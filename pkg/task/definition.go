@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand/v2"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -63,6 +64,15 @@ func (g Generator) resultDestDir() string {
 	)
 }
 
+func (g Generator) dyldLibraryPath() string {
+	x, _ := filepath.Abs(g.dir.NeutrinoDir())
+	return fmt.Sprintf(
+		"%s/bin:%s",
+		x,
+		os.Getenv("DYLD_LIBRARY_PATH"),
+	)
+}
+
 func (g Generator) env() execx.Env {
 	e := g.c.Env()
 	e.Set("ResultDestDir", g.resultDir)
@@ -72,10 +82,7 @@ func (g Generator) env() execx.Env {
 	} else {
 		e.Set("Play", "")
 	}
-	e.Set(
-		"DYLD_LIBRARY_PATH",
-		fmt.Sprintf("%s:${DYLD_LIBRARY_PATH}", g.dir.BinDir()),
-	)
+	e.Set("DYLD_LIBRARY_PATH", g.dyldLibraryPath())
 	e.Merge(g.dir.Env())
 	return e
 }
@@ -109,7 +116,7 @@ func (g Generator) DisplayEnv() *Task {
 		k, v := ss[0], ss[1]
 		add(fmt.Sprintf(`%s="%s"`, k, v))
 	}
-	add(`export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}`)
+	add(fmt.Sprintf(`export DYLD_LIBRARY_PATH="%s"`, g.dyldLibraryPath()))
 
 	return g.newTask(script.New(
 		"display_env",
@@ -121,7 +128,7 @@ func (g Generator) Init() *Task {
 	return g.newTask(script.New(
 		"init",
 		fmt.Sprintf(`chmod 755 %[1]s/*
-xattr -dr com.apple.quarantine %[1]s`,
+xattr -dr com.apple.quarantine "%[1]s"`,
 			g.dir.BinDir(),
 		),
 	))
@@ -130,7 +137,7 @@ xattr -dr com.apple.quarantine %[1]s`,
 func (g Generator) Prepare() *Task {
 	return g.newTask(script.New(
 		"prepare",
-		fmt.Sprintf(`cp -f %s %s/
+		fmt.Sprintf(`cp -f %s "%s/"
 mkdir -p ${ResultDestDir}`,
 			g.c.Score, g.dir.MusicXMLDir(),
 		),
