@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/berquerant/execx"
 )
@@ -46,13 +47,25 @@ func (s Script) Run(ctx context.Context, opt ...ConfigOption) error {
 		cmd.Dir = c.Dir.Get()
 		_, err := cmd.Run(
 			ctx,
-			execx.WithStdoutConsumer(func(t execx.Token) {
-				slog.Info(t.String(), slog.String("title", s.title), slog.String("dir", cmd.Dir), slog.String("fd", "stdout"))
-			}),
-			execx.WithStderrConsumer(func(t execx.Token) {
-				slog.Info(t.String(), slog.String("title", s.title), slog.String("dir", cmd.Dir), slog.String("fd", "stderr"))
-			}),
+			execx.WithStdoutConsumer(s.logConsumer(
+				slog.String("dir", cmd.Dir),
+				slog.String("fd", "stdout"),
+			)),
+			execx.WithStderrConsumer(s.logConsumer(
+				slog.String("dir", cmd.Dir),
+				slog.String("fd", "stderr"),
+			)),
 		)
 		return err
 	})
+}
+
+func (s Script) logConsumer(attr ...any) func(execx.Token) {
+	attrs := append([]any{slog.String("title", s.title)}, attr...)
+	return func(t execx.Token) {
+		// CR as newline
+		for _, x := range strings.Split(t.String(), "\r") {
+			slog.Info(x, attrs...)
+		}
+	}
 }
