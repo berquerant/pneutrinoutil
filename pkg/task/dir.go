@@ -23,7 +23,7 @@ type Dir struct {
 func (d Dir) Env() execx.Env {
 	e := execx.NewEnv()
 	e.Set("WORKDIR", d.workDir)
-	e.Set("NEUTRINODIR", d.neutrinoDir)
+	// e.Set("NEUTRINODIR", d.neutrinoDir)
 	return e
 }
 
@@ -33,10 +33,10 @@ func (d Dir) NeutrinoDir() string { return d.neutrinoDir }
 
 func (Dir) ResultDir() string { return join("${WORKDIR}", "result") }
 
-func (Dir) ModelDir() string  { return join("${NEUTRINODIR}", "model") }
-func (Dir) BinDir() string    { return join("${NEUTRINODIR}", "bin") }
-func (Dir) OutputDir() string { return join("${NEUTRINODIR}", "output") }
-func (Dir) ScoreDir() string  { return join("${NEUTRINODIR}", "score") }
+func (Dir) ModelDir() string  { return "./model" }
+func (Dir) BinDir() string    { return "./bin" }
+func (Dir) OutputDir() string { return "./output" }
+func (Dir) ScoreDir() string  { return "./score" }
 
 func (d Dir) MusicXMLDir() string { return join(d.ScoreDir(), "musicxml") }
 func (d Dir) LabelDir() string    { return join(d.ScoreDir(), "label") }
