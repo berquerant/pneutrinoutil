@@ -1,0 +1,9 @@
+- name: Build pneutrino binary
+  ansible.builtin.shell:
+    cmd: ./task build
+    chdir: "{{ ansible_env.GIT_ROOT }}"
+
+- name: Show help
+  ansible.builtin.shell:
+    cmd: ./pneutrinoutil --help
+    chdir: "{{ dist_dir }}"

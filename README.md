@@ -2,27 +2,36 @@
 
 My [NEUTRIONO](https://studio-neutrino.com/) utilities.
 
-## neutrino.sh
+# Usage
 
-Generate .wav from .musicxml and preserve inputs and outputs in a nice way.
-
-### Usage
-
-Install the script.
-
-```sh
-ln -s path/to/neutrino.sh path/to/NEUTRINO/neutrino.sh
-cd path/to/NEUTRINO
+``` shell
+./dist/pneutrinoutil --neutrinoDir ./dist/NEUTRINO --workDir ./tmp --score /path/to/some.musicxml
 ```
 
-Generate a default skeleton.json.
+# Requirements
 
-``` sh
-./neutrino.sh -n > skeleton.json
+- macOS
+- Go
+- [uv](https://github.com/astral-sh/uv)
+
+# Installation
+
+Prepare libraries.
+
+``` shell
+uv sync
+go mod download
 ```
 
-After changing skeleton.json and installing .musicxml to `Score`, generate .wav.
+Download NEUTRINO and singer libraries.
 
-``` sh
-./neutrino.sh
+``` shell
+./task ansible
+```
+
+Build pneutrinoutil.
+
+``` shell
+./task build
+./dist/pneutrinoutil --help
 ```

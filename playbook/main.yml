@@ -1,0 +1,5 @@
+- hosts: local
+  roles:
+    - { role: download/base, tags: [ base ] }
+    - { role: download/singer, tags: [ singer ] }
+    - { role: build/base, tags: [ build ]}

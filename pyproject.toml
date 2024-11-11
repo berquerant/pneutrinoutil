@@ -1,0 +1,9 @@
+[project]
+name = "pneutrinoutil"
+version = "0.1.0"
+description = "NEUTRINO util"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "ansible>=10.6.0",
+]

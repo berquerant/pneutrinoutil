@@ -1,0 +1,15 @@
+- name: Ensure NEUTRINO directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ tmp_dir }}"
+    - "{{ dist_dir }}"
+
+- name: Download singers
+  ansible.builtin.include_tasks: singer.yml
+  loop: "{{ singers }}"
+  loop_control:
+    # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_loops.html#stacking-loops-via-include-tasks
+    loop_var: singer

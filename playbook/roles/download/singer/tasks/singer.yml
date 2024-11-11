@@ -1,0 +1,28 @@
+- name: Create url
+  ansible.builtin.set_fact:
+    singer_url_filename: "{{ singer.name }}（NEUTRINO-Library）-{{ singer.version }}.zip"
+
+- name: Download singer
+  ansible.builtin.get_url:
+    url: "https://studio-neutrino.com/downloads/{{ singer.version | regex_replace('\\.[0-9]+$') }}/{{ singer_url_filename | urlencode }}"
+    dest: "{{ tmp_dir }}/singer-{{ singer.name }}-{{ singer.version }}.zip"
+    mode: "644"
+    timeout: 3600 # 1h
+  register: get_singer_result
+
+- name: Unzip singer
+  ansible.builtin.shell:
+    cmd: "ditto -V -x -k --sequesterRsrc {{ get_singer_result.dest }} {{ dist_dir }}"
+  when: get_singer_result.changed
+
+- name: Find singer directory
+  ansible.builtin.find:
+    paths: "{{ dist_dir }}/{{ singer.name }}（NEUTRINO-Library）"
+    file_type: directory
+  register: find_singer_directory_result
+
+- name: Copy to NEUTRINO/model
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "{{ dist_dir }}/NEUTRINO/model/"
+  loop: "{{ find_singer_directory_result.files }}"

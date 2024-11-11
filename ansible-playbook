@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export GIT_ROOT="$(git rev-parse --show-toplevel)"
+uv run ansible-playbook "$@"

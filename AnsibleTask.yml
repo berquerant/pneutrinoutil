@@ -1,0 +1,12 @@
+version: '3'
+
+tasks:
+  default:
+    deps:
+      - run
+  run:
+    cmds:
+      - ./ansible-playbook playbook/main.yml --diff -v
+  dry:
+    cmds:
+      - ./ansible-playbook playbook/main.yml --diff --check -v

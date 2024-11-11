@@ -1,0 +1,21 @@
+- name: Ensure NEUTRINO directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ tmp_dir }}"
+    - "{{ dist_dir }}"
+
+- name: Download NEUTRINO
+  ansible.builtin.get_url:
+    url: "https://studio-neutrino.com/downloads/{{ neutrino_version | regex_replace('\\.[0-9]+$') }}/NEUTRINO-macOS-{{ neutrino_version }}.zip"
+    dest: "{{ tmp_dir }}/NEUTRINO-{{ neutrino_version }}.zip"
+    mode: "644"
+    timeout: 3600 # 1h
+  register: get_neutrino_result
+
+- name: Unzip NEUTRINO
+  ansible.builtin.shell:
+    cmd: "ditto -V -x -k --sequesterRsrc {{ get_neutrino_result.dest }} {{ dist_dir }}"
+  when: get_neutrino_result.changed
