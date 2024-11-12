@@ -79,8 +79,8 @@ type Config struct {
 }
 
 func (c Config) basename() string {
-	ss := strings.SplitN(filepath.Base(c.Score), ".", 2)
-	return ss[0]
+	ss := strings.Split(filepath.Base(c.Score), ".")
+	return strings.Join(ss[:len(ss)-1], ".")
 }
 
 func (c Config) nsfModel() string {
