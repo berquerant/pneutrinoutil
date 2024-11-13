@@ -7,9 +7,9 @@ import (
 	"github.com/berquerant/pneutrinoutil/pkg/task"
 )
 
-func newTasks(dir *task.Dir, c *ctl.Config, now time.Time, play bool) []*task.Task {
+func newTaskRunner(dir *task.Dir, c *ctl.Config, now time.Time, play bool) *task.Runner {
 	g := task.NewGenerator(dir, c, now, play)
-	return []*task.Task{
+	tasks := []*task.Task{
 		g.DisplayEnv(),
 		g.Init(),
 		g.Prepare(),
@@ -19,4 +19,5 @@ func newTasks(dir *task.Dir, c *ctl.Config, now time.Time, play bool) []*task.Ta
 		g.WORLD(),
 		g.Cleanup(),
 	}
+	return task.NewRunner(tasks)
 }

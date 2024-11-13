@@ -3,6 +3,7 @@ module github.com/berquerant/pneutrinoutil
 go 1.23.2
 
 require (
+	github.com/berquerant/dataclass v0.4.0
 	github.com/berquerant/execx v0.6.1
 	github.com/berquerant/goconfig v0.3.0
 	github.com/go-task/task/v3 v3.40.0

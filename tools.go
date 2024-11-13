@@ -4,6 +4,7 @@
 package main
 
 import (
+	_ "github.com/berquerant/dataclass"
 	_ "github.com/berquerant/goconfig"
 	_ "github.com/go-task/task/v3/cmd/task"
 	_ "golang.org/x/vuln/cmd/govulncheck"

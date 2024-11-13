@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/berquerant/pneutrinoutil/pkg/ctl"
@@ -58,39 +57,23 @@ var rootCmd = &cobra.Command{
 		dir := newDir(cmd)
 
 		play, _ := cmd.Flags().GetBool("play")
-		tasks := newTasks(dir, c, now, play)
+		runner := newTaskRunner(dir, c, now, play)
+
 		if dry, _ := cmd.Flags().GetBool("dry"); dry {
-			ss := make([]string, len(tasks))
-			for i, t := range tasks {
-				ss[i] = t.String()
-			}
-			fmt.Println(strings.Join(ss, "\n"))
+			fmt.Println(runner.String())
 			return nil
 		}
 
-		type stat struct {
-			title   string
-			elapsed time.Duration
-		}
-		stats := []stat{}
-		for _, t := range tasks {
-			if err := t.Run(cmd.Context()); err != nil {
-				return err
-			}
-			stats = append(stats, stat{
-				title:   t.Title(),
-				elapsed: t.Elapsed(),
-			})
-		}
-		for i, s := range stats {
+		err = runner.Run(cmd.Context())
+		for i, s := range runner.Stats() {
 			slog.Info(
 				"Stat",
-				slog.String("title", s.title),
+				slog.String("title", s.Title()),
 				slog.Int("index", i),
-				slog.Duration("elapsed", s.elapsed),
-				slog.Float64("elapsedSeconds", s.elapsed.Seconds()),
+				slog.Duration("elapsed", s.Elapsed()),
+				slog.Float64("elapsedSeconds", s.Elapsed().Seconds()),
 			)
 		}
-		return nil
+		return err
 	},
 }
