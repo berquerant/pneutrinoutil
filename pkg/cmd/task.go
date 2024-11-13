@@ -12,7 +12,6 @@ func newTaskRunner(dir *task.Dir, c *ctl.Config, now time.Time, play bool) *task
 	tasks := []*task.Task{
 		g.DisplayEnv(),
 		g.Init(),
-		g.Prepare(),
 		g.MusicXMLToLabel(),
 		g.NEUTRINO(),
 		g.NSF(),

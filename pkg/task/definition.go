@@ -128,17 +128,10 @@ func (g Generator) Init() *Task {
 	return g.newTask(script.New(
 		"init",
 		fmt.Sprintf(`chmod 755 %[1]s/*
-xattr -dr com.apple.quarantine "%[1]s"`,
-			g.dir.BinDir(),
-		),
-	))
-}
-
-func (g Generator) Prepare() *Task {
-	return g.newTask(script.New(
-		"prepare",
-		fmt.Sprintf(`cp -f %s "%s/"
+xattr -dr com.apple.quarantine "%[1]s"
+cp -f %[2]s "%[3]s/"
 mkdir -p ${ResultDestDir}`,
+			g.dir.BinDir(),
 			g.c.Score,
 			g.dir.MusicXMLDir(),
 		),
