@@ -244,20 +244,23 @@ func (g Generator) Cleanup() *Task {
 	return g.newTask(script.New(
 		"cleanup",
 		fmt.Sprintf(
-			`cp "%s/${BASENAME}.wav" \
-  "%s/${BASENAME}.musicxml" \
-  "${ResultDestDir}/"
+			`cp %s/${BASENAME}.* "%s/${BASENAME}.musicxml" "${ResultDestDir}/"
+world_wav="%s/${BASENAME}_world.wav"
+if [ -f "${world_wav}" ] ; then
+  cp "${world_wav}" "${ResultDestDir}/"
+fi
 cat <<EOS > "${ResultDestDir}/config.yml"
 %s
 EOS
 echo "%s" > "${ResultDestDir}/PWD"
 
+ls -la "${ResultDestDir}/"
 if [ -n "$Play" ] ; then
-  open "${ResultDestDir}/${BASENAME}.wav"
-fi
-`,
+  open "${ResultDestDir}/${BASENAME}.wav" || open "${world_wav}"
+fi`,
 			g.dir.OutputDir(),
 			g.dir.MusicXMLDir(),
+			g.dir.OutputDir(),
 			b,
 			g.dir.PWD(),
 		),
