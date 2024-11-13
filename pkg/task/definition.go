@@ -173,7 +173,7 @@ func (g Generator) NEUTRINO() *Task {
   "%[5]s/${ModelDir}/" \
   -w "%[4]s/${BASENAME}.mgc" \
   "%[4]s/${BASENAME}.bap" \
-  -n 1 \
+  -n ${NumParallel} \
   -o ${NumThreads} \
   -k ${StyleShift} \
   -d ${InferenceMode} \
@@ -199,7 +199,7 @@ func (g Generator) NSF() *Task {
   "%[3]s/${ModelDir}/${NsfModel}.bin" \
   "%[2]s/${BASENAME}.wav" \
   -l "%[4]s/${BASENAME}.lab" \
-  -n 1 \
+  -n ${NumParallel} \
   -p ${NumThreads} \
   -s ${SamplingFreq} \
   -f ${PitchShiftNsf} \
@@ -226,7 +226,7 @@ func (g Generator) WORLD() *Task {
   -p ${SmoothPicth} \
   -c ${SmoothFormant} \
   -b ${EnhanceBreathiness} \
-  -n ${NumThreads} \
+  -n ${NumParallel} \
   -t`,
 			g.dir.BinDir(),
 			g.dir.OutputDir(),

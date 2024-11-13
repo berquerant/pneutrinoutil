@@ -59,11 +59,12 @@ func NewDefaultConfig() (*Config, error) {
 
 type Config struct {
 	Description string `yaml:"desc" usage:"description of config"`
+	NumParallel int    `yaml:"parallel" usage:"number of parallel" default:"1"`
 	// musicXML_to_label
 	// Suffix string `yaml:"suffix"`
 	// Project settings
 	Score         string `yaml:"score" usage:"score file, required"`
-	NumThreads    int    `yaml:"thread" usage:"number of processor to use" default:"4"`
+	NumThreads    int    `yaml:"thread" usage:"number of parallel in session" default:"1"`
 	InferenceMode int    `yaml:"inference" usage:"quality, processing speed: 2 (elements), 3 (standard) or 4 (advanced)" default:"3"`
 	// NEUTRINO
 	ModelDir   string `yaml:"model" usage:"singer" default:"MERROW"`
@@ -128,6 +129,7 @@ func (c Config) Env() execx.Env {
 		{k: "SamplingFreq", v: c.samplingFreq()},
 		{k: "BASENAME", v: c.basename()},
 		{k: "RandomSeed", v: c.RandomSeed},
+		{k: "NumParallel", v: c.NumParallel},
 	} {
 		e.Set(x.k, fmt.Sprint(x.v))
 	}
