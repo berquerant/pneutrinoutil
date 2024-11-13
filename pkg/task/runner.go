@@ -23,6 +23,14 @@ type Runner struct {
 
 func (r Runner) Stats() []Stat { return r.stats }
 
+func (r Runner) Tasks() []string {
+	titles := make([]string, len(r.tasks))
+	for i, t := range r.tasks {
+		titles[i] = t.Title()
+	}
+	return titles
+}
+
 func (r Runner) String() string {
 	ss := make([]string, len(r.tasks))
 	for i, t := range r.tasks {

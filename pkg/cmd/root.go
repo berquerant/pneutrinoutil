@@ -30,6 +30,7 @@ func init() {
 	rootCmd.PersistentFlags().StringP("neutrinoDir", "n", "./dist/NEUTRINO", "NEUTRINO directory")
 	rootCmd.Flags().Bool("dry", false, "dryrun")
 	rootCmd.Flags().Bool("play", false, "play generated wav after running")
+	rootCmd.Flags().Bool("list-tasks", false, "list task names")
 
 	var c ctl.Config
 	if err := c.SetFlags(rootCmd.Flags()); err != nil {
@@ -66,6 +67,13 @@ var rootCmd = &cobra.Command{
 		)
 
 		runner := newTaskRunner(dir, c, now, play)
+
+		if list, _ := cmd.Flags().GetBool("list-tasks"); list {
+			for _, t := range runner.Tasks() {
+				fmt.Println(t)
+			}
+			return nil
+		}
 
 		if dry, _ := cmd.Flags().GetBool("dry"); dry {
 			fmt.Println(runner.String())
