@@ -177,6 +177,7 @@ func (g Generator) NEUTRINO() *Task {
   -o ${NumThreads} \
   -k ${StyleShift} \
   -d ${InferenceMode} \
+  -r ${RandomSeed} \
   -t`,
 			g.dir.BinDir(),
 			g.dir.FullDir(),

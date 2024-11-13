@@ -68,6 +68,7 @@ type Config struct {
 	// NEUTRINO
 	ModelDir   string `yaml:"model" usage:"singer" default:"MERROW"`
 	StyleShift int    `yaml:"styleShift" usage:"change the key and estimate to change the style of singing"`
+	RandomSeed int    `yaml:"randomSeed" usage:"random seed" default:"1234"`
 	// NSF
 	PitchShiftNsf float32 `yaml:"pitchShiftNsf" usage:"change pitch via NSF"`
 	// WORLD
@@ -126,6 +127,7 @@ func (c Config) Env() execx.Env {
 		{k: "NsfModel", v: c.nsfModel()},
 		{k: "SamplingFreq", v: c.samplingFreq()},
 		{k: "BASENAME", v: c.basename()},
+		{k: "RandomSeed", v: c.RandomSeed},
 	} {
 		e.Set(x.k, fmt.Sprint(x.v))
 	}
