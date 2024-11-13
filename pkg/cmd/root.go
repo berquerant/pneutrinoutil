@@ -68,10 +68,28 @@ var rootCmd = &cobra.Command{
 			return nil
 		}
 
+		type stat struct {
+			title   string
+			elapsed time.Duration
+		}
+		stats := []stat{}
 		for _, t := range tasks {
 			if err := t.Run(cmd.Context()); err != nil {
 				return err
 			}
+			stats = append(stats, stat{
+				title:   t.Title(),
+				elapsed: t.Elapsed(),
+			})
+		}
+		for i, s := range stats {
+			slog.Info(
+				"Stat",
+				slog.String("title", s.title),
+				slog.Int("index", i),
+				slog.Duration("elapsed", s.elapsed),
+				slog.Float64("elapsedSeconds", s.elapsed.Seconds()),
+			)
 		}
 		return nil
 	},

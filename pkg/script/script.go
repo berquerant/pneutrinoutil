@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
+	"time"
 
 	"github.com/berquerant/execx"
 )
@@ -21,7 +22,11 @@ const scriptShell = "bash"
 type Script struct {
 	title   string
 	content string
+	elapsed time.Duration
 }
+
+func (s Script) Title() string          { return s.title }
+func (s Script) Elapsed() time.Duration { return s.elapsed }
 
 func (s Script) String() string {
 	return fmt.Sprintf(`# %s
@@ -31,7 +36,20 @@ set -ex
 
 //go:generate go run github.com/berquerant/goconfig -field "Env execx.Env|Dir string" -option -output script_config_generated.go
 
-func (s Script) Run(ctx context.Context, opt ...ConfigOption) error {
+func (s *Script) Run(ctx context.Context, opt ...ConfigOption) error {
+	startTime := time.Now()
+	slog.Info("Run script", slog.String("title", s.title))
+	defer func() {
+		elapsedTime := time.Since(startTime)
+		s.elapsed = elapsedTime
+		slog.Info(
+			"End run script",
+			slog.String("title", s.title),
+			slog.Duration("elapsed", elapsedTime),
+			slog.Float64("elapsedSeconds", elapsedTime.Seconds()),
+		)
+	}()
+
 	c := NewConfigBuilder().
 		Env(execx.NewEnv()).
 		Dir(".").
