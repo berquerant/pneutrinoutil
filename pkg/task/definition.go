@@ -219,7 +219,7 @@ func (g Generator) WORLD() *Task {
   -p ${SmoothPicth} \
   -c ${SmoothFormant} \
   -b ${EnhanceBreathiness} \
-  -n ${NumParallel} \
+  -n ${NumThreads} \
   -t`,
 			g.dir.BinDir(),
 			g.dir.OutputDir(),
