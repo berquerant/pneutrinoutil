@@ -10,6 +10,7 @@ import (
 
 	"github.com/berquerant/pneutrinoutil/pkg/ctl"
 	"github.com/berquerant/pneutrinoutil/pkg/logx"
+	"github.com/berquerant/pneutrinoutil/pkg/task"
 	"github.com/spf13/cobra"
 )
 
@@ -28,13 +29,15 @@ func init() {
 	rootCmd.PersistentFlags().StringP("workDir", "w", ".", "working directory")
 	rootCmd.PersistentFlags().StringP("neutrinoDir", "n", "./dist/NEUTRINO", "NEUTRINO directory")
 	rootCmd.Flags().Bool("dry", false, "dryrun")
-
 	rootCmd.Flags().Bool("play", false, "play generated wav after running")
 
 	var c ctl.Config
 	if err := c.SetFlags(rootCmd.Flags()); err != nil {
 		panic(err)
 	}
+
+	rootCmd.Flags().StringSliceP("include", "i", nil, "include task names")
+	rootCmd.Flags().StringSliceP("exclude", "e", nil, "exclude task names")
 }
 
 var rootCmd = &cobra.Command{
@@ -56,7 +59,12 @@ var rootCmd = &cobra.Command{
 		}
 		dir := newDir(cmd)
 
-		play, _ := cmd.Flags().GetBool("play")
+		var (
+			play, _    = cmd.Flags().GetBool("play")
+			include, _ = cmd.Flags().GetStringSlice("include")
+			exclude, _ = cmd.Flags().GetStringSlice("exclude")
+		)
+
 		runner := newTaskRunner(dir, c, now, play)
 
 		if dry, _ := cmd.Flags().GetBool("dry"); dry {
@@ -64,7 +72,7 @@ var rootCmd = &cobra.Command{
 			return nil
 		}
 
-		err = runner.Run(cmd.Context())
+		err = runner.Run(cmd.Context(), task.WithInclude(include), task.WithExclude(exclude))
 		for i, s := range runner.Stats() {
 			slog.Info(
 				"Stat",
