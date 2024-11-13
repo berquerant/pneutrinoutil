@@ -61,7 +61,7 @@ func (s *Script) Run(ctx context.Context, opt ...ConfigOption) error {
 	x.Env.Merge(execx.EnvFromEnviron())
 	x.Env.Merge(c.Env.Get())
 
-	return x.Runner(func(cmd *execx.Cmd) error {
+	if err := x.Runner(func(cmd *execx.Cmd) error {
 		cmd.Dir = c.Dir.Get()
 		_, err := cmd.Run(
 			ctx,
@@ -75,7 +75,10 @@ func (s *Script) Run(ctx context.Context, opt ...ConfigOption) error {
 			)),
 		)
 		return err
-	})
+	}); err != nil {
+		return fmt.Errorf("%w: %s", err, s.title)
+	}
+	return nil
 }
 
 func (s Script) logConsumer(attr ...any) func(execx.Token) {
