@@ -16,7 +16,7 @@ func TestConfig(t *testing.T) {
 		}
 		want := &ctl.Config{
 			NumParallel:   1,
-			NumThreads:    1,
+			NumThreads:    4,
 			InferenceMode: 3,
 			ModelDir:      "MERROW",
 			RandomSeed:    1234,

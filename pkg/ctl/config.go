@@ -64,7 +64,7 @@ type Config struct {
 	// Suffix string `yaml:"suffix"`
 	// Project settings
 	Score         string `yaml:"score" usage:"score file, required"`
-	NumThreads    int    `yaml:"thread" usage:"number of parallel in session" default:"1"`
+	NumThreads    int    `yaml:"thread" usage:"number of parallel in session" default:"4"`
 	InferenceMode int    `yaml:"inference" usage:"quality, processing speed: 2 (elements), 3 (standard) or 4 (advanced)" default:"3"`
 	// NEUTRINO
 	ModelDir   string `yaml:"model" usage:"singer" default:"MERROW"`
