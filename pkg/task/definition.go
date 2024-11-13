@@ -139,7 +139,8 @@ func (g Generator) Prepare() *Task {
 		"prepare",
 		fmt.Sprintf(`cp -f %s "%s/"
 mkdir -p ${ResultDestDir}`,
-			g.c.Score, g.dir.MusicXMLDir(),
+			g.c.Score,
+			g.dir.MusicXMLDir(),
 		),
 	))
 }
@@ -164,14 +165,14 @@ func (g Generator) NEUTRINO() *Task {
 	return g.newTask(script.New(
 		"NEUTRINO",
 		fmt.Sprintf(
-			`%s/NEUTRINO \
-  "%s/${BASENAME}.lab" \
-  "%s/${BASENAME}.lab" \
-  "%s/${BASENAME}.f0" \
-  "%s/${BASENAME}.melspec" \
-  "%s/${ModelDir}/" \
-  -w "%s/${BASENAME}.mgc" \
-  "%s/${BASENAME}.bap" \
+			`%[1]s/NEUTRINO \
+  "%[2]s/${BASENAME}.lab" \
+  "%[3]s/${BASENAME}.lab" \
+  "%[4]s/${BASENAME}.f0" \
+  "%[4]s/${BASENAME}.melspec" \
+  "%[5]s/${ModelDir}/" \
+  -w "%[4]s/${BASENAME}.mgc" \
+  "%[4]s/${BASENAME}.bap" \
   -n 1 \
   -o ${NumThreads} \
   -k ${StyleShift} \
@@ -181,10 +182,7 @@ func (g Generator) NEUTRINO() *Task {
 			g.dir.FullDir(),
 			g.dir.TimingDir(),
 			g.dir.OutputDir(),
-			g.dir.OutputDir(),
 			g.dir.ModelDir(),
-			g.dir.OutputDir(),
-			g.dir.OutputDir(),
 		),
 	))
 }
@@ -193,12 +191,12 @@ func (g Generator) NSF() *Task {
 	return g.newTask(script.New(
 		"NSF",
 		fmt.Sprintf(
-			`%s/NSF \
-  "%s/${BASENAME}.f0" \
-  "%s/${BASENAME}.melspec" \
-  "%s/${ModelDir}/${NsfModel}.bin" \
-  "%s/${BASENAME}.wav" \
-  -l "%s/${BASENAME}.lab" \
+			`%[1]s/NSF \
+  "%[2]s/${BASENAME}.f0" \
+  "%[2]s/${BASENAME}.melspec" \
+  "%[3]s/${ModelDir}/${NsfModel}.bin" \
+  "%[2]s/${BASENAME}.wav" \
+  -l "%[4]s/${BASENAME}.lab" \
   -n 1 \
   -p ${NumThreads} \
   -s ${SamplingFreq} \
@@ -206,9 +204,7 @@ func (g Generator) NSF() *Task {
   -t`,
 			g.dir.BinDir(),
 			g.dir.OutputDir(),
-			g.dir.OutputDir(),
 			g.dir.ModelDir(),
-			g.dir.OutputDir(),
 			g.dir.TimingDir(),
 		),
 	))
@@ -218,11 +214,11 @@ func (g Generator) WORLD() *Task {
 	return g.newTask(script.New(
 		"WORLD",
 		fmt.Sprintf(
-			`%s/WORLD \
-  "%s/${BASENAME}.f0" \
-  "%s/${BASENAME}.mgc" \
-  "%s/${BASENAME}.bap" \
-  "%s/${BASENAME}_world.wav" \
+			`%[1]s/WORLD \
+  "%[2]s/${BASENAME}.f0" \
+  "%[2]s/${BASENAME}.mgc" \
+  "%[2]s/${BASENAME}.bap" \
+  "%[2]s/${BASENAME}_world.wav" \
   -f ${PitchShiftWorld} \
   -m ${FormantShift} \
   -p ${SmoothPicth} \
@@ -231,9 +227,6 @@ func (g Generator) WORLD() *Task {
   -n ${NumThreads} \
   -t`,
 			g.dir.BinDir(),
-			g.dir.OutputDir(),
-			g.dir.OutputDir(),
-			g.dir.OutputDir(),
 			g.dir.OutputDir(),
 		),
 	))
@@ -244,15 +237,15 @@ func (g Generator) Cleanup() *Task {
 	return g.newTask(script.New(
 		"cleanup",
 		fmt.Sprintf(
-			`cp %s/${BASENAME}.* "%s/${BASENAME}.musicxml" "${ResultDestDir}/"
-world_wav="%s/${BASENAME}_world.wav"
+			`cp %[1]s/${BASENAME}.* "%[2]s/${BASENAME}.musicxml" "${ResultDestDir}/"
+world_wav="%[2]s/${BASENAME}_world.wav"
 if [ -f "${world_wav}" ] ; then
   cp "${world_wav}" "${ResultDestDir}/"
 fi
 cat <<EOS > "${ResultDestDir}/config.yml"
-%s
+%[3]s
 EOS
-echo "%s" > "${ResultDestDir}/PWD"
+echo "%[4]s" > "${ResultDestDir}/PWD"
 
 ls -la "${ResultDestDir}/"
 if [ -n "$Play" ] ; then
@@ -260,7 +253,6 @@ if [ -n "$Play" ] ; then
 fi`,
 			g.dir.OutputDir(),
 			g.dir.MusicXMLDir(),
-			g.dir.OutputDir(),
 			b,
 			g.dir.PWD(),
 		),
