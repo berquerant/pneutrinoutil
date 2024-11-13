@@ -45,7 +45,7 @@ func (s *Script) Run(ctx context.Context, opt ...ConfigOption) error {
 		slog.Info(
 			"End run script",
 			slog.String("title", s.title),
-			slog.Duration("elapsed", elapsedTime),
+			slog.String("elapsed", elapsedTime.String()),
 			slog.Float64("elapsedSeconds", elapsedTime.Seconds()),
 		)
 	}()

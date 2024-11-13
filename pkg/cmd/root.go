@@ -78,7 +78,7 @@ var rootCmd = &cobra.Command{
 				"Stat",
 				slog.String("title", s.Title()),
 				slog.Int("index", i),
-				slog.Duration("elapsed", s.Elapsed()),
+				slog.String("elapsed", s.Elapsed().String()),
 				slog.Float64("elapsedSeconds", s.Elapsed().Seconds()),
 			)
 		}
