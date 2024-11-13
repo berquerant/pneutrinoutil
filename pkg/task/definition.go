@@ -178,6 +178,7 @@ func (g Generator) NEUTRINO() *Task {
   -k ${StyleShift} \
   -d ${InferenceMode} \
   -r ${RandomSeed} \
+  -i "%[4]s/${BASENAME}.trace" \
   -t`,
 			g.dir.BinDir(),
 			g.dir.FullDir(),
