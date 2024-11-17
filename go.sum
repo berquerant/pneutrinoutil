@@ -25,6 +25,8 @@ github.com/berquerant/execx v0.6.1 h1:7JIz0+5xoH+rrIS2gUUBnHhEQO0D/GsyUI+fV6KAFm
 github.com/berquerant/execx v0.6.1/go.mod h1:svWBwuRYDyD2atFzNhXL7cqEqb1TzGAB7i/Y1IgJeJI=
 github.com/berquerant/goconfig v0.3.0 h1:ZE06HPp8aoXcdaNBWr3YsnMokfl5BBV4J0OHha5E8E0=
 github.com/berquerant/goconfig v0.3.0/go.mod h1:4fY4lQ98iRSU8Rn4huI7334mlVS46rAHjrAVfonzGzs=
+github.com/berquerant/structconfig v0.1.2 h1:ubWDf4tVjLqXmxS+5Vc3QdTwg4Nyy6zFsW7qkW/CEQ4=
+github.com/berquerant/structconfig v0.1.2/go.mod h1:v9zT5NR/Xu5lrQpkPXdszF7t2ejQ1CveGBPPxk47XDE=
 github.com/bitfield/gotestdox v0.2.2 h1:x6RcPAbBbErKLnapz1QeAlf3ospg8efBsedU93CDsnE=
 github.com/bitfield/gotestdox v0.2.2/go.mod h1:D+gwtS0urjBrzguAkTM2wodsTQYFHdpx8eqRJ3N+9pY=
 github.com/bwesterb/go-ristretto v1.2.3/go.mod h1:fUIoIZaG73pV5biE2Blr2xEzDoMj7NFEuV9ekS419A0=

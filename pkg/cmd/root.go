@@ -44,6 +44,10 @@ func init() {
 var rootCmd = &cobra.Command{
 	Use:   "pneutrinoutil [CONFIG_YML]",
 	Short: `Generate .wav from .musicxml using NEUTRINO`,
+	Long: `Generate .wav from .musicxml using NEUTRINO
+
+e.g.
+pneutrinoutil --neutrinoDir /path/to/NEUTRINO --workDir /path/to/install-result --score /path/to/some.musicxml`,
 	PersistentPreRun: func(cmd *cobra.Command, _ []string) {
 		debugEnabled, _ := cmd.Flags().GetBool("debug")
 		logLevel := slog.LevelInfo

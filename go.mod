@@ -6,6 +6,7 @@ require (
 	github.com/berquerant/dataclass v0.4.0
 	github.com/berquerant/execx v0.6.1
 	github.com/berquerant/goconfig v0.3.0
+	github.com/berquerant/structconfig v0.1.2
 	github.com/go-task/task/v3 v3.40.0
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
@@ -59,6 +60,7 @@ require (
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	github.com/zeebo/xxh3 v1.0.2 // indirect
 	golang.org/x/crypto v0.29.0 // indirect
+	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
 	golang.org/x/mod v0.22.0 // indirect
 	golang.org/x/net v0.31.0 // indirect
 	golang.org/x/sync v0.9.0 // indirect

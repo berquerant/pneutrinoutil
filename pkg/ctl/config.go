@@ -1,83 +1,46 @@
 package ctl
 
 import (
-	"errors"
 	"fmt"
 	"path/filepath"
-	"reflect"
-	"strconv"
 	"strings"
 
 	"github.com/berquerant/execx"
-	"github.com/berquerant/pneutrinoutil/pkg/reflectx"
+	"github.com/berquerant/structconfig"
 )
 
 // NewDefaultConfig returns a new Config.
 // Default values are from "default" struct tags.
 func NewDefaultConfig() (*Config, error) {
+	sc := structconfig.New[Config]()
 	var c Config
-	s, err := reflectx.NewFields(c)
-	if err != nil {
+	if err := sc.FromDefault(&c); err != nil {
 		return nil, err
 	}
-	// get value of pointer to mutate
-	v := reflect.ValueOf(&c)
-
-	for _, f := range s {
-		dv, ok := f.Tag.Lookup("default")
-		if !ok {
-			continue
-		}
-		newErr := func() error {
-			return fmt.Errorf("unexpected default value of Config: %s, got %s", f.Name, dv)
-		}
-		fv := v.Elem().FieldByName(f.Name)
-
-		// set default values from "default" tag
-		switch f.Type.Kind() {
-		case reflect.String:
-			fv.SetString(dv)
-		case reflect.Int:
-			i, err := strconv.Atoi(dv)
-			if err != nil {
-				return nil, errors.Join(err, newErr())
-			}
-			fv.SetInt(int64(i))
-		case reflect.Float32:
-			f, err := strconv.ParseFloat(dv, 32)
-			if err != nil {
-				return nil, errors.Join(err, newErr())
-			}
-			fv.SetFloat(f)
-		default:
-			return nil, newErr()
-		}
-	}
-
 	return &c, nil
 }
 
 type Config struct {
-	Description string `yaml:"desc" usage:"description of config"`
-	NumParallel int    `yaml:"parallel" usage:"number of parallel" default:"1"`
+	Description string `yaml:"desc" name:"desc" usage:"description of config"`
+	NumParallel int    `yaml:"parallel" name:"parallel" usage:"number of parallel" default:"1"`
 	// musicXML_to_label
 	// Suffix string `yaml:"suffix"`
 	// Project settings
-	Score         string `yaml:"score" usage:"score file, required"`
-	NumThreads    int    `yaml:"thread" usage:"number of parallel in session" default:"4"`
-	InferenceMode int    `yaml:"inference" usage:"quality, processing speed: 2 (elements), 3 (standard) or 4 (advanced)" default:"3"`
+	Score         string `yaml:"score" name:"score" usage:"score file, required"`
+	NumThreads    int    `yaml:"thread" name:"thread" usage:"number of parallel in session" default:"4"`
+	InferenceMode int    `yaml:"inference" name:"inference" usage:"quality, processing speed: 2 (elements), 3 (standard) or 4 (advanced)" default:"3"`
 	// NEUTRINO
-	ModelDir   string `yaml:"model" usage:"singer" default:"MERROW"`
-	StyleShift int    `yaml:"styleShift" usage:"change the key and estimate to change the style of singing"`
-	RandomSeed int    `yaml:"randomSeed" usage:"random seed" default:"1234"`
+	ModelDir   string `yaml:"model" name:"model" usage:"singer" default:"MERROW"`
+	StyleShift int    `yaml:"styleShift" name:"styleShift" usage:"change the key and estimate to change the style of singing"`
+	RandomSeed int    `yaml:"randomSeed" name:"randomSeed" usage:"random seed" default:"1234"`
 	// NSF
-	PitchShiftNsf float32 `yaml:"pitchShiftNsf" usage:"change pitch via NSF"`
+	PitchShiftNsf float32 `yaml:"pitchShiftNsf" name:"pitchShiftNsf" usage:"change pitch via NSF"`
 	// WORLD
-	PitchShiftWorld    float32 `yaml:"pitchShiftWorld" usage:"change pitch via WORLD"`
-	FormantShift       float32 `yaml:"formantShift" usage:"change voice quality" default:"1"`
-	SmoothPitch        float32 `yaml:"smoothPitch" usage:"[0, 100]%"`
-	SmoothFormant      float32 `yaml:"smoothFormant" usage:"[0, 100]%"`
-	EnhanceBreathiness float32 `yaml:"enhanceBreathiness" usage:"[0, 100]%"`
+	PitchShiftWorld    float32 `yaml:"pitchShiftWorld" name:"pitchShiftWorld" usage:"change pitch via WORLD"`
+	FormantShift       float32 `yaml:"formantShift" name:"formantShift" usage:"change voice quality" default:"1"`
+	SmoothPitch        float32 `yaml:"smoothPitch" name:"smoothPitch" usage:"[0, 100]%"`
+	SmoothFormant      float32 `yaml:"smoothFormant" name:"smoothFormant" usage:"[0, 100]%"`
+	EnhanceBreathiness float32 `yaml:"enhanceBreathiness" name:"enhanceBreathiness" usage:"[0, 100]%"`
 }
 
 func (c Config) basename() string {
