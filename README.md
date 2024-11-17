@@ -23,7 +23,7 @@ uv sync
 go mod download
 ```
 
-Download NEUTRINO and singer libraries, and build pneutrinoutil
+Download NEUTRINO and singer libraries, and build pneutrinoutil.
 
 ``` shell
 ./task ansible
