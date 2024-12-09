@@ -7,7 +7,7 @@ require (
 	github.com/berquerant/execx v0.6.2
 	github.com/berquerant/goconfig v0.3.0
 	github.com/berquerant/structconfig v0.1.2
-	github.com/go-task/task/v3 v3.40.0
+	github.com/go-task/task/v3 v3.40.1
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.10.0
@@ -19,11 +19,12 @@ require (
 require (
 	dario.cat/mergo v1.0.0 // indirect
 	github.com/Ladicle/tabwriter v1.0.0 // indirect
-	github.com/Masterminds/semver/v3 v3.3.0 // indirect
+	github.com/Masterminds/semver/v3 v3.3.1 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/ProtonMail/go-crypto v1.0.0 // indirect
 	github.com/alecthomas/chroma/v2 v2.14.0 // indirect
 	github.com/bitfield/gotestdox v0.2.2 // indirect
+	github.com/chainguard-dev/git-urls v1.0.2 // indirect
 	github.com/cloudflare/circl v1.3.7 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.5 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -56,7 +57,6 @@ require (
 	github.com/sajari/fuzzy v1.0.0 // indirect
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
 	github.com/skeema/knownhosts v1.2.2 // indirect
-	github.com/whilp/git-urls v1.0.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	github.com/zeebo/xxh3 v1.0.2 // indirect
 	golang.org/x/crypto v0.29.0 // indirect
