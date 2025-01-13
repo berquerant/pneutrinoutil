@@ -6,7 +6,7 @@ toolchain go1.23.4
 
 require (
 	github.com/berquerant/dataclass v0.4.0
-	github.com/berquerant/execx v0.7.0
+	github.com/berquerant/execx v0.8.0
 	github.com/berquerant/goconfig v0.3.0
 	github.com/berquerant/structconfig v0.2.2
 	github.com/go-task/task/v3 v3.40.1
