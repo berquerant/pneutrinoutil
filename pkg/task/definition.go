@@ -16,7 +16,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func NewGenerator(dir *Dir, c *ctl.Config, now time.Time, play bool) *Generator {
+func NewGenerator(dir *Dir, c *ctl.Config, now time.Time, play string) *Generator {
 	g := &Generator{
 		dir:  dir,
 		c:    c,
@@ -31,7 +31,7 @@ type Generator struct {
 	dir       *Dir
 	c         *ctl.Config
 	now       time.Time
-	play      bool
+	play      string
 	resultDir string
 }
 
@@ -77,11 +77,7 @@ func (g Generator) env() execx.Env {
 	e := g.c.Env()
 	e.Set("ResultDestDir", g.resultDir)
 	e.Set("Score", g.c.Score)
-	if g.play {
-		e.Set("Play", "1")
-	} else {
-		e.Set("Play", "")
-	}
+	e.Set("Play", g.play)
 	e.Set("DYLD_LIBRARY_PATH", g.dyldLibraryPath())
 	e.Merge(g.dir.Env())
 	return e
@@ -244,7 +240,7 @@ echo "%[4]s" > "${ResultDestDir}/PWD"
 
 ls -la "${ResultDestDir}/"
 if [ -n "$Play" ] ; then
-  open "${ResultDestDir}/${BASENAME}.wav" || open "${world_wav}"
+  $Play "${ResultDestDir}/${BASENAME}.wav" || $Play "${world_wav}"
 fi`,
 			g.dir.OutputDir(),
 			g.dir.MusicXMLDir(),

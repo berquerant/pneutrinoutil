@@ -7,7 +7,7 @@ import (
 	"github.com/berquerant/pneutrinoutil/pkg/task"
 )
 
-func newTaskRunner(dir *task.Dir, c *ctl.Config, now time.Time, play bool) *task.Runner {
+func newTaskRunner(dir *task.Dir, c *ctl.Config, now time.Time, play string) *task.Runner {
 	g := task.NewGenerator(dir, c, now, play)
 	tasks := []*task.Task{
 		g.DisplayEnv(),

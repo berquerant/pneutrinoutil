@@ -29,7 +29,7 @@ func init() {
 	rootCmd.PersistentFlags().StringP("workDir", "w", ".", "working directory")
 	rootCmd.PersistentFlags().StringP("neutrinoDir", "n", "./dist/NEUTRINO", "NEUTRINO directory")
 	rootCmd.Flags().Bool("dry", false, "dryrun")
-	rootCmd.Flags().Bool("play", false, "play generated wav after running")
+	rootCmd.Flags().String("play", "", "play command generated wav after running, wav file will be passed to 1st argument")
 	rootCmd.Flags().Bool("list-tasks", false, "list task names")
 
 	var c ctl.Config
@@ -65,7 +65,7 @@ pneutrinoutil --neutrinoDir /path/to/NEUTRINO --workDir /path/to/install-result 
 		dir := newDir(cmd)
 
 		var (
-			play, _    = cmd.Flags().GetBool("play")
+			play, _    = cmd.Flags().GetString("play")
 			include, _ = cmd.Flags().GetStringSlice("include")
 			exclude, _ = cmd.Flags().GetStringSlice("exclude")
 		)
