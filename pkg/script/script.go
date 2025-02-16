@@ -34,7 +34,7 @@ set -ex
 %s`, s.title, s.content)
 }
 
-//go:generate go run github.com/berquerant/goconfig -field "Env execx.Env|Dir string" -option -output script_config_generated.go
+//go:generate go tool goconfig -field "Env execx.Env|Dir string" -option -output script_config_generated.go
 
 func (s *Script) Run(ctx context.Context, opt ...ConfigOption) error {
 	startTime := time.Now()

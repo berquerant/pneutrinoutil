@@ -8,7 +8,7 @@ import (
 	"github.com/berquerant/pneutrinoutil/pkg/set"
 )
 
-//go:generate go run github.com/berquerant/dataclass -type Stat -field "Title string|Elapsed time.Duration" -output stat_dataclass_generated.go
+//go:generate go tool dataclass -type Stat -field "Title string|Elapsed time.Duration" -output stat_dataclass_generated.go
 
 func NewRunner(tasks []*Task) *Runner {
 	return &Runner{
@@ -39,7 +39,7 @@ func (r Runner) String() string {
 	return strings.Join(ss, "\n")
 }
 
-//go:generate go run github.com/berquerant/goconfig -configOption Option -field "Include []string|Exclude []string" -option -output runner_config_generated.go
+//go:generate go tool goconfig -configOption Option -field "Include []string|Exclude []string" -option -output runner_config_generated.go
 
 func (r *Runner) Run(ctx context.Context, opt ...Option) error {
 	c := NewConfigBuilder().

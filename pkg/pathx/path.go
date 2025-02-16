@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-//go:generate go run github.com/berquerant/goconfig -field "Mode os.FileMode|Truncate bool" -option -output path_config_generated.go
+//go:generate go tool goconfig -field "Mode os.FileMode|Truncate bool" -option -output path_config_generated.go
 
 const (
 	defaultDirPermission  = 0755
