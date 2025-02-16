@@ -1,8 +1,6 @@
 module github.com/berquerant/pneutrinoutil
 
-go 1.23.3
-
-toolchain go1.23.4
+go 1.24.0
 
 require (
 	github.com/berquerant/dataclass v0.4.0
