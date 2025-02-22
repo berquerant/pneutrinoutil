@@ -7,7 +7,7 @@ import (
 )
 
 func Setup(w io.Writer, level slog.Leveler) {
-	handler := slog.NewJSONHandler(w, &slog.HandlerOptions{
+	handler := slog.NewTextHandler(w, &slog.HandlerOptions{
 		Level: level,
 	})
 	logger := slog.New(handler)
