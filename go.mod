@@ -3,7 +3,7 @@ module github.com/berquerant/pneutrinoutil
 go 1.24.0
 
 require (
-	github.com/berquerant/execx v0.9.0
+	github.com/berquerant/execx v0.10.0
 	github.com/berquerant/structconfig v0.3.0
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/pflag v1.0.6
