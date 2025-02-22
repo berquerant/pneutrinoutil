@@ -7,6 +7,7 @@ import (
 
 	"github.com/berquerant/execx"
 	"github.com/berquerant/structconfig"
+	"github.com/spf13/pflag"
 )
 
 // NewDefaultConfig returns a new Config.
@@ -37,7 +38,7 @@ type Config struct {
 	PitchShiftNsf float32 `yaml:"pitchShiftNsf" name:"pitchShiftNsf" usage:"change pitch via NSF"`
 	// WORLD
 	PitchShiftWorld    float32 `yaml:"pitchShiftWorld" name:"pitchShiftWorld" usage:"change pitch via WORLD"`
-	FormantShift       float32 `yaml:"formantShift" name:"formantShift" usage:"change voice quality" default:"1"`
+	FormantShift       float32 `yaml:"formantShift" name:"formantShift" usage:"change voice quality" default:"1.0"`
 	SmoothPitch        float32 `yaml:"smoothPitch" name:"smoothPitch" usage:"[0, 100]%"`
 	SmoothFormant      float32 `yaml:"smoothFormant" name:"smoothFormant" usage:"[0, 100]%"`
 	EnhanceBreathiness float32 `yaml:"enhanceBreathiness" name:"enhanceBreathiness" usage:"[0, 100]%"`
@@ -72,29 +73,45 @@ func (c Config) samplingFreq() int {
 	}
 }
 
+func (c Config) envMap() map[string]any {
+	return map[string]any{
+		"NumThreads":         c.NumThreads,
+		"InferenceMode":      c.InferenceMode,
+		"ModelDir":           c.ModelDir,
+		"StyleShift":         c.StyleShift,
+		"PitchShiftNsf":      c.PitchShiftNsf,
+		"PitchShiftWorld":    c.PitchShiftWorld,
+		"FormantShift":       c.FormantShift,
+		"SmoothPitch":        c.SmoothPitch,
+		"SmoothFormant":      c.SmoothFormant,
+		"EnhanceBreathiness": c.EnhanceBreathiness,
+		"NsfModel":           c.nsfModel(),
+		"SamplingFreq":       c.samplingFreq(),
+		"BASENAME":           c.basename(),
+		"RandomSeed":         c.RandomSeed,
+		"NumParallel":        c.NumParallel,
+	}
+}
+
 func (c Config) Env() execx.Env {
 	e := execx.NewEnv()
-	for _, x := range []struct {
-		k string
-		v any
-	}{
-		{k: "NumThreads", v: c.NumThreads},
-		{k: "InferenceMode", v: c.InferenceMode},
-		{k: "ModelDir", v: c.ModelDir},
-		{k: "StyleShift", v: c.StyleShift},
-		{k: "PitchShiftNsf", v: c.PitchShiftNsf},
-		{k: "PitchShiftWorld", v: c.PitchShiftWorld},
-		{k: "FormantShift", v: c.FormantShift},
-		{k: "SmoothPitch", v: c.SmoothPitch},
-		{k: "SmoothFormant", v: c.SmoothFormant},
-		{k: "EnhanceBreathiness", v: c.EnhanceBreathiness},
-		{k: "NsfModel", v: c.nsfModel()},
-		{k: "SamplingFreq", v: c.samplingFreq()},
-		{k: "BASENAME", v: c.basename()},
-		{k: "RandomSeed", v: c.RandomSeed},
-		{k: "NumParallel", v: c.NumParallel},
-	} {
-		e.Set(x.k, fmt.Sprint(x.v))
+	for k, v := range c.envMap() {
+		e.Set(k, fmt.Sprint(v))
 	}
 	return e
+}
+
+// ApplyFlagValues sets flag values to this.
+func (c *Config) ApplyFlagValues(fs *pflag.FlagSet) error {
+	sc := structconfig.New[Config]()
+	return sc.FromFlags(c, fs)
+}
+
+// SetFlags sets command-line flags.
+// Flag name is from "name" struct tag.
+// Flag usage is from "usage" struct tag.
+// Flag default value is from "default" struct tag.
+func (c Config) SetFlags(fs *pflag.FlagSet) error {
+	sc := structconfig.New[Config]()
+	return sc.SetFlags(fs)
 }
