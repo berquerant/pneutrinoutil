@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/berquerant/execx"
 	"github.com/berquerant/pneutrinoutil/pkg/ctl"
 	"github.com/berquerant/pneutrinoutil/pkg/logx"
 	"github.com/berquerant/pneutrinoutil/pkg/task"
@@ -31,6 +33,7 @@ func init() {
 	rootCmd.Flags().Bool("dry", false, "dryrun")
 	rootCmd.Flags().String("play", "", "play command generated wav after running, wav file will be passed to 1st argument")
 	rootCmd.Flags().Bool("list-tasks", false, "list task names")
+	rootCmd.Flags().StringSlice("env", nil, "names of additional environment variables to allow reading; all allows everythings")
 
 	var c ctl.Config
 	if err := c.SetFlags(rootCmd.Flags()); err != nil {
@@ -62,38 +65,40 @@ pneutrinoutil --neutrinoDir /path/to/NEUTRINO --workDir /path/to/install-result 
 		if err != nil {
 			return err
 		}
-		dir := newDir(cmd)
 
 		var (
+			dir        = newDir(cmd, now)
 			play, _    = cmd.Flags().GetString("play")
 			include, _ = cmd.Flags().GetStringSlice("include")
 			exclude, _ = cmd.Flags().GetStringSlice("exclude")
 		)
 
-		runner := newTaskRunner(dir, c, now, play)
+		tasks := task.NewGenerator(dir, c, play).ExecutableTasks()
+		taskNames := make([]string, len(tasks.Tasks))
+		for i, t := range tasks.Tasks {
+			taskNames[i] = t.Name
+		}
 
 		if list, _ := cmd.Flags().GetBool("list-tasks"); list {
-			for _, t := range runner.Tasks() {
-				fmt.Println(t)
-			}
+			fmt.Println(strings.Join(taskNames, "\n"))
 			return nil
 		}
+
+		tasks.Entrypoint = prepareTaskEntrypoint(taskNames, include, exclude)
+
+		environWhiteList, _ := cmd.Flags().GetStringSlice("env")
+		tasks.Env.Merge(prepareAdditionalEnviron(environWhiteList))
 
 		if dry, _ := cmd.Flags().GetBool("dry"); dry {
-			fmt.Println(runner.String())
+			slog.Info("generated script should be called on the dir", "dir", dir.NeutrinoDir())
+			fmt.Println(tasks.String())
 			return nil
 		}
 
-		err = runner.Run(cmd.Context(), task.WithInclude(include), task.WithExclude(exclude))
-		for i, s := range runner.Stats() {
-			slog.Info(
-				"Stat",
-				slog.String("title", s.Title()),
-				slog.Int("index", i),
-				slog.String("elapsed", s.Elapsed().String()),
-				slog.Float64("elapsedSeconds", s.Elapsed().Seconds()),
-			)
-		}
-		return err
+		return tasks.IntoScript("bash").Runner(func(cmd *execx.Cmd) error {
+			cmd.Dir = dir.NeutrinoDir()
+			slog.Info("exec", "dir", cmd.Dir, "args", cmd.Args)
+			return cmd.Exec()
+		})
 	},
 }

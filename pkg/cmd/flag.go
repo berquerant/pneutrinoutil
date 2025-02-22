@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 
 	"github.com/berquerant/pneutrinoutil/pkg/ctl"
 	"github.com/berquerant/pneutrinoutil/pkg/task"
@@ -11,11 +12,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func newDir(cmd *cobra.Command) *task.Dir {
+func newDir(cmd *cobra.Command, now time.Time) *task.Dir {
 	workDir, _ := cmd.Flags().GetString("workDir")
 	neutrinoDir, _ := cmd.Flags().GetString("neutrinoDir")
 	pwd := os.Getenv("PWD")
-	return task.NewDir(workDir, neutrinoDir, pwd)
+	return task.NewDir(workDir, neutrinoDir, pwd, now)
 }
 
 func newConfig(cmd *cobra.Command, args []string) (*ctl.Config, error) {
