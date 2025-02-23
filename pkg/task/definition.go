@@ -10,19 +10,20 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func NewGenerator(dir *Dir, c *ctl.Config, play string) *Generator {
-	g := &Generator{
+func NewGenerator(dir *Dir, c *ctl.Config, play, hook string) *Generator {
+	return &Generator{
 		dir:  dir,
 		c:    c,
 		play: play,
+		hook: hook,
 	}
-	return g
 }
 
 type Generator struct {
 	dir  *Dir
 	c    *ctl.Config
 	play string
+	hook string
 }
 
 func (g Generator) dyldLibraryPath() string {
@@ -39,6 +40,7 @@ func (g Generator) env() execx.Env {
 	e.Set("ResultDestDir", g.dir.ResultDestDir())
 	e.Set("Score", g.c.Score)
 	e.Set("Play", g.play)
+	e.Set("Hook", g.hook)
 	e.Set("DYLD_LIBRARY_PATH", g.dyldLibraryPath())
 	e.Set("HOME", os.Getenv("HOME"))
 	e.Merge(g.dir.Env())
@@ -132,19 +134,23 @@ mkdir -p "${ResultDestDir}"`,
 		Add(execx.NewTask(
 			"cleanup",
 			fmt.Sprintf(
-				`world_wav="%[1]s/${BASENAME}_world.wav"
-cp %[1]s/${BASENAME}.* "%[2]s/${BASENAME}.musicxml" "${world_wav}" "${ResultDestDir}/"
-if [ -f "${world_wav}" ] ; then
-  cp "${world_wav}" "${ResultDestDir}/"
-fi
+				`cp %[1]s/${BASENAME}.* "%[2]s/${BASENAME}.musicxml" "%[1]s/${BASENAME}_world.wav" "${ResultDestDir}/"
 cat <<EOS > "${ResultDestDir}/config.yml"
 %[3]s
 EOS
 echo "%[4]s" > "${ResultDestDir}/PWD"
 
-ls -lah "${ResultDestDir}/"
+if [ -n "$Hook" ] ; then
+  $Hook "${ResultDestDir}"
+fi
 if [ -n "$Play" ] ; then
-  $Play "${ResultDestDir}/${BASENAME}.wav" || $Play "${world_wav}"
+  result_wav="${ResultDestDir}/${BASENAME}.wav"
+  world_wav="${ResultDestDir}/${BASENAME}_world.wav"
+  if [ -f "${result_wav}" ] ; then
+    $Play "${result_wav}"
+  else
+    $Play "${world_wav}"
+  fi
 fi`,
 				g.dir.OutputDir(),
 				g.dir.MusicXMLDir(),

@@ -32,6 +32,7 @@ func init() {
 	rootCmd.PersistentFlags().StringP("neutrinoDir", "n", "./dist/NEUTRINO", "NEUTRINO directory")
 	rootCmd.Flags().Bool("dry", false, "dryrun")
 	rootCmd.Flags().String("play", "", "play command generated wav after running, wav file will be passed to 1st argument")
+	rootCmd.Flags().String("hook", "", "command to be executed after running, result dir will be passed to 1st argument")
 	rootCmd.Flags().Bool("list-tasks", false, "list task names")
 	rootCmd.Flags().StringSlice("env", nil, "names of additional environment variables to allow reading; all allows everythings")
 
@@ -69,11 +70,12 @@ pneutrinoutil --neutrinoDir /path/to/NEUTRINO --workDir /path/to/install-result 
 		var (
 			dir        = newDir(cmd, now)
 			play, _    = cmd.Flags().GetString("play")
+			hook, _    = cmd.Flags().GetString("hook")
 			include, _ = cmd.Flags().GetStringSlice("include")
 			exclude, _ = cmd.Flags().GetStringSlice("exclude")
 		)
 
-		tasks := task.NewGenerator(dir, c, play).ExecutableTasks()
+		tasks := task.NewGenerator(dir, c, play, hook).ExecutableTasks()
 		taskNames := make([]string, len(tasks.Tasks))
 		for i, t := range tasks.Tasks {
 			taskNames[i] = t.Name
