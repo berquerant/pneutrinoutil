@@ -8,7 +8,7 @@ tasks:
       - build
   build:
     cmds:
-      - go build -trimpath -v -o dist/pneutrinoutil .
+      - go build -trimpath -v -o dist/pneutrinoutil cli/main.go
   lint:
     deps:
       - vuln
