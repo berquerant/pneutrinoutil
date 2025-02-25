@@ -7,8 +7,15 @@ tasks:
       - test
       - build
   build:
+    deps:
+      - build-cli
+      - build-server
+  build-cli:
     cmds:
       - go build -trimpath -v -o dist/pneutrinoutil cli/main.go
+  build-server:
+    cmds:
+      - go build -trimpath -v -o dist/pneutrinoutil-server server/main.go
   lint:
     deps:
       - vuln
