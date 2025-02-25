@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/berquerant/pneutrinoutil/pkg/cmd"
+	"github.com/berquerant/pneutrinoutil/cli/cmd"
 )
 
 func main() {

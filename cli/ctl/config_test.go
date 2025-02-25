@@ -3,7 +3,7 @@ package ctl_test
 import (
 	"testing"
 
-	"github.com/berquerant/pneutrinoutil/pkg/ctl"
+	"github.com/berquerant/pneutrinoutil/cli/ctl"
 	"github.com/stretchr/testify/assert"
 )
 

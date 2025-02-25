@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/berquerant/pneutrinoutil/pkg/ctl"
+	"github.com/berquerant/pneutrinoutil/cli/ctl"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 )

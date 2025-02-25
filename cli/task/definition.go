@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/berquerant/execx"
-	"github.com/berquerant/pneutrinoutil/pkg/ctl"
+	"github.com/berquerant/pneutrinoutil/cli/ctl"
 	"gopkg.in/yaml.v3"
 )
 

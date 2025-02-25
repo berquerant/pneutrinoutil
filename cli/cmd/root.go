@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/berquerant/execx"
-	"github.com/berquerant/pneutrinoutil/pkg/ctl"
+	"github.com/berquerant/pneutrinoutil/cli/ctl"
+	"github.com/berquerant/pneutrinoutil/cli/task"
 	"github.com/berquerant/pneutrinoutil/pkg/logx"
-	"github.com/berquerant/pneutrinoutil/pkg/task"
 	"github.com/spf13/cobra"
 )
 
