@@ -1,13 +1,13 @@
 package task
 
 import (
-	"fmt"
 	"math"
 	"math/rand/v2"
 	"path/filepath"
 	"time"
 
 	"github.com/berquerant/execx"
+	"github.com/berquerant/pneutrinoutil/pkg/pathx"
 )
 
 func NewDir(workDir, neutrinoDir, pwd string, now time.Time) *Dir {
@@ -54,26 +54,9 @@ func (d Dir) TimingDir() string { return d.join(d.LabelDir(), "timing") }
 func (Dir) join(elem ...string) string { return filepath.Join(elem...) }
 func (Dir) salt() uint16               { return uint16(rand.IntN(math.MaxUint16 + 1)) }
 
-func (d Dir) timeString() string {
-	return fmt.Sprintf(
-		// %Y%m%d-%H%M%S
-		"%04d%02d%02d%02d%02d%02d",
-		d.now.Year(),
-		d.now.Month(),
-		d.now.Day(),
-		d.now.Hour(),
-		d.now.Minute(),
-		d.now.Second(),
-	)
-}
-
 func (d Dir) ResultDestDir() string {
 	return d.join(
 		d.ResultDir(),
-		fmt.Sprintf("${BASENAME}__%s_%d_%d",
-			d.timeString(),
-			d.now.Unix(),
-			d.salt(),
-		),
+		pathx.NewResultElement("${BASENAME}", d.now, int(d.salt())).String(),
 	)
 }
