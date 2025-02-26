@@ -57,7 +57,7 @@ func (Dir) salt() uint16               { return uint16(rand.IntN(math.MaxUint16 
 func (d Dir) timeString() string {
 	return fmt.Sprintf(
 		// %Y%m%d-%H%M%S
-		"%04d%02d%02d-%02d%02d%02d",
+		"%04d%02d%02d%02d%02d%02d",
 		d.now.Year(),
 		d.now.Month(),
 		d.now.Day(),
@@ -70,7 +70,7 @@ func (d Dir) timeString() string {
 func (d Dir) ResultDestDir() string {
 	return d.join(
 		d.ResultDir(),
-		fmt.Sprintf("${BASENAME}_%s_%d_%d",
+		fmt.Sprintf("${BASENAME}__%s_%d_%d",
 			d.timeString(),
 			d.now.Unix(),
 			d.salt(),
