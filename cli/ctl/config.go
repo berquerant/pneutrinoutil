@@ -22,26 +22,26 @@ func NewDefaultConfig() (*Config, error) {
 }
 
 type Config struct {
-	Description string `yaml:"desc" name:"desc" usage:"description of config"`
-	NumParallel int    `yaml:"parallel" name:"parallel" usage:"number of parallel" default:"1"`
+	Description string `json:"desc" yaml:"desc" name:"desc" usage:"description of config"`
+	NumParallel int    `json:"parallel" yaml:"parallel" name:"parallel" usage:"number of parallel" default:"1"`
 	// musicXML_to_label
 	// Suffix string `yaml:"suffix"`
 	// Project settings
-	Score         string `yaml:"score" name:"score" usage:"score file, required"`
-	NumThreads    int    `yaml:"thread" name:"thread" usage:"number of parallel in session" default:"4"`
-	InferenceMode int    `yaml:"inference" name:"inference" usage:"quality, processing speed: 2 (elements), 3 (standard) or 4 (advanced)" default:"3"`
+	Score         string `json:"score" yaml:"score" name:"score" usage:"score file, required"`
+	NumThreads    int    `json:"thread" yaml:"thread" name:"thread" usage:"number of parallel in session" default:"4"`
+	InferenceMode int    `json:"inference" yaml:"inference" name:"inference" usage:"quality, processing speed: 2 (elements), 3 (standard) or 4 (advanced)" default:"3"`
 	// NEUTRINO
-	ModelDir   string `yaml:"model" name:"model" usage:"singer" default:"MERROW"`
-	StyleShift int    `yaml:"styleShift" name:"styleShift" usage:"change the key and estimate to change the style of singing"`
-	RandomSeed int    `yaml:"randomSeed" name:"randomSeed" usage:"random seed" default:"1234"`
+	ModelDir   string `json:"model" yaml:"model" name:"model" usage:"singer" default:"MERROW"`
+	StyleShift int    `json:"styleShift" yaml:"styleShift" name:"styleShift" usage:"change the key and estimate to change the style of singing"`
+	RandomSeed int    `json:"randomSeed" yaml:"randomSeed" name:"randomSeed" usage:"random seed" default:"1234"`
 	// NSF
-	PitchShiftNsf float32 `yaml:"pitchShiftNsf" name:"pitchShiftNsf" usage:"change pitch via NSF"`
+	PitchShiftNsf float32 `json:"pitchShiftNsf" yaml:"pitchShiftNsf" name:"pitchShiftNsf" usage:"change pitch via NSF"`
 	// WORLD
-	PitchShiftWorld    float32 `yaml:"pitchShiftWorld" name:"pitchShiftWorld" usage:"change pitch via WORLD"`
-	FormantShift       float32 `yaml:"formantShift" name:"formantShift" usage:"change voice quality" default:"1.0"`
-	SmoothPitch        float32 `yaml:"smoothPitch" name:"smoothPitch" usage:"[0, 100]%"`
-	SmoothFormant      float32 `yaml:"smoothFormant" name:"smoothFormant" usage:"[0, 100]%"`
-	EnhanceBreathiness float32 `yaml:"enhanceBreathiness" name:"enhanceBreathiness" usage:"[0, 100]%"`
+	PitchShiftWorld    float32 `json:"pitchShiftWorld" yaml:"pitchShiftWorld" name:"pitchShiftWorld" usage:"change pitch via WORLD"`
+	FormantShift       float32 `json:"formantShift" yaml:"formantShift" name:"formantShift" usage:"change voice quality" default:"1.0"`
+	SmoothPitch        float32 `json:"smoothPitch" yaml:"smoothPitch" name:"smoothPitch" usage:"[0, 100]%"`
+	SmoothFormant      float32 `json:"smoothFormant" yaml:"smoothFormant" name:"smoothFormant" usage:"[0, 100]%"`
+	EnhanceBreathiness float32 `json:"enhanceBreathiness" yaml:"enhanceBreathiness" name:"enhanceBreathiness" usage:"[0, 100]%"`
 }
 
 func (c Config) basename() string {
