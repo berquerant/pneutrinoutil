@@ -61,13 +61,8 @@ func ParseResultElement(s string) (*ResultElement, error) {
 		return nil, fmt.Errorf("%w: invalid time string", errors.Join(ErrParseResultElement, err))
 	}
 
-	unix, err := strconv.ParseInt(matched[2], 10, 64)
-	if err != nil {
+	if _, err := strconv.ParseInt(matched[2], 10, 64); err != nil {
 		return nil, fmt.Errorf("%w: invalid timestamp", errors.Join(ErrParseResultElement, err))
-	}
-
-	if now.Unix() != unix {
-		return nil, fmt.Errorf("%w: mismatch: time string and timestamp", ErrParseResultElement)
 	}
 
 	salt, err := strconv.Atoi(matched[3])
