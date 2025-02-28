@@ -62,4 +62,7 @@ func run(ctx context.Context, c *config.Config) {
 
 const usage = `pneutrinoutil-server -- pneutrinoutil http server
 
+e.g.
+pneutrinoutil-server --neutrinoDir /path/to/NEUTRINO --workDir /path/to/workingDirectory --pneutrinoutil /path/to/pneutrinoutil
+
 Flags:`
