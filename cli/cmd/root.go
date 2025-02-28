@@ -46,7 +46,7 @@ func init() {
 }
 
 var rootCmd = &cobra.Command{
-	Use:   "pneutrinoutil [CONFIG_YML]",
+	Use:   "pneutrinoutil [CONFIG_YML|CONFIG_JSON]",
 	Short: `Generate .wav from .musicxml using NEUTRINO`,
 	Long: `Generate .wav from .musicxml using NEUTRINO
 

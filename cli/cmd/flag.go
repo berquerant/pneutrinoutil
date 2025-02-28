@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -41,7 +43,11 @@ func newConfig(cmd *cobra.Command, args []string) (*ctl.Config, error) {
 				return err
 			}
 			if err := yaml.Unmarshal(b, c); err != nil {
-				return err
+				if jErr := json.Unmarshal(b, c); jErr != nil {
+					return errors.Join(err, jErr)
+				} else {
+					return err
+				}
 			}
 			return nil
 		}(); err != nil {
