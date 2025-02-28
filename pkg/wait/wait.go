@@ -90,5 +90,4 @@ func (w *Worker) Add(waiter Waiter) {
 		}
 		w.jobs.Del(id)
 	}()
-
 }

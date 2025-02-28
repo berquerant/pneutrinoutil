@@ -3,11 +3,14 @@ package pworker
 import (
 	"errors"
 	"io"
+	"log/slog"
 	"os"
 	"path/filepath"
 
 	"github.com/berquerant/pneutrinoutil/cli/ctl"
+	"github.com/berquerant/pneutrinoutil/pkg/logx"
 	"github.com/berquerant/pneutrinoutil/pkg/pathx"
+	"github.com/berquerant/pneutrinoutil/server/alog"
 	"gopkg.in/yaml.v3"
 )
 
@@ -20,6 +23,7 @@ func LoadResultElement(entry os.DirEntry) (*pathx.ResultElement, error) {
 		return nil, ErrNotDir
 	}
 	re, err := pathx.ParseResultElement(entry.Name())
+	alog.L().Debug("load result element", slog.String("name", entry.Name()), logx.Err(err))
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +31,9 @@ func LoadResultElement(entry os.DirEntry) (*pathx.ResultElement, error) {
 }
 
 func LoadResultConfig(dir string, elem *pathx.ResultElement) (*ctl.Config, error) {
-	f, err := os.Open(filepath.Join(dir, elem.String(), "config.yml"))
+	name := filepath.Join(dir, elem.String(), "config.yml")
+	f, err := os.Open(name)
+	alog.L().Debug("load result config", slog.String("name", name), logx.Err(err))
 	if err != nil {
 		return nil, err
 	}
