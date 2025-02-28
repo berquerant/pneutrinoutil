@@ -1,6 +1,7 @@
 package wait
 
 import (
+	"context"
 	"sync"
 	"sync/atomic"
 
@@ -26,6 +27,7 @@ type Worker struct {
 	doneC  chan *Result
 	jobs   *syncx.Map[string, Waiter]
 	closed atomic.Bool
+	sem    syncx.Semaphore
 }
 
 const (
@@ -33,10 +35,11 @@ const (
 )
 
 // New returns a new [Worker].
-func New() *Worker {
+func New(concurrency int) *Worker {
 	var w Worker
 	w.jobs = syncx.NewMap[string, Waiter]()
 	w.doneC = make(chan *Result, workerDoneChannelSize)
+	w.sem = syncx.NewSemaphore(concurrency)
 	return &w
 }
 
@@ -65,20 +68,27 @@ func (w *Worker) Add(waiter Waiter) {
 		return
 	}
 
-	id := uuid.New()
 	w.wg.Add(1)
-	w.jobs.Set(id, waiter)
-
 	go func() {
-		defer func() {
-			w.jobs.Del(id)
-			w.wg.Done()
-		}()
+		defer w.wg.Done()
 
+		if err := w.sem.Wait(context.Background()); err != nil {
+			return
+		}
+		defer w.sem.Signal()
+
+		if w.closed.Load() {
+			return
+		}
+
+		id := uuid.New()
+		w.jobs.Set(id, waiter)
 		err := waiter.Wait()
 		w.doneC <- &Result{
 			Waiter: waiter,
 			Err:    err,
 		}
+		w.jobs.Del(id)
 	}()
+
 }

@@ -2,6 +2,8 @@ package wait_test
 
 import (
 	"errors"
+	"fmt"
+	"slices"
 	"testing"
 	"time"
 
@@ -44,76 +46,82 @@ func newCancelProc(id int) *cancelProc {
 }
 
 func TestWorker(t *testing.T) {
-	t.Run("cancel", func(t *testing.T) {
-		w := wait.New()
-		p1 := newCancelProc(1)
+	for _, n := range []int{0, 1, 2, 100} {
+		t.Run(fmt.Sprintf("concurrenty%d", n), func(t *testing.T) {
 
-		type res struct {
-			id int
-		}
-		want := []res{
-			{id: 1},
-		}
+			t.Run("cancel", func(t *testing.T) {
+				t.Parallel()
+				w := wait.New(n)
+				p1 := newCancelProc(1)
 
-		go func() {
-			w.Add(p1)
-			w.WaitAndClose()
-		}()
+				type res struct {
+					id int
+				}
+				want := []res{
+					{id: 1},
+				}
 
-		go func() {
-			time.Sleep(300 * time.Millisecond)
-			w.Cancel()
-		}()
+				go func() {
+					w.Add(p1)
+					time.Sleep(300 * time.Millisecond)
+					w.Cancel()
+					w.WaitAndClose()
+				}()
 
-		got := []res{}
-		for r := range w.DoneC() {
-			x := r.Waiter.(*cancelProc)
-			got = append(got, res{id: x.id})
-		}
+				got := []res{}
+				for r := range w.DoneC() {
+					x := r.Waiter.(*cancelProc)
+					got = append(got, res{id: x.id})
+				}
 
-		assert.Equal(t, want, got)
-	})
+				assert.Equal(t, want, got)
+			})
 
-	t.Run("jobs", func(t *testing.T) {
-		w := wait.New()
-		p1 := &proc{
-			id:    1,
-			sleep: 100 * time.Millisecond,
-		}
-		p2 := &proc{
-			id:    2,
-			sleep: 500 * time.Millisecond,
-		}
-		pErr := errors.New("proc error")
-		p3 := &proc{
-			id:    3,
-			sleep: 300 * time.Millisecond,
-			err:   pErr,
-		}
+			t.Run("jobs", func(t *testing.T) {
+				w := wait.New(n)
+				p1 := &proc{
+					id:    1,
+					sleep: 150 * time.Millisecond,
+				}
+				p2 := &proc{
+					id:    2,
+					sleep: 50 * time.Millisecond,
+				}
+				pErr := errors.New("proc error")
+				p3 := &proc{
+					id:    3,
+					sleep: 100 * time.Millisecond,
+					err:   pErr,
+				}
 
-		type res struct {
-			id  int
-			err error
-		}
-		want := []res{
-			{id: 1},
-			{id: 3, err: pErr},
-			{id: 2},
-		}
+				type res struct {
+					id  int
+					err error
+				}
+				want := []res{
+					{id: 1},
+					{id: 2},
+					{id: 3, err: pErr},
+				}
 
-		go func() {
-			w.Add(p1)
-			w.Add(p2)
-			w.Add(p3)
-			w.WaitAndClose()
-		}()
+				go func() {
+					w.Add(p1)
+					w.Add(p2)
+					w.Add(p3)
+					time.Sleep(500 * time.Millisecond)
+					w.WaitAndClose()
+				}()
 
-		got := []res{}
-		for r := range w.DoneC() {
-			x := r.Waiter.(*proc)
-			got = append(got, res{id: x.id, err: r.Err})
-		}
+				got := []res{}
+				for r := range w.DoneC() {
+					x := r.Waiter.(*proc)
+					got = append(got, res{id: x.id, err: r.Err})
+				}
+				slices.SortFunc(got, func(a, b res) int { return a.id - b.id })
+				assert.Equal(t, want, got)
+			})
 
-		assert.Equal(t, want, got)
-	})
+		})
+
+	}
 }
