@@ -23,7 +23,7 @@ type Config struct {
 	NeutrinoDir           string    `name:"neutrinoDir" short:"n" default:"./dist/NEUTRINO" usage:"NEUTRINO directory"`
 	ShutdownPeriodSeconds int       `name:"shutdownPeriodSeconds" default:"10" usage:"duration the server needs to shut down gracefully"`
 	ProcessTimeoutSeconds int       `name:"processTimeoutSeconds" default:"1200" usage:"duration pneutrinoutil timeout"`
-	AccessLogFile         string    `name:"accessLogFile" default:"-" usage:"access log file; - means stdout"`
+	AccessLogFile         string    `name:"accessLogFile" default:"-" usage:"access log file; - means stderr"`
 	AccessLogWriter       io.Writer `name:"-"`
 	Shell                 string    `name:"shell" short:"s" default:"bash" usage:"shell command to execute"`
 	Concurrency           int       `name:"concurrency" short:"c" default:"1" usage:"pneutrinoutil process concurrency"`
@@ -88,7 +88,7 @@ func New(fs *pflag.FlagSet) (*Config, error) {
 
 func (c Config) prepareAccessLogWriter() (io.Writer, error) {
 	if c.AccessLogFile == "-" {
-		return os.Stdout, nil
+		return os.Stderr, nil
 	}
 
 	f, err := os.OpenFile(c.AccessLogFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
