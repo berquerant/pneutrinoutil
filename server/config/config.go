@@ -11,6 +11,7 @@ import (
 
 	"github.com/berquerant/pneutrinoutil/pkg/pathx"
 	"github.com/berquerant/structconfig"
+	"github.com/labstack/gommon/log"
 	"github.com/spf13/pflag"
 )
 
@@ -26,6 +27,7 @@ type Config struct {
 	AccessLogWriter       io.Writer `name:"-"`
 	Shell                 string    `name:"shell" short:"s" default:"bash" usage:"shell command to execute"`
 	Concurrency           int       `name:"concurrency" short:"c" default:"1" usage:"pneutrinoutil process concurrency"`
+	Debug                 bool      `name:"debug" usage:"enable debug logs"`
 }
 
 func (c Config) Addr() string                 { return fmt.Sprintf("%s:%d", c.Host, c.Port) }
@@ -39,6 +41,19 @@ func (c Config) ShutdownPeriod() time.Duration {
 }
 func (c Config) ProcessTimeout() time.Duration {
 	return time.Duration(c.ProcessTimeoutSeconds) * time.Second
+}
+
+func (c Config) EchoLogLevel() log.Lvl {
+	if c.Debug {
+		return log.DEBUG
+	}
+	return log.INFO
+}
+func (c Config) SLogLevel() slog.Leveler {
+	if c.Debug {
+		return slog.LevelDebug
+	}
+	return slog.LevelInfo
 }
 
 func New(fs *pflag.FlagSet) (*Config, error) {
@@ -103,6 +118,7 @@ func (c Config) intoMap() map[string]any {
 		"accessLogFile":         c.AccessLogFile,
 		"shell":                 c.Shell,
 		"concurrency":           c.Concurrency,
+		"debug":                 c.Debug,
 	}
 }
 

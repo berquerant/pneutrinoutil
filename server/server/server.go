@@ -18,6 +18,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
@@ -42,7 +43,7 @@ func New(cfg *config.Config) *Server {
 	if !ok {
 		panic(fmt.Sprintf("echo.Logger must be log.Logger"))
 	}
-	l.SetLevel(log.INFO)
+	l.SetLevel(cfg.EchoLogLevel())
 	//
 	// middlewares
 	//

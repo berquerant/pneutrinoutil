@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -23,8 +22,6 @@ import (
 // @host localhost:9101
 // @basePath /v1
 func main() {
-	alog.Setup(os.Stdout, slog.LevelInfo)
-
 	fs := pflag.NewFlagSet("main", pflag.ContinueOnError)
 	fs.Usage = func() {
 		fmt.Println(usage)
@@ -35,10 +32,11 @@ func main() {
 		return
 	}
 	if err != nil {
-		alog.L().Error("exit", logx.Err(err))
-		os.Exit(1)
+		panic(err)
 	}
 	defer c.Close()
+
+	alog.Setup(os.Stdout, c.SLogLevel())
 
 	if err := c.Validate(); err != nil {
 		alog.L().Error("invalid config", logx.Err(err))
