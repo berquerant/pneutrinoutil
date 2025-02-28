@@ -24,6 +24,7 @@ type Config struct {
 	ProcessTimeoutSeconds int       `name:"processTimeoutSeconds" default:"1200" usage:"duration pneutrinoutil timeout"`
 	AccessLogFile         string    `name:"accessLogFile" default:"-" usage:"access log file; - means stdout"`
 	AccessLogWriter       io.Writer `name:"-"`
+	Shell                 string    `name:"shell" short:"s" default:"bash" usage:"shell command to execute"`
 }
 
 func (c Config) Addr() string                 { return fmt.Sprintf("%s:%d", c.Host, c.Port) }
@@ -95,6 +96,7 @@ func (c Config) intoMap() map[string]any {
 		"shutdownPeriodSeconds": c.ShutdownPeriodSeconds,
 		"processTimeoutSeconds": c.ProcessTimeoutSeconds,
 		"accessLogFile":         c.AccessLogFile,
+		"shell":                 c.Shell,
 	}
 }
 

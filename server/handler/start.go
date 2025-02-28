@@ -87,6 +87,7 @@ func NewStart(c *config.Config, w *wait.Worker) *Start {
 		uploadDir:            c.UploadDir(),
 		logDir:               c.LogDir(),
 		processTimeout:       c.ProcessTimeout(),
+		shell:                c.Shell,
 		worker:               w,
 		env: []string{
 			fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
@@ -103,6 +104,7 @@ type Start struct {
 	logDir               string
 	env                  []string
 	processTimeout       time.Duration
+	shell                string
 
 	worker *wait.Worker
 }
@@ -130,6 +132,7 @@ func (s *Start) NewProcess(c echo.Context) *StatusError {
 		"--workDir", s.pneutrinoutilWorkDir,
 		"--score", score,
 		"--env", "all",
+		"--shell", s.shell,
 	}
 	for k, v := range s.GetFormArgs(c) {
 		args = append(args, fmt.Sprintf("--%s", k), v)
