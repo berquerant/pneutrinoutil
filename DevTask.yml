@@ -8,6 +8,7 @@ tasks:
       - build
   build:
     deps:
+      - swag
       - build-cli
       - build-server
   build-cli:
@@ -40,3 +41,6 @@ tasks:
   tidy:
     cmds:
       - go mod tidy -v
+  swag:
+    cmds:
+      - go tool swag init -g ./server/main.go -o ./server/docs

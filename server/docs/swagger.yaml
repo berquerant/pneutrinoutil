@@ -1,0 +1,332 @@
+basePath: /v1
+definitions:
+  ctl.Config:
+    properties:
+      desc:
+        type: string
+      enhanceBreathiness:
+        type: number
+      formantShift:
+        default: 1
+        type: number
+      inference:
+        default: 3
+        type: integer
+      model:
+        default: MERROW
+        description: NEUTRINO
+        type: string
+      parallel:
+        default: 1
+        type: integer
+      pitchShiftNsf:
+        description: NSF
+        type: number
+      pitchShiftWorld:
+        description: WORLD
+        type: number
+      randomSeed:
+        default: 1234
+        type: integer
+      score:
+        description: |-
+          musicXML_to_label
+          Suffix string `yaml:"suffix"`
+          Project settings
+        type: string
+      smoothFormant:
+        type: number
+      smoothPitch:
+        type: number
+      styleShift:
+        type: integer
+      thread:
+        default: 4
+        type: integer
+    type: object
+  handler.DebugResponseData:
+    properties:
+      routes: {}
+    type: object
+  handler.ErrorResponse:
+    properties:
+      error:
+        type: string
+      ok:
+        description: "false"
+        type: boolean
+    type: object
+  handler.GetDetailResponseData:
+    properties:
+      basename:
+        description: original musicxml file name except extension
+        type: string
+      created_at:
+        type: string
+      error:
+        type: string
+      rid:
+        description: request id, or just id
+        type: string
+      salt:
+        type: integer
+    type: object
+  handler.ListResponseDataElement:
+    properties:
+      basename:
+        description: original musicxml file name except extension
+        type: string
+      created_at:
+        type: string
+      rid:
+        description: request id, or just id
+        type: string
+      salt:
+        type: integer
+    type: object
+  handler.SuccessResponse-ctl_Config:
+    properties:
+      data:
+        $ref: '#/definitions/ctl.Config'
+      ok:
+        description: "true"
+        type: boolean
+    type: object
+  handler.SuccessResponse-handler_DebugResponseData:
+    properties:
+      data:
+        $ref: '#/definitions/handler.DebugResponseData'
+      ok:
+        description: "true"
+        type: boolean
+    type: object
+  handler.SuccessResponse-handler_GetDetailResponseData:
+    properties:
+      data:
+        $ref: '#/definitions/handler.GetDetailResponseData'
+      ok:
+        description: "true"
+        type: boolean
+    type: object
+  handler.SuccessResponse-handler_ListResponseData:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/handler.ListResponseDataElement'
+        type: array
+      ok:
+        description: "true"
+        type: boolean
+    type: object
+  handler.SuccessResponse-string:
+    properties:
+      data:
+        type: string
+      ok:
+        description: "true"
+        type: boolean
+    type: object
+host: localhost:9101
+info:
+  contact: {}
+  description: pneutrinoutil http server
+  title: pneutrinoutil API
+  version: "1.0"
+paths:
+  /debug:
+    get:
+      description: debug info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.SuccessResponse-handler_DebugResponseData'
+      summary: debug info
+  /health:
+    get:
+      description: health check
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.SuccessResponse-string'
+      summary: health check
+  /proc:
+    get:
+      description: list results of processes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.SuccessResponse-handler_ListResponseData'
+      summary: list results
+    post:
+      description: start a pneutrinoutil process with given arguments
+      parameters:
+      - description: musicxml
+        in: formData
+        name: score
+        required: true
+        type: file
+      - description: '[0, 100]%, default: 0'
+        in: formData
+        name: enhanceBreathiness
+        type: number
+      - description: 'default: 1.0'
+        in: formData
+        name: formantShift
+        type: number
+      - description: '[2, 3, 4], default: 2'
+        in: formData
+        name: inference
+        type: integer
+      - description: 'default: KIRITAN'
+        in: formData
+        name: model
+        type: string
+      - description: 'default: 0'
+        in: formData
+        name: pitchShiftNsf
+        type: number
+      - description: 'default: 0'
+        in: formData
+        name: pitchShiftWorld
+        type: number
+      - description: '[0, 100]%, default: 0'
+        in: formData
+        name: smoothFormant
+        type: number
+      - description: '[0, 100]%, default: 0'
+        in: formData
+        name: smoothPitch
+        type: number
+      - description: 'default: 0'
+        in: formData
+        name: styleShift
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: new process started
+          schema:
+            $ref: '#/definitions/handler.SuccessResponse-string'
+        "400":
+          description: bad score
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "413":
+          description: too big score
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: start a process
+  /proc/{id}/config:
+    get:
+      description: download pneutrinoutil config as json
+      parameters:
+      - description: request id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.SuccessResponse-ctl_Config'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: download config
+  /proc/{id}/detail:
+    get:
+      description: get process info
+      parameters:
+      - description: request id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.SuccessResponse-handler_GetDetailResponseData'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: get process info
+  /proc/{id}/log:
+    get:
+      description: download process log file
+      parameters:
+      - description: request id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: download log
+  /proc/{id}/musicxml:
+    get:
+      description: download musicxml file
+      parameters:
+      - description: request id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: download musicxml
+  /proc/{id}/wav:
+    get:
+      description: download wav file generated by pneutrinoutil
+      parameters:
+      - description: request id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: download wav
+swagger: "2.0"
