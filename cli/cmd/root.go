@@ -35,6 +35,7 @@ func init() {
 	rootCmd.Flags().String("hook", "", "command to be executed after running, result dir will be passed to 1st argument")
 	rootCmd.Flags().Bool("list-tasks", false, "list task names")
 	rootCmd.Flags().StringSlice("env", nil, "names of additional environment variables to allow reading; all allows everythings")
+	rootCmd.Flags().StringP("shell", "s", "bash", "shell command to execute")
 
 	var c ctl.Config
 	if err := c.SetFlags(rootCmd.Flags()); err != nil {
@@ -97,7 +98,8 @@ pneutrinoutil --neutrinoDir /path/to/NEUTRINO --workDir /path/to/install-result 
 			return nil
 		}
 
-		return tasks.IntoScript("bash").Runner(func(cmd *execx.Cmd) error {
+		shell, _ := cmd.Flags().GetString("shell")
+		return tasks.IntoScript(shell).Runner(func(cmd *execx.Cmd) error {
 			cmd.Dir = dir.NeutrinoDir()
 			slog.Info("exec", "dir", cmd.Dir, "args", cmd.Args)
 			return cmd.Exec()
