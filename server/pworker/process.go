@@ -2,9 +2,12 @@ package pworker
 
 import (
 	"io"
+	"log/slog"
 	"os/exec"
 
+	"github.com/berquerant/pneutrinoutil/pkg/logx"
 	"github.com/berquerant/pneutrinoutil/pkg/wait"
+	"github.com/berquerant/pneutrinoutil/server/alog"
 )
 
 var _ wait.Waiter = &Process{}
@@ -20,5 +23,17 @@ func (p *Process) Cancel() { p.CancelFunc() }
 
 func (p *Process) Wait() error {
 	defer p.Log.Close()
+	if err := p.Cmd.Start(); err != nil {
+		alog.L().Error("failed to start process",
+			slog.String("id", p.RequestID),
+			logx.Err(err),
+		)
+		return err
+	}
+
+	alog.L().Info("started process",
+		slog.String("id", p.RequestID),
+		slog.Int("pid", p.Cmd.Process.Pid),
+	)
 	return p.Cmd.Wait()
 }

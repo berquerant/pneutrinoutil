@@ -143,18 +143,9 @@ func (s *Start) NewProcess(c echo.Context) *StatusError {
 	cmd.Stdout = logFile
 	cmd.Stderr = logFile
 	cmd.Env = s.env
-	if err := cmd.Start(); err != nil {
-		cancel()
-		return &StatusError{
-			http.StatusInternalServerError,
-			fmt.Errorf("%w: failed to start process", err),
-			"failed to start process",
-		}
-	}
 
 	alog.L().Info("start process",
 		slog.String("id", rid),
-		slog.Int("pid", cmd.Process.Pid),
 		slog.String("bin", s.pneutrinoutil),
 		slog.String("args", strings.Join(args, " ")),
 		slog.String("log", logFilePath),
