@@ -8,18 +8,20 @@ import (
 	"time"
 )
 
-func NewResultElement(basename string, now time.Time, salt int) *ResultElement {
+func NewResultElement(basename string, now time.Time, timestamp int64, salt int) *ResultElement {
 	return &ResultElement{
-		Basename: basename,
-		Now:      now,
-		Salt:     salt,
+		Basename:  basename,
+		Now:       now,
+		Timestamp: timestamp,
+		Salt:      salt,
 	}
 }
 
 type ResultElement struct {
-	Basename string
-	Now      time.Time
-	Salt     int
+	Basename  string
+	Now       time.Time
+	Timestamp int64
+	Salt      int
 }
 
 func (r ResultElement) String() string {
@@ -32,7 +34,7 @@ func (r ResultElement) String() string {
 		r.Now.Hour(),
 		r.Now.Minute(),
 		r.Now.Second(),
-		r.Now.Unix(),
+		r.Timestamp,
 		r.Salt,
 	)
 }
@@ -61,7 +63,8 @@ func ParseResultElement(s string) (*ResultElement, error) {
 		return nil, fmt.Errorf("%w: invalid time string", errors.Join(ErrParseResultElement, err))
 	}
 
-	if _, err := strconv.ParseInt(matched[2], 10, 64); err != nil {
+	timestamp, err := strconv.ParseInt(matched[2], 10, 64)
+	if err != nil {
 		return nil, fmt.Errorf("%w: invalid timestamp", errors.Join(ErrParseResultElement, err))
 	}
 
@@ -71,8 +74,9 @@ func ParseResultElement(s string) (*ResultElement, error) {
 	}
 
 	return &ResultElement{
-		Basename: basename,
-		Now:      now,
-		Salt:     salt,
+		Basename:  basename,
+		Now:       now,
+		Timestamp: timestamp,
+		Salt:      salt,
 	}, nil
 }

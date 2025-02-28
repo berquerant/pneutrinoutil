@@ -57,6 +57,6 @@ func (Dir) salt() uint16               { return uint16(rand.IntN(math.MaxUint16 
 func (d Dir) ResultDestDir() string {
 	return d.join(
 		d.ResultDir(),
-		pathx.NewResultElement("${BASENAME}", d.now, int(d.salt())).String(),
+		pathx.NewResultElement("${BASENAME}", d.now, d.now.Unix(), int(d.salt())).String(),
 	)
 }
