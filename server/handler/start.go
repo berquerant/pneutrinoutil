@@ -28,7 +28,7 @@ import (
 // @param enhanceBreathiness formData number false "[0, 100]%, default: 0"
 // @param formantShift formData number false "default: 1.0"
 // @param inference formData integer false "[2, 3, 4], default: 2"
-// @param model formData string false "default: KIRITAN"
+// @param model formData string false "default: MERROW"
 // @param pitchShiftNsf formData number false "default: 0"
 // @param pitchShiftWorld formData number false "default: 0"
 // @param smoothFormant formData number false "[0, 100]%, default: 0"
