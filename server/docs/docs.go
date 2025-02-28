@@ -99,7 +99,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "default: KIRITAN",
+                        "description": "default: MERROW",
                         "name": "model",
                         "in": "formData"
                     },

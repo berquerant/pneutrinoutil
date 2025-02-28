@@ -186,7 +186,7 @@ paths:
         in: formData
         name: inference
         type: integer
-      - description: 'default: KIRITAN'
+      - description: 'default: MERROW'
         in: formData
         name: model
         type: string
