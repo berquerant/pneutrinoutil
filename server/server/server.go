@@ -32,7 +32,7 @@ func New(cfg *config.Config) *Server {
 	var (
 		e      = echo.New()
 		list   = pworker.NewList(cfg.PneutrinoutilWorkDir())
-		worker = wait.New()
+		worker = wait.New(cfg.Concurrency)
 	)
 
 	//

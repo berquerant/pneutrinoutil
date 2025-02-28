@@ -25,6 +25,7 @@ type Config struct {
 	AccessLogFile         string    `name:"accessLogFile" default:"-" usage:"access log file; - means stdout"`
 	AccessLogWriter       io.Writer `name:"-"`
 	Shell                 string    `name:"shell" short:"s" default:"bash" usage:"shell command to execute"`
+	Concurrency           int       `name:"concurrency" short:"c" default:"1" usage:"pneutrinoutil process concurrency"`
 }
 
 func (c Config) Addr() string                 { return fmt.Sprintf("%s:%d", c.Host, c.Port) }
@@ -101,6 +102,7 @@ func (c Config) intoMap() map[string]any {
 		"processTimeoutSeconds": c.ProcessTimeoutSeconds,
 		"accessLogFile":         c.AccessLogFile,
 		"shell":                 c.Shell,
+		"concurrency":           c.Concurrency,
 	}
 }
 
