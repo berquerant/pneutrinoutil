@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os/exec"
 	"strings"
 	"sync"
 
@@ -136,6 +137,13 @@ func (s *Server) Start(ctx context.Context) {
 				alog.L().Error("unknown waiter", slog.String("instance", fmt.Sprintf("%#v", r.Waiter)))
 				continue
 			}
+
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				s.notify(ctx, p.RequestID, r.Err == nil)
+			}()
+
 			if err := r.Err; err != nil {
 				alog.L().Error("waiter done", slog.String("id", p.RequestID), logx.Err(err))
 				s.list.Fail(p.RequestID, err)
@@ -171,3 +179,36 @@ func (s *Server) Start(ctx context.Context) {
 }
 
 func (s *Server) Echo() *echo.Echo { return s.e }
+
+func (s *Server) notify(ctx context.Context, requestID string, success bool) {
+	c := s.c.NotificationCommand
+	if c == "" {
+		return
+	}
+
+	iCtx, cancel := context.WithTimeout(ctx, s.c.NotificationTimeout())
+	defer cancel()
+
+	status := func() string {
+		if success {
+			return "0"
+		}
+		return "1"
+	}()
+
+	cmd := exec.CommandContext(iCtx, c, requestID, status)
+	cmd.Stdout = nil
+	cmd.Stderr = nil
+	cmd.Env = []string{
+		"REQUEST_ID=" + requestID,
+		"STATUS=" + status,
+	}
+
+	logCmd := slog.String("command", strings.Join(cmd.Args, " "))
+	alog.L().Info("start notification", logCmd)
+	if err := cmd.Run(); err != nil {
+		alog.L().Error("notification", logCmd, logx.Err(err))
+		return
+	}
+	alog.L().Info("end notification", logCmd)
+}
