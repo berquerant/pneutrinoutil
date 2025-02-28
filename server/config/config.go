@@ -33,8 +33,12 @@ func (c Config) UploadDir() string            { return filepath.Join(c.TmpDir(),
 func (c Config) PneutrinoutilWorkDir() string { return filepath.Join(c.WorkDir, "pneutrinoutil") }
 func (c Config) LogDir() string               { return filepath.Join(c.TmpDir(), "log") }
 
-func (c Config) ShutdownPeriod() time.Duration { return time.Duration(c.ShutdownPeriodSeconds) }
-func (c Config) ProcessTimeout() time.Duration { return time.Duration(c.ProcessTimeoutSeconds) }
+func (c Config) ShutdownPeriod() time.Duration {
+	return time.Duration(c.ShutdownPeriodSeconds) * time.Second
+}
+func (c Config) ProcessTimeout() time.Duration {
+	return time.Duration(c.ProcessTimeoutSeconds) * time.Second
+}
 
 func New(fs *pflag.FlagSet) (*Config, error) {
 	c, err := structconfig.NewConfigWithMerge(
