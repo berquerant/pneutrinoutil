@@ -16,23 +16,27 @@ func L() *slog.Logger {
 var instance *slog.Logger
 
 func Setup(w io.Writer, level slog.Leveler) {
-	handler := NewLTSVHandler(w)
+	handler := NewLTSVHandler(w, level)
 	instance = slog.New(handler)
 }
 
 type LTSVHandler struct {
-	w io.Writer
+	w     io.Writer
+	level slog.Leveler
 }
 
-func NewLTSVHandler(w io.Writer) *LTSVHandler {
+func NewLTSVHandler(w io.Writer, level slog.Leveler) *LTSVHandler {
 	return &LTSVHandler{
-		w: w,
+		w:     w,
+		level: level,
 	}
 }
 
-func (h *LTSVHandler) Enabled(_ context.Context, _ slog.Level) bool { return true }
-func (h *LTSVHandler) WithAttrs(_ []slog.Attr) slog.Handler         { return h }
-func (h *LTSVHandler) WithGroup(_ string) slog.Handler              { return h }
+func (h *LTSVHandler) Enabled(_ context.Context, level slog.Level) bool {
+	return level.Level() >= h.level.Level()
+}
+func (h *LTSVHandler) WithAttrs(_ []slog.Attr) slog.Handler { return h }
+func (h *LTSVHandler) WithGroup(_ string) slog.Handler      { return h }
 
 func (h *LTSVHandler) Handle(_ context.Context, r slog.Record) error {
 	var (
