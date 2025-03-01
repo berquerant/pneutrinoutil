@@ -26,24 +26,28 @@ var (
 	ErrArgument = errors.New("Argument")
 )
 
-func init() {
-	rootCmd.PersistentFlags().Bool("debug", false, "enable debug")
-	rootCmd.PersistentFlags().StringP("workDir", "w", ".", "working directory")
-	rootCmd.PersistentFlags().StringP("neutrinoDir", "n", "./dist/NEUTRINO", "NEUTRINO directory")
-	rootCmd.Flags().Bool("dry", false, "dryrun")
-	rootCmd.Flags().String("play", "", "play command generated wav after running, wav file will be passed to 1st argument")
-	rootCmd.Flags().String("hook", "", "command to be executed after running, result dir will be passed to 1st argument")
-	rootCmd.Flags().Bool("list-tasks", false, "list task names")
-	rootCmd.Flags().StringSlice("env", nil, "names of additional environment variables to allow reading; all allows everythings")
-	rootCmd.Flags().StringP("shell", "s", "bash", "shell command to execute")
+func InitFlags(cmd *cobra.Command) {
+	cmd.PersistentFlags().Bool("debug", false, "enable debug")
+	cmd.PersistentFlags().StringP("workDir", "w", ".", "working directory")
+	cmd.PersistentFlags().StringP("neutrinoDir", "n", "./dist/NEUTRINO", "NEUTRINO directory")
+	cmd.Flags().Bool("dry", false, "dryrun")
+	cmd.Flags().String("play", "", "play command generated wav after running, wav file will be passed to 1st argument")
+	cmd.Flags().String("hook", "", "command to be executed after running, result dir will be passed to 1st argument")
+	cmd.Flags().Bool("list-tasks", false, "list task names")
+	cmd.Flags().StringSlice("env", nil, "names of additional environment variables to allow reading; all allows everythings")
+	cmd.Flags().StringP("shell", "s", "bash", "shell command to execute")
 
 	var c ctl.Config
-	if err := c.SetFlags(rootCmd.Flags()); err != nil {
+	if err := c.SetFlags(cmd.Flags()); err != nil {
 		panic(err)
 	}
 
-	rootCmd.Flags().StringSliceP("include", "i", nil, "include task names")
-	rootCmd.Flags().StringSliceP("exclude", "e", nil, "exclude task names")
+	cmd.Flags().StringSliceP("include", "i", nil, "include task names")
+	cmd.Flags().StringSliceP("exclude", "e", nil, "exclude task names")
+}
+
+func init() {
+	InitFlags(rootCmd)
 }
 
 var rootCmd = &cobra.Command{
