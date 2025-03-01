@@ -23,7 +23,7 @@ func init() {
 
 var rootCmd = &cobra.Command{
 	Use:   "mockcli",
-	Shoft: "mock pneutrinoutil CLI for testing",
+	Short: "mock pneutrinoutil CLI for testing",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		now := time.Now()
 		logger := logx.NewLTSVLogger(os.Stdout, slog.LevelDebug)
