@@ -14,14 +14,14 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func newDir(cmd *cobra.Command, now time.Time) *task.Dir {
+func NewDir(cmd *cobra.Command, now time.Time) *task.Dir {
 	workDir, _ := cmd.Flags().GetString("workDir")
 	neutrinoDir, _ := cmd.Flags().GetString("neutrinoDir")
 	pwd := os.Getenv("PWD")
 	return task.NewDir(workDir, neutrinoDir, pwd, now)
 }
 
-func newConfig(cmd *cobra.Command, args []string) (*ctl.Config, error) {
+func NewConfig(cmd *cobra.Command, args []string) (*ctl.Config, error) {
 	if len(args) > 1 {
 		return nil, fmt.Errorf("%w: require 0 or 1 argument for config file", ErrArgument)
 	}

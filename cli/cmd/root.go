@@ -67,13 +67,13 @@ pneutrinoutil --neutrinoDir /path/to/NEUTRINO --workDir /path/to/install-result 
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		now := time.Now()
-		c, err := newConfig(cmd, args)
+		c, err := NewConfig(cmd, args)
 		if err != nil {
 			return err
 		}
 
 		var (
-			dir        = newDir(cmd, now)
+			dir        = NewDir(cmd, now)
 			play, _    = cmd.Flags().GetString("play")
 			hook, _    = cmd.Flags().GetString("hook")
 			include, _ = cmd.Flags().GetStringSlice("include")
