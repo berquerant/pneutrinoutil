@@ -34,15 +34,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	err = c.Init()
 	defer c.Close()
-
-	alog.Setup(os.Stdout, c.SLogLevel())
-
-	if err := c.Validate(); err != nil {
+	if err != nil {
 		alog.L().Error("invalid config", logx.Err(err))
 		os.Exit(1)
 	}
 
+	alog.Setup(os.Stdout, c.SLogLevel())
 	run(context.Background(), c)
 }
 
@@ -54,7 +53,9 @@ func run(ctx context.Context, c *config.Config) {
 	defer stop()
 
 	alog.L().Info("start server", c.LogAttr()...)
-	server.New(c).Start(iCtx)
+	srv := server.New(c)
+	go srv.Start(iCtx)
+	srv.Wait()
 	alog.L().Info("shut down")
 }
 
