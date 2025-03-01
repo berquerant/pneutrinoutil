@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/berquerant/pneutrinoutil/pkg/pathx"
+	"github.com/berquerant/pneutrinoutil/server/alog"
 	"github.com/berquerant/structconfig"
 	"github.com/labstack/gommon/log"
 	"github.com/spf13/pflag"
@@ -70,10 +71,17 @@ func New(fs *pflag.FlagSet) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+	return c, nil
+}
+
+func (c *Config) Init() error {
+	if err := c.Validate(); err != nil {
+		return err
+	}
 	// open access log
 	w, err := c.prepareAccessLogWriter()
 	if err != nil {
-		return nil, err
+		return err
 	}
 	c.AccessLogWriter = w
 	// ensure directories
@@ -84,15 +92,20 @@ func New(fs *pflag.FlagSet) (*Config, error) {
 		c.PneutrinoutilWorkDir(),
 		c.LogDir(),
 	} {
+		alog.L().Debug("ensure dir", slog.String("path", dir))
 		if err := pathx.EnsureDir(dir); err != nil {
-			return nil, err
+			return err
 		}
 	}
-	return c, nil
+	return nil
 }
 
+const (
+	AccessLogStderr = "-"
+)
+
 func (c Config) prepareAccessLogWriter() (io.Writer, error) {
-	if c.AccessLogFile == "-" {
+	if c.AccessLogFile == AccessLogStderr {
 		return os.Stderr, nil
 	}
 
