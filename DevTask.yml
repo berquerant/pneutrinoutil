@@ -8,7 +8,6 @@ tasks:
       - build
   build:
     deps:
-      - swag
       - build-cli
       - build-server
   build-cli:
