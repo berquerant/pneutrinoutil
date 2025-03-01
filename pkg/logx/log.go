@@ -6,12 +6,11 @@ import (
 	"log/slog"
 )
 
-func Setup(w io.Writer, level slog.Leveler) {
+func NewTextLogger(w io.Writer, level slog.Leveler) *slog.Logger {
 	handler := slog.NewTextHandler(w, &slog.HandlerOptions{
 		Level: level,
 	})
-	logger := slog.New(handler)
-	slog.SetDefault(logger)
+	return slog.New(handler)
 }
 
 func Err(err error) slog.Attr {

@@ -63,7 +63,7 @@ pneutrinoutil --neutrinoDir /path/to/NEUTRINO --workDir /path/to/install-result 
 		if debugEnabled {
 			logLevel = slog.LevelDebug
 		}
-		logx.Setup(os.Stderr, logLevel)
+		slog.SetDefault(logx.NewTextLogger(os.Stderr, logLevel))
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		now := time.Now()
