@@ -81,3 +81,31 @@ func TestExist(t *testing.T) {
 		assert.Equal(t, pathx.Efile, pathx.Exist(filepath.Join(pwd, "path_test.go")))
 	})
 }
+
+func TestBasename(t *testing.T) {
+	for _, tc := range []struct {
+		title string
+		path  string
+		want  string
+	}{
+		{
+			title: "no dots",
+			path:  "filename",
+			want:  "filename",
+		},
+		{
+			title: "one dots",
+			path:  "filename.log",
+			want:  "filename",
+		},
+		{
+			title: "two dots",
+			path:  "filename.log.gz",
+			want:  "filename.log",
+		},
+	} {
+		t.Run(tc.title, func(t *testing.T) {
+			assert.Equal(t, tc.want, pathx.Basename(tc.path))
+		})
+	}
+}

@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 //go:generate go tool goconfig -field "Mode os.FileMode|Truncate bool" -option -output path_config_generated.go
@@ -88,4 +89,9 @@ func Exist(path string) ExistType {
 	default:
 		return Eunknown
 	}
+}
+
+func Basename(path string) string {
+	b := filepath.Base(path)
+	return strings.TrimSuffix(b, filepath.Ext(b))
 }

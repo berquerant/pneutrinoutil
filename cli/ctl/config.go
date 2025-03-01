@@ -2,10 +2,9 @@ package ctl
 
 import (
 	"fmt"
-	"path/filepath"
-	"strings"
 
 	"github.com/berquerant/execx"
+	"github.com/berquerant/pneutrinoutil/pkg/pathx"
 	"github.com/berquerant/structconfig"
 	"github.com/spf13/pflag"
 )
@@ -44,10 +43,7 @@ type Config struct {
 	EnhanceBreathiness float32 `json:"enhanceBreathiness" yaml:"enhanceBreathiness" name:"enhanceBreathiness" usage:"[0, 100]%"`
 }
 
-func (c Config) Basename() string {
-	ss := strings.Split(filepath.Base(c.Score), ".")
-	return strings.Join(ss[:len(ss)-1], ".")
-}
+func (c Config) Basename() string { return pathx.Basename(c.Score) }
 
 func (c Config) nsfModel() string {
 	switch c.InferenceMode {
