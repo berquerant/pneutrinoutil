@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"os/exec"
 	"strings"
 	"sync"
 
@@ -28,7 +27,11 @@ type Server struct {
 	c      *config.Config
 	list   *pworker.List
 	worker *wait.Worker
+	wg     *sync.WaitGroup
 }
+
+func (s *Server) Echo() *echo.Echo { return s.e }
+func (s *Server) Wait()            { s.wg.Wait() }
 
 func New(cfg *config.Config) *Server {
 	var (
@@ -100,35 +103,29 @@ func New(cfg *config.Config) *Server {
 	e.HideBanner = true
 	e.HidePort = true
 
+	var wg sync.WaitGroup
 	return &Server{
 		e:      e,
 		c:      cfg,
 		list:   list,
 		worker: worker,
+		wg:     &wg,
 	}
 }
 
-func (s *Server) Start(ctx context.Context) {
-	go func() {
-		if err := s.list.Init(); err != nil {
-			alog.L().Error("init server", logx.Err(err))
-		}
-		alog.L().Info("start server")
-		if err := s.e.Start(s.c.Addr()); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			panic("shutting down the server")
-		}
-	}()
-
-	var wg sync.WaitGroup
+func (s *Server) StartLoop(ctx context.Context) {
+	if err := s.list.Init(); err != nil {
+		alog.L().Error("init server", logx.Err(err))
+	}
 
 	//
 	// wait process and write result loop
 	//
-	wg.Add(1)
+	s.wg.Add(1)
 	go func() {
 		alog.L().Info("start worker loop")
 		defer func() {
-			wg.Done()
+			s.wg.Done()
 			alog.L().Info("end worker loop")
 		}()
 
@@ -139,9 +136,9 @@ func (s *Server) Start(ctx context.Context) {
 				continue
 			}
 
-			wg.Add(1)
+			s.wg.Add(1)
 			go func() {
-				defer wg.Done()
+				defer s.wg.Done()
 				s.notify(ctx, p.RequestID, r.Err == nil)
 			}()
 
@@ -160,11 +157,32 @@ func (s *Server) Start(ctx context.Context) {
 	<-ctx.Done()
 	alog.L().Info("server canceled")
 
-	wg.Add(1)
+	s.wg.Add(1)
 	go func() {
-		defer wg.Done()
+		defer s.wg.Done()
 		s.worker.WaitAndClose()
 	}()
+
+	alog.L().Info("cancel worker")
+	s.worker.Cancel()
+}
+
+func (s *Server) Start(ctx context.Context) {
+	s.wg.Add(1)
+	go func() {
+		defer s.wg.Done()
+		s.StartLoop(ctx)
+	}()
+
+	go func() {
+		alog.L().Info("start server")
+		if err := s.e.Start(s.c.Addr()); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			panic("shutting down the server")
+		}
+	}()
+
+	<-ctx.Done()
+	alog.L().Info("server canceled")
 
 	iCtx, cancel := context.WithTimeout(context.Background(), s.c.ShutdownPeriod())
 	defer cancel()
@@ -173,43 +191,4 @@ func (s *Server) Start(ctx context.Context) {
 	if err := s.e.Shutdown(iCtx); err != nil {
 		panic(err)
 	}
-
-	alog.L().Info("cancel worker")
-	s.worker.Cancel()
-	wg.Wait()
-}
-
-func (s *Server) Echo() *echo.Echo { return s.e }
-
-func (s *Server) notify(ctx context.Context, requestID string, success bool) {
-	c := s.c.NotificationCommand
-	if c == "" {
-		return
-	}
-
-	iCtx, cancel := context.WithTimeout(ctx, s.c.NotificationTimeout())
-	defer cancel()
-
-	status := func() string {
-		if success {
-			return "0"
-		}
-		return "1"
-	}()
-
-	cmd := exec.CommandContext(iCtx, c, requestID, status)
-	cmd.Stdout = nil
-	cmd.Stderr = nil
-	cmd.Env = []string{
-		"REQUEST_ID=" + requestID,
-		"STATUS=" + status,
-	}
-
-	logCmd := slog.String("command", strings.Join(cmd.Args, " "))
-	alog.L().Info("start notification", logCmd)
-	if err := cmd.Run(); err != nil {
-		alog.L().Error("notification", logCmd, logx.Err(err))
-		return
-	}
-	alog.L().Info("end notification", logCmd)
 }
