@@ -155,7 +155,7 @@ func (s *Server) StartLoop(ctx context.Context) {
 	}()
 
 	<-ctx.Done()
-	alog.L().Info("server canceled")
+	alog.L().Info("server canceled, worker canceling")
 
 	s.wg.Add(1)
 	go func() {
