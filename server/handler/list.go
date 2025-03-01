@@ -41,6 +41,8 @@ func (s *List) Handler(c echo.Context) error {
 
 type ListResponseData []*ListResponseDataElement
 
+func (d ListResponseData) Len() int { return len(d) }
+
 type ListResponseDataElement struct {
 	RequestID string `json:"rid"`      // request id, or just id
 	Basename  string `json:"basename"` // original musicxml file name except extension
