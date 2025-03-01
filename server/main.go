@@ -54,7 +54,7 @@ func run(ctx context.Context, c *config.Config) {
 
 	alog.L().Info("start server", c.LogAttr()...)
 	srv := server.New(c)
-	go srv.Start(iCtx)
+	srv.Start(iCtx)
 	srv.Wait()
 	alog.L().Info("shut down")
 }
