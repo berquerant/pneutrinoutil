@@ -22,18 +22,15 @@ type Process struct {
 func (p *Process) Cancel() { p.CancelFunc() }
 
 func (p *Process) Wait() error {
+	logRid := slog.String("id", p.RequestID)
+	alog.L().Info("starting process", logRid)
+
 	defer p.Log.Close()
 	if err := p.Cmd.Start(); err != nil {
-		alog.L().Error("failed to start process",
-			slog.String("id", p.RequestID),
-			logx.Err(err),
-		)
+		alog.L().Error("failed to start process", logRid, logx.Err(err))
 		return err
 	}
 
-	alog.L().Info("started process",
-		slog.String("id", p.RequestID),
-		slog.Int("pid", p.Cmd.Process.Pid),
-	)
+	alog.L().Info("started process", logRid, slog.Int("pid", p.Cmd.Process.Pid))
 	return p.Cmd.Wait()
 }
