@@ -44,7 +44,7 @@ type Config struct {
 	EnhanceBreathiness float32 `json:"enhanceBreathiness" yaml:"enhanceBreathiness" name:"enhanceBreathiness" usage:"[0, 100]%"`
 }
 
-func (c Config) basename() string {
+func (c Config) Basename() string {
 	ss := strings.Split(filepath.Base(c.Score), ".")
 	return strings.Join(ss[:len(ss)-1], ".")
 }
@@ -87,7 +87,7 @@ func (c Config) envMap() map[string]any {
 		"EnhanceBreathiness": c.EnhanceBreathiness,
 		"NsfModel":           c.nsfModel(),
 		"SamplingFreq":       c.samplingFreq(),
-		"BASENAME":           c.basename(),
+		"BASENAME":           c.Basename(),
 		"RandomSeed":         c.RandomSeed,
 		"NumParallel":        c.NumParallel,
 	}
