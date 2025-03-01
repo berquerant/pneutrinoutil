@@ -139,6 +139,12 @@ const docTemplate = `{
                         "description": "new process started",
                         "schema": {
                             "$ref": "#/definitions/handler.SuccessResponse-string"
+                        },
+                        "headers": {
+                            "string x-request-id": {
+                                "type": "string",
+                                "description": "request id, or just id"
+                            }
                         }
                     },
                     "400": {

@@ -36,6 +36,7 @@ import (
 // @param styleShift formData integer false "default: 0"
 // @produce json
 // @success 202 {object} handler.SuccessResponse[string] "new process started"
+// @header 202 {string} string x-request-id "request id, or just id"
 // @failure 400 {object} handler.ErrorResponse "bad score"
 // @failure 413 {object} handler.ErrorResponse "too big score"
 // @failure 500 {object} handler.ErrorResponse

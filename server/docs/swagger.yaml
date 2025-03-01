@@ -215,6 +215,10 @@ paths:
       responses:
         "202":
           description: new process started
+          headers:
+            string x-request-id:
+              description: request id, or just id
+              type: string
           schema:
             $ref: '#/definitions/handler.SuccessResponse-string'
         "400":
