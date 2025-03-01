@@ -92,6 +92,7 @@ func New(cfg *config.Config) *Server {
 	getGroup.GET("/config", getHandler.Config).Name = "getConfig"
 	getGroup.GET("/musicxml", getHandler.MusicXML).Name = "getMusicXML"
 	getGroup.GET("/wav", getHandler.Wav).Name = "getWav"
+	getGroup.GET("/world_wav", getHandler.WorldWav).Name = "getWorldWav"
 	getGroup.GET("/log", getHandler.Log).Name = "getLog"
 	//
 	// echo
