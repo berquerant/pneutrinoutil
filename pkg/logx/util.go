@@ -6,7 +6,7 @@ import (
 )
 
 func Err(err error) slog.Attr {
-	return slog.Any("err", err)
+	return slog.String("err", err.Error())
 }
 
 func Jsonify(v any) []byte {
