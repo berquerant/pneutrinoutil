@@ -35,11 +35,12 @@ func main() {
 		panic(err)
 	}
 	err = c.Init()
-	defer c.Close()
 	if err != nil {
 		alog.L().Error("invalid config", logx.Err(err))
+		c.Close()
 		os.Exit(1)
 	}
+	defer c.Close()
 
 	alog.Setup(os.Stdout, c.SLogLevel())
 	run(context.Background(), c)
