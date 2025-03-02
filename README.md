@@ -7,13 +7,13 @@ My [NEUTRIONO](https://studio-neutrino.com/) utilities.
 ## CLI
 
 ``` shell
-./dist/pneutrinoutil --neutrinoDir ./dist/NEUTRINO --workDir ./tmp --score /path/to/some.musicxml
+./dist/pneutrinoutil --score /path/to/some.musicxml
 ```
 
 ## HTTP server
 
 ``` shell
-./dist/pneutrinoutil-server --neutrinoDir ./dist/NEUTRINO --workDir ./tmp --pneutrinoutil ./dist/pneutrinoutil
+./dist/pneutrinoutil-server
 ```
 
 [Swagger is available](http://localhost:9101/v1/swagger/index.html).
