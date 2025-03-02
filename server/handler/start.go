@@ -119,7 +119,7 @@ func (s *Start) NewProcess(c echo.Context) *StatusError {
 	rid := echox.RequestID(c)
 	logFilePath := filepath.Join(s.logDir, rid)
 	logFile, rErr := os.Create(logFilePath)
-	if err != nil {
+	if rErr != nil {
 		return &StatusError{
 			http.StatusInternalServerError,
 			fmt.Errorf("%w: open %s", rErr, logFilePath),
