@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -13,6 +14,7 @@ import (
 	"github.com/berquerant/pneutrinoutil/cli/ctl"
 	"github.com/berquerant/pneutrinoutil/cli/task"
 	"github.com/berquerant/pneutrinoutil/pkg/logx"
+	"github.com/berquerant/pneutrinoutil/pkg/pathx"
 	"github.com/spf13/cobra"
 )
 
@@ -28,7 +30,11 @@ var (
 
 func InitFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().Bool("debug", false, "enable debug")
-	cmd.PersistentFlags().StringP("workDir", "w", ".", "working directory")
+	cmd.PersistentFlags().StringP(
+		"workDir", "w",
+		filepath.Join(pathx.UserHomeDirOr("."), ".pneutrinoutil"),
+		"working directory; $HOME/.pneutrinoutil or .pneutrinoutil if no $HOME",
+	)
 	cmd.PersistentFlags().StringP("neutrinoDir", "n", "./dist/NEUTRINO", "NEUTRINO directory")
 	cmd.Flags().Bool("dry", false, "dryrun")
 	cmd.Flags().String("play", "", "play command generated wav after running, wav file will be passed to 1st argument")

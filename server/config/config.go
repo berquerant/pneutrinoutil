@@ -21,7 +21,7 @@ type Config struct {
 	Host                       string `name:"host" usage:"server host"`
 	Port                       uint   `name:"port" short:"p" default:"9101" usage:"server port"`
 	Pneutrinoutil              string `name:"pneutrinoutil" short:"x" default:"pneutrinoutil" usage:"pneutrinoutil executable"`
-	WorkDir                    string `name:"workDir" short:"w" default:"." usage:"working directory"`
+	WorkDir                    string `name:"workDir" short:"w" usage:"working directory; $HOME/.pneutrinoutil-server or .pneutrinoutil-server if no $HOME"`
 	NeutrinoDir                string `name:"neutrinoDir" short:"n" default:"./dist/NEUTRINO" usage:"NEUTRINO directory"`
 	ShutdownPeriodSeconds      int    `name:"shutdownPeriodSeconds" default:"10" usage:"duration the server needs to shut down gracefully"`
 	ProcessTimeoutSeconds      int    `name:"processTimeoutSeconds" default:"1200" usage:"duration pneutrinoutil timeout"`
@@ -73,6 +73,9 @@ func New(fs *pflag.FlagSet) (*Config, error) {
 	)
 	if err != nil {
 		return nil, err
+	}
+	if c.WorkDir == "" {
+		c.WorkDir = filepath.Join(pathx.UserHomeDirOr("."), ".pneutrinoutil-server")
 	}
 	return c, nil
 }

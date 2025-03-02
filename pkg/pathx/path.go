@@ -95,3 +95,10 @@ func Basename(path string) string {
 	b := filepath.Base(path)
 	return strings.TrimSuffix(b, filepath.Ext(b))
 }
+
+func UserHomeDirOr(defaultDir string) string {
+	if x, err := os.UserHomeDir(); err == nil {
+		return x
+	}
+	return defaultDir
+}
