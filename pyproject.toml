@@ -1,6 +1,6 @@
 [project]
 name = "pneutrinoutil"
-version = "0.4.1"
+version = "0.5.0"
 description = "NEUTRINO util"
 readme = "README.md"
 requires-python = ">=3.13"
