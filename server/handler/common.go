@@ -83,14 +83,14 @@ func ReadFormFile(c echo.Context, name, uploadDir string, maxBytes int64) (strin
 		return "", NewStatusError(
 			http.StatusBadRequest,
 			err,
-			"failed to read form file",
+			fmt.Sprintf("failed to read form file: %s", name),
 		)
 	}
 	if fh.Size > maxBytes {
 		return "", NewStatusError(
 			http.StatusRequestEntityTooLarge,
 			fmt.Errorf("RequestEntityTooLarge: %s", fh.Filename),
-			"file is too big",
+			fmt.Sprintf("file is too big: %s", fh.Filename),
 		)
 	}
 
@@ -99,7 +99,7 @@ func ReadFormFile(c echo.Context, name, uploadDir string, maxBytes int64) (strin
 		return "", NewStatusError(
 			http.StatusInternalServerError,
 			fmt.Errorf("%w: open %s", err, fh.Filename),
-			"failed to open form file",
+			fmt.Sprintf("failed to open form file: %s", fh.Filename),
 		)
 	}
 	defer src.Close()
@@ -110,7 +110,7 @@ func ReadFormFile(c echo.Context, name, uploadDir string, maxBytes int64) (strin
 		return "", NewStatusError(
 			http.StatusInternalServerError,
 			fmt.Errorf("%w: open dst %s for %s", err, dstPath, fh.Filename),
-			"failed load form file",
+			fmt.Sprintf("failed to load form file: %s", fh.Filename),
 		)
 	}
 	defer dst.Close()
@@ -119,7 +119,7 @@ func ReadFormFile(c echo.Context, name, uploadDir string, maxBytes int64) (strin
 		return "", NewStatusError(
 			http.StatusInternalServerError,
 			fmt.Errorf("%w: copy src %s to dst %s", err, fh.Filename, dstPath),
-			"failed load form file",
+			fmt.Sprintf("failed to load form file: %s", fh.Filename),
 		)
 	}
 
