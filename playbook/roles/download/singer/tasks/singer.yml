@@ -13,7 +13,7 @@
 - name: Unzip singer
   ansible.builtin.shell:
     cmd: "ditto -V -x -k --sequesterRsrc {{ get_singer_result.dest }} {{ dist_dir }}"
-  when: get_singer_result.changed
+  # when: get_singer_result.changed
 
 - name: Find singer directory
   ansible.builtin.find:

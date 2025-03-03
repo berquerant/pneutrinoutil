@@ -18,4 +18,4 @@
 - name: Unzip NEUTRINO
   ansible.builtin.shell:
     cmd: "ditto -V -x -k --sequesterRsrc {{ get_neutrino_result.dest }} {{ dist_dir }}"
-  when: get_neutrino_result.changed
+  # when: get_neutrino_result.changed
