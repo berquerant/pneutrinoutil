@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/berquerant/pneutrinoutil/pkg/echox"
@@ -148,7 +147,7 @@ func (s *Start) NewProcess(c echo.Context) *StatusError {
 	alog.L().Info("start process",
 		slog.String("id", rid),
 		slog.String("bin", s.pneutrinoutil),
-		slog.String("args", strings.Join(args, " ")),
+		logx.Array("args", args...),
 		slog.String("log", logFilePath),
 	)
 	s.worker.Add(&pworker.Process{
