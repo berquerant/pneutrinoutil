@@ -1,4 +1,9 @@
 #!/bin/bash
 
 export GIT_ROOT="$(git rev-parse --show-toplevel)"
+
+# ERROR: Ansible requires the locale encoding to be UTF-8; Detected None.
+export LC_ALL=""
+export LANG="en_US.UTF-8"
+export LANGUAGE="en_US"
 uv run ansible-playbook "$@"
