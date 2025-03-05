@@ -63,6 +63,14 @@ var _ error = &StatusError{}
 func (e StatusError) Error() string { return e.Err.Error() }
 func (e StatusError) Unwrap() error { return e.Err }
 
+func (e StatusError) AppendMessageToErr(msg string) *StatusError {
+	return &StatusError{
+		Status: e.Status,
+		Err:    fmt.Errorf("%w: %s", e.Err, msg),
+		Msg:    e.Msg,
+	}
+}
+
 func NewStatusError(status int, err error, msg string) *StatusError {
 	return &StatusError{
 		Status: status,
@@ -82,7 +90,7 @@ func ReadFormFile(c echo.Context, name, uploadDir string, maxBytes int64) (strin
 	if err != nil {
 		return "", NewStatusError(
 			http.StatusBadRequest,
-			err,
+			fmt.Errorf("%w: read multipart form file: %s", err, name),
 			fmt.Sprintf("failed to read form file: %s", name),
 		)
 	}

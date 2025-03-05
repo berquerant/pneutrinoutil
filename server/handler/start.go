@@ -76,7 +76,11 @@ func (Start) GetFormArgs(c echo.Context) map[string]string {
 // GetFormFile reads a musicxml file from the form file `score`.
 // Returns the file path.
 func (s Start) GetFormFile(c echo.Context) (string, *StatusError) {
-	return ReadFormFile(c, "score", s.uploadDir, uploadMaxSizeBytes)
+	r, err := ReadFormFile(c, "score", s.uploadDir, uploadMaxSizeBytes)
+	if err != nil {
+		return "", err.AppendMessageToErr("failed to read score file from form")
+	}
+	return r, nil
 }
 
 func NewStart(c *config.Config, w *wait.Worker) *Start {
