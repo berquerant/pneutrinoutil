@@ -4,7 +4,7 @@ go 1.24.0
 
 require (
 	github.com/berquerant/execx v0.11.0
-	github.com/berquerant/structconfig v0.4.0
+	github.com/berquerant/structconfig v0.5.0
 	github.com/google/uuid v1.6.0
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/labstack/gommon v0.4.2
