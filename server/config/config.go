@@ -189,10 +189,10 @@ func (c Config) Validate() error {
 
 func (c *Config) Close() error {
 	var err error
-	if x, ok := c.AccessLogWriter.(*os.File); ok {
+	if x, ok := c.AccessLogWriter.(io.Closer); ok {
 		err = errors.Join(err, x.Close())
 	}
-	if x, ok := c.NotificationLogWriter.(*os.File); ok {
+	if x, ok := c.NotificationLogWriter.(io.Closer); ok {
 		err = errors.Join(err, x.Close())
 	}
 	return err
