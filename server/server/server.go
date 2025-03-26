@@ -85,6 +85,7 @@ func New(cfg *config.Config) *Server {
 	//
 	v1 := e.Group("/v1")
 	v1.GET(healthPath, handler.Health).Name = "health"
+	v1.GET("/version", handler.Version).Name = "version"
 	v1.GET("/debug", handler.Debug).Name = "debug"
 	v1.GET("/swagger/*", echoSwagger.WrapHandler)
 	v1.POST("/proc", handler.NewStart(cfg, worker).Handler).Name = "createProcess"

@@ -347,6 +347,23 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/version": {
+            "get": {
+                "description": "get server version",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "get server version",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.SuccessResponse-handler_VersionResponseData"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -517,6 +534,18 @@ const docTemplate = `{
                 }
             }
         },
+        "handler.SuccessResponse-handler_VersionResponseData": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/handler.VersionResponseData"
+                },
+                "ok": {
+                    "description": "true",
+                    "type": "boolean"
+                }
+            }
+        },
         "handler.SuccessResponse-string": {
             "type": "object",
             "properties": {
@@ -526,6 +555,19 @@ const docTemplate = `{
                 "ok": {
                     "description": "true",
                     "type": "boolean"
+                }
+            }
+        },
+        "handler.VersionResponseData": {
+            "type": "object",
+            "properties": {
+                "revision": {
+                    "description": "commit hash",
+                    "type": "string"
+                },
+                "version": {
+                    "description": "server version",
+                    "type": "string"
                 }
             }
         }

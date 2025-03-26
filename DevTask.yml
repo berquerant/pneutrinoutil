@@ -12,10 +12,10 @@ tasks:
       - build-server
   build-cli:
     cmds:
-      - go build -trimpath -v -o dist/pneutrinoutil cli/main.go
+      - ./bin/build.sh -o dist/pneutrinoutil cli/main.go
   build-server:
     cmds:
-      - go build -trimpath -v -o dist/pneutrinoutil-server server/main.go
+      - ./bin/build.sh -o dist/pneutrinoutil-server server/main.go
   lint:
     deps:
       - vuln

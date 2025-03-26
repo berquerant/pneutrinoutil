@@ -214,6 +214,15 @@ EOS
 		assert.Equal(t, http.StatusOK, r.StatusCode)
 	})
 
+	t.Run("version", func(t *testing.T) {
+		r, err := http.Get(newURL("/v1/version"))
+		if !assert.Nil(t, err) {
+			return
+		}
+		r.Body.Close()
+		assert.Equal(t, http.StatusOK, r.StatusCode)
+	})
+
 	t.Run("debug", func(t *testing.T) {
 		r, err := http.Get(newURL("/v1/debug"))
 		if !assert.Nil(t, err) {

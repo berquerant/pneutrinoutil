@@ -118,6 +118,14 @@ definitions:
         description: "true"
         type: boolean
     type: object
+  handler.SuccessResponse-handler_VersionResponseData:
+    properties:
+      data:
+        $ref: '#/definitions/handler.VersionResponseData'
+      ok:
+        description: "true"
+        type: boolean
+    type: object
   handler.SuccessResponse-string:
     properties:
       data:
@@ -125,6 +133,15 @@ definitions:
       ok:
         description: "true"
         type: boolean
+    type: object
+  handler.VersionResponseData:
+    properties:
+      revision:
+        description: commit hash
+        type: string
+      version:
+        description: server version
+        type: string
     type: object
 host: localhost:9101
 info:
@@ -352,4 +369,15 @@ paths:
           schema:
             $ref: '#/definitions/handler.ErrorResponse'
       summary: download world wav
+  /version:
+    get:
+      description: get server version
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.SuccessResponse-handler_VersionResponseData'
+      summary: get server version
 swagger: "2.0"

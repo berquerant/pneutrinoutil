@@ -9,6 +9,7 @@ import (
 	"syscall"
 
 	"github.com/berquerant/pneutrinoutil/pkg/logx"
+	"github.com/berquerant/pneutrinoutil/pkg/version"
 	"github.com/berquerant/pneutrinoutil/server/alog"
 	"github.com/berquerant/pneutrinoutil/server/config"
 	_ "github.com/berquerant/pneutrinoutil/server/docs"
@@ -27,6 +28,7 @@ func main() {
 		fmt.Println(usage)
 		fs.PrintDefaults()
 	}
+	fs.Bool("version", false, "print pneutrinoutil-server version")
 	c, err := config.New(fs)
 	if errors.Is(err, pflag.ErrHelp) {
 		return
@@ -34,6 +36,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	if v, _ := fs.GetBool("version"); v {
+		version.Write(os.Stdout)
+		return
+	}
+
 	err = c.Init()
 	if err != nil {
 		alog.L().Error("invalid config", logx.Err(err))
