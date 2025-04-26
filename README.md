@@ -25,6 +25,7 @@ My [NEUTRIONO](https://studio-neutrino.com/) utilities.
 - macOS
 - Go
 - [uv](https://github.com/astral-sh/uv)
+- [direnv](https://github.com/direnv/direnv)
 
 # Installation
 
