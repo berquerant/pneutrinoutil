@@ -44,3 +44,6 @@ tasks:
   swag:
     cmds:
       - go tool swag init -g ./server/main.go -o ./server/docs
+  start:
+    cmds:
+      - go tool goreman -b 9101 start

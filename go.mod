@@ -63,6 +63,7 @@ require (
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-zglob v0.0.6 // indirect
+	github.com/mattn/goreman v0.3.16 // indirect
 	github.com/mitchellh/hashstructure/v2 v2.0.2 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect
@@ -100,6 +101,7 @@ tool (
 	github.com/berquerant/dataclass
 	github.com/berquerant/goconfig
 	github.com/go-task/task/v3/cmd/task
+	github.com/mattn/goreman
 	github.com/swaggo/swag/cmd/swag
 	golang.org/x/vuln/cmd/govulncheck
 	gotest.tools/gotestsum
