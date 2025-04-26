@@ -1,6 +1,6 @@
 module github.com/berquerant/pneutrinoutil
 
-go 1.24.0
+go 1.24.2
 
 require (
 	github.com/berquerant/execx v0.11.0
