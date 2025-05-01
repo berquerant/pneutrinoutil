@@ -1,21 +1,21 @@
 package handler
 
 import (
-	"context"
+	"bytes"
 	"fmt"
 	"log/slog"
 	"net/http"
-	"os"
-	"os/exec"
+	"path"
 	"path/filepath"
 	"time"
 
+	"github.com/berquerant/pneutrinoutil/pkg/alog"
+	"github.com/berquerant/pneutrinoutil/pkg/domain"
 	"github.com/berquerant/pneutrinoutil/pkg/echox"
 	"github.com/berquerant/pneutrinoutil/pkg/logx"
-	"github.com/berquerant/pneutrinoutil/pkg/wait"
-	"github.com/berquerant/pneutrinoutil/server/alog"
-	"github.com/berquerant/pneutrinoutil/server/config"
-	"github.com/berquerant/pneutrinoutil/server/pworker"
+	"github.com/berquerant/pneutrinoutil/pkg/repo"
+	"github.com/berquerant/pneutrinoutil/pkg/task"
+	"github.com/hibiken/asynq"
 	"github.com/labstack/echo/v4"
 )
 
@@ -74,92 +74,103 @@ func (Start) GetFormArgs(c echo.Context) map[string]string {
 }
 
 // GetFormFile reads a musicxml file from the form file `score`.
-// Returns the file path.
-func (s Start) GetFormFile(c echo.Context) (string, *StatusError) {
-	r, err := ReadFormFile(c, "score", s.uploadDir, uploadMaxSizeBytes)
+// Returns the file content.
+func (s Start) GetFormFile(c echo.Context) (*ReadFromFileResult, *StatusError) {
+	r, err := ReadFormFile(c, "score", uploadMaxSizeBytes)
 	if err != nil {
-		return "", err.AppendMessageToErr("failed to read score file from form")
+		return nil, err.AppendMessageToErr("failed to read score file from form")
 	}
 	return r, nil
 }
 
-func NewStart(c *config.Config, w *wait.Worker) *Start {
+func NewStart(
+	client *asynq.Client,
+	processTimeout time.Duration,
+	bucket string,
+	path string,
+	objectWriter repo.ObjectWriter,
+	detailsCreator repo.ProcessDetailsCreator,
+	processCreator repo.ProcessCreator,
+) *Start {
 	return &Start{
-		pneutrinoutil:        c.Pneutrinoutil,
-		neutrinoDir:          c.NeutrinoDir,
-		pneutrinoutilWorkDir: c.PneutrinoutilWorkDir(),
-		uploadDir:            c.UploadDir(),
-		logDir:               c.LogDir(),
-		processTimeout:       c.ProcessTimeout(),
-		shell:                c.Shell,
-		worker:               w,
-		env: []string{
-			fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
-			fmt.Sprintf("PWD=%s", os.Getenv("PWD")),
-		},
+		client:         client,
+		processTimeout: processTimeout,
+		bucket:         bucket,
+		path:           path,
+		objectWriter:   objectWriter,
+		detailsCreator: detailsCreator,
+		processCreator: processCreator,
 	}
 }
 
 type Start struct {
-	pneutrinoutil        string
-	neutrinoDir          string
-	pneutrinoutilWorkDir string
-	uploadDir            string
-	logDir               string
-	env                  []string
-	processTimeout       time.Duration
-	shell                string
-
-	worker *wait.Worker
+	client         *asynq.Client
+	processTimeout time.Duration
+	objectWriter   repo.ObjectWriter
+	detailsCreator repo.ProcessDetailsCreator
+	processCreator repo.ProcessCreator
+	bucket         string
+	path           string
 }
 
 func (s *Start) NewProcess(c echo.Context) *StatusError {
-	score, err := s.GetFormFile(c)
-	if err != nil {
-		return err
-	}
-
 	rid := echox.RequestID(c)
-	logFilePath := filepath.Join(s.logDir, rid)
-	logFile, rErr := os.Create(logFilePath)
-	if rErr != nil {
-		return &StatusError{
-			http.StatusInternalServerError,
-			fmt.Errorf("%w: open %s", rErr, logFilePath),
-			"failed to create log file",
-		}
+	score, fErr := s.GetFormFile(c)
+	if fErr != nil {
+		return fErr
 	}
 
-	args := []string{
-		"--desc", rid,
-		"--neutrinoDir", s.neutrinoDir,
-		"--workDir", s.pneutrinoutilWorkDir,
-		"--score", score,
-		"--env", "all",
-		"--shell", s.shell,
+	obj, err := s.objectWriter.WriteObject(c.Request().Context(), &repo.WriteObjectRequest{
+		Type:   domain.ObjectTypeFile,
+		Bucket: s.bucket,
+		Path:   filepath.Join(s.path, rid, score.Name),
+		Blob:   bytes.NewBuffer(score.Blob),
+	})
+	if err != nil {
+		return NewStatusError(http.StatusInternalServerError, err, "failed to upload score")
 	}
+
+	title := score.Name
+	if ext := path.Ext(title); ext != "" {
+		title = title[:len(title)-len(ext)]
+	}
+	details, err := s.detailsCreator.CreateProcessDetails(c.Request().Context(), &repo.CreateProcessDetailsRequest{
+		Title:         title,
+		ScoreObjectId: obj.Object().ID,
+	})
+	if err != nil {
+		return NewStatusError(http.StatusInternalServerError, err, "failed to create process details")
+	}
+
+	proc, err := s.processCreator.CreateProcess(c.Request().Context(), &repo.CreateProcessRequest{
+		RequestId: rid,
+		DetailsId: details.ID,
+		Status:    domain.ProcessStatusPending,
+	})
+	if err != nil {
+		return NewStatusError(http.StatusInternalServerError, err, "failed to create process")
+	}
+
+	var args []string
 	for k, v := range s.GetFormArgs(c) {
 		args = append(args, fmt.Sprintf("--%s", k), v)
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), s.processTimeout)
-	cmd := exec.CommandContext(ctx, s.pneutrinoutil, args...)
-	cmd.Stdout = logFile
-	cmd.Stderr = logFile
-	cmd.Env = s.env
-
-	alog.L().Info("start process",
-		slog.String("id", rid),
-		slog.String("bin", s.pneutrinoutil),
-		logx.Array("args", args...),
-		slog.String("log", logFilePath),
-	)
-	s.worker.Add(&pworker.Process{
-		RequestID:  rid,
-		Cmd:        cmd,
-		CancelFunc: cancel,
-		Log:        logFile,
+	atask, err := task.NewPneutrinoutilStart(task.PneutrinoutilStartPayload{
+		RequestID: rid,
+		Args:      args,
 	})
+	if err != nil {
+		return NewStatusError(http.StatusInternalServerError, err, "failed to create task")
+	}
+
+	info, err := s.client.EnqueueContext(c.Request().Context(), atask, asynq.Timeout(s.processTimeout))
+	if err != nil {
+		return NewStatusError(http.StatusInternalServerError, err, "failed to enqueue task")
+	}
+
+	alog.L().Info("new task enqueued",
+		slog.String("id", rid), slog.Int("processID", proc.ID), slog.String("taskID", info.ID),
+	)
 
 	return nil
 }

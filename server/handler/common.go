@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
-	"path/filepath"
 
 	"github.com/labstack/echo/v4"
 )
@@ -84,18 +82,23 @@ func (e StatusError) Respond(c echo.Context) error {
 	return Error(c, e.Status, e.Msg)
 }
 
+type ReadFromFileResult struct {
+	Blob []byte
+	Name string
+}
+
 // ReadFormFile reads a form file and writes content to uploadDir.
-func ReadFormFile(c echo.Context, name, uploadDir string, maxBytes int64) (string, *StatusError) {
+func ReadFormFile(c echo.Context, name string, maxBytes int64) (*ReadFromFileResult, *StatusError) {
 	fh, err := c.FormFile(name)
 	if err != nil {
-		return "", NewStatusError(
+		return nil, NewStatusError(
 			http.StatusBadRequest,
 			fmt.Errorf("%w: read multipart form file: %s", err, name),
 			fmt.Sprintf("failed to read form file: %s", name),
 		)
 	}
 	if fh.Size > maxBytes {
-		return "", NewStatusError(
+		return nil, NewStatusError(
 			http.StatusRequestEntityTooLarge,
 			fmt.Errorf("RequestEntityTooLarge: %s", fh.Filename),
 			fmt.Sprintf("file is too big: %s", fh.Filename),
@@ -104,7 +107,7 @@ func ReadFormFile(c echo.Context, name, uploadDir string, maxBytes int64) (strin
 
 	src, err := fh.Open()
 	if err != nil {
-		return "", NewStatusError(
+		return nil, NewStatusError(
 			http.StatusInternalServerError,
 			fmt.Errorf("%w: open %s", err, fh.Filename),
 			fmt.Sprintf("failed to open form file: %s", fh.Filename),
@@ -112,24 +115,16 @@ func ReadFormFile(c echo.Context, name, uploadDir string, maxBytes int64) (strin
 	}
 	defer src.Close()
 
-	dstPath := filepath.Join(uploadDir, fh.Filename)
-	dst, err := os.Create(dstPath)
+	blob, err := io.ReadAll(src)
 	if err != nil {
-		return "", NewStatusError(
+		return nil, NewStatusError(
 			http.StatusInternalServerError,
-			fmt.Errorf("%w: open dst %s for %s", err, dstPath, fh.Filename),
-			fmt.Sprintf("failed to load form file: %s", fh.Filename),
+			fmt.Errorf("%w: read form file from %s", err, fh.Filename),
+			fmt.Sprintf("failed to read form file: %s", fh.Filename),
 		)
 	}
-	defer dst.Close()
-
-	if _, err := io.Copy(dst, src); err != nil {
-		return "", NewStatusError(
-			http.StatusInternalServerError,
-			fmt.Errorf("%w: copy src %s to dst %s", err, fh.Filename, dstPath),
-			fmt.Sprintf("failed to load form file: %s", fh.Filename),
-		)
-	}
-
-	return dstPath, nil
+	return &ReadFromFileResult{
+		Blob: blob,
+		Name: fh.Filename,
+	}, nil
 }

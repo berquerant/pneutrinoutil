@@ -56,6 +56,20 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "summary": "list results",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "query limit; default: 5",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "process status; (pending|running|succeed|failed)",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -449,18 +463,24 @@ const docTemplate = `{
                     "description": "original musicxml file name except extension",
                     "type": "string"
                 },
-                "created_at": {
+                "command": {
                     "type": "string"
                 },
-                "error": {
+                "completed_at": {
+                    "type": "string"
+                },
+                "created_at": {
                     "type": "string"
                 },
                 "rid": {
                     "description": "request id, or just id",
                     "type": "string"
                 },
-                "salt": {
-                    "type": "integer"
+                "started_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
                 }
             }
         },
@@ -468,7 +488,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "basename": {
-                    "description": "original musicxml file name except extension",
+                    "type": "string"
+                },
+                "command": {
+                    "type": "string"
+                },
+                "completed_at": {
                     "type": "string"
                 },
                 "created_at": {
@@ -478,8 +503,11 @@ const docTemplate = `{
                     "description": "request id, or just id",
                     "type": "string"
                 },
-                "salt": {
-                    "type": "integer"
+                "started_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
                 }
             }
         },

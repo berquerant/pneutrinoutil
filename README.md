@@ -15,7 +15,9 @@ My [NEUTRIONO](https://studio-neutrino.com/) utilities.
 ## HTTP server
 
 ``` shell
-./dist/pneutrinoutil-server
+docker compose up -d
+./task mysql
+./task start
 ```
 
 [Swagger is available](http://localhost:9101/v1/swagger/index.html).
@@ -26,6 +28,7 @@ My [NEUTRIONO](https://studio-neutrino.com/) utilities.
 - Go
 - [uv](https://github.com/astral-sh/uv)
 - [direnv](https://github.com/direnv/direnv)
+- Docker
 
 # Installation
 

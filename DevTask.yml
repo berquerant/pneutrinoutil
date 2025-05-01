@@ -6,6 +6,7 @@ tasks:
       - lint
       - test
       - build
+  # Build binaries
   build:
     deps:
       - build-cli
@@ -16,6 +17,9 @@ tasks:
   build-server:
     cmds:
       - ./bin/build.sh -o dist/pneutrinoutil-server server/main.go
+  build-worker:
+    cmds:
+      - ./bin/build.sh -o dist/pneutrinoutil-worker worker/main.go
   lint:
     deps:
       - vuln
@@ -23,13 +27,21 @@ tasks:
   test:
     cmds:
       # - go tool gotestsum --format pkgname --format-icons hivis -- -cover -race ./...
-      - go test -cover -race ./...
+      - go test -cover -race $(go list ./... | grep -v tests)
+  # E2E test
+  e2e:
+    cmds:
+      - ./bin/ddl.sh db
+      - ./bin/ddl.sh users
+      - ./bin/ddl.sh tables test
+      - go test -cover -race $(go list ./... | grep tests) -count=1
   vuln:
     cmds:
       - go tool govulncheck ./...
   vet:
     cmds:
       - go vet ./...
+  # Go generate
   generate:
     # deps:
     #   - clean-generated
@@ -41,9 +53,19 @@ tasks:
   tidy:
     cmds:
       - go mod tidy -v
+  # Generate API document
   swag:
     cmds:
       - go tool swag init -g ./server/main.go -o ./server/docs
+  # Start servers
   start:
+    deps:
+      - mysql
     cmds:
       - go tool goreman -b $GOREMAN_BASE_PORT start
+  # Prepare mysql data
+  mysql:
+    cmds:
+      - ./bin/ddl.sh db
+      - ./bin/ddl.sh users
+      - ./bin/ddl.sh tables $MYSQL_DATABASE

@@ -11,24 +11,19 @@ import (
 	"github.com/berquerant/pneutrinoutil/pkg/alog"
 	"github.com/berquerant/pneutrinoutil/pkg/logx"
 	"github.com/berquerant/pneutrinoutil/pkg/version"
-	"github.com/berquerant/pneutrinoutil/server/config"
-	_ "github.com/berquerant/pneutrinoutil/server/docs"
-	"github.com/berquerant/pneutrinoutil/server/server"
+	"github.com/berquerant/pneutrinoutil/worker/config"
+	"github.com/berquerant/pneutrinoutil/worker/worker"
 	"github.com/spf13/pflag"
 )
 
-// @title pneutrinoutil API
-// @version 1.0
-// @description pneutrinoutil http server
-// @host localhost:9101
-// @basePath /v1
 func main() {
 	fs := pflag.NewFlagSet("main", pflag.ContinueOnError)
 	fs.Usage = func() {
 		fmt.Println(usage)
 		fs.PrintDefaults()
 	}
-	fs.Bool("version", false, "print pneutrinoutil-server version")
+
+	fs.Bool("version", false, "print pneutrinoutil-worker version")
 	c, err := config.New(fs)
 	if errors.Is(err, pflag.ErrHelp) {
 		return
@@ -60,19 +55,17 @@ func run(ctx context.Context, c *config.Config) {
 	)
 	defer stop()
 
-	alog.L().Info("start server")
-	srv, err := server.New(iCtx, c)
-	if err != nil {
-		alog.L().Error("cannot start server", logx.Err(err))
-		return
+	srv := worker.New(c)
+	alog.L().Info("start worker")
+	if err := srv.Run(iCtx); err != nil {
+		alog.L().Error("worker got an error", logx.Err(err))
 	}
-	srv.Start(iCtx)
 	alog.L().Info("shut down")
 }
 
-const usage = `pneutrinoutil-server -- pneutrinoutil http server
+const usage = `pneutrinoutil-worker -- pneutrinoutil process worker
 
 e.g.
-pneutrinoutil-server --mysqlDSN DSN --redisDSN DSN
+pneutrinoutil-worker --neutrinoDir /path/to/NEUTRINO --workDir /path/to/workingDirectory --pneutrinoutil /path/to/pneutrinoutil --mysqlDSN DSN --redisDSN DSN
 
 Flags:`
