@@ -12,7 +12,6 @@ on:
       - main
 
 env:
-  PROJECT_ROOT: "$GITHUB_WORKSPACE"
   MYSQL_HOST: "127.0.0.1"
   MYSQL_PORT: "13306"
   MYSQL_DATABASE: "pneutrinoutil"
@@ -29,6 +28,8 @@ jobs:
   build:
     timeout-minutes: 10
     runs-on: ubuntu-latest
+    env:
+      PROJECT_ROOT: "${GITHUB_WORKSPACE}"
     strategy:
       matrix:
         go-version:
@@ -47,6 +48,12 @@ jobs:
             }
       - name: Start docker services
         run: docker compose up -d
+      - name: Wait redis
+        run: ./bin/redis.sh wait
+      - name: Wait mysql
+        run: ./bin/mysql.sh wait
+      - name: Prepare mysql data
+        run: ./task mysql
       - name: Setup Go ${{ matrix.go-version }}
         uses: actions/setup-go@v5.4.0
         with:
@@ -57,12 +64,6 @@ jobs:
         run: go version
       - name: Lint
         run: ./task lint
-      - name: Wait redis
-        run: ./bin/redis.sh wait
-      - name: Wait mysql
-        run: ./bin/mysql.sh wait
-      - name: Prepare mysql data
-        run: ./task mysql
       - name: Test
         run: ./task test
       - name: Stop docker services
