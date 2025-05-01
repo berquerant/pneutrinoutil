@@ -28,8 +28,6 @@ jobs:
   build:
     timeout-minutes: 10
     runs-on: ubuntu-latest
-    env:
-      PROJECT_ROOT: "${GITHUB_WORKSPACE}"
     strategy:
       matrix:
         go-version:

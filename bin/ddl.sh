@@ -1,20 +1,22 @@
 #!/bin/bash
 
+readonly d="$(cd "$(dirname "$0")/.." || exit; pwd)"
+
 client() {
-    "${PROJECT_ROOT}/bin/mysql.sh" root "$@"
+    "${d}/bin/mysql.sh" root "$@"
 }
 
 init_db() {
-    client -e "$(cat ${PROJECT_ROOT}/ddl/mysql/db.sql)"
+    client -e "$(cat ${d}/ddl/mysql/db.sql)"
 }
 
 init_tables() {
     local -r db="$1"
-    client "$db" -e "$(cat ${PROJECT_ROOT}/ddl/mysql/tables.sql)"
+    client "$db" -e "$(cat ${d}/ddl/mysql/tables.sql)"
 }
 
 init_users() {
-    client -e "$(cat ${PROJECT_ROOT}/ddl/mysql/users.sql)"
+    client -e "$(cat ${d}/ddl/mysql/users.sql)"
 }
 
 readonly cmd="$1"
