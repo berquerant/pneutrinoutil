@@ -11,6 +11,19 @@ on:
     branches:
       - main
 
+env:
+  PROJECT_ROOT: "$GITHUB_WORKSPACE"
+  MYSQL_HOST: "127.0.0.1"
+  MYSQL_PORT: "13306"
+  MYSQL_DATABASE: "pneutrinoutil"
+  MYSQL_ROOT_PASSWORD: "rootpass"
+  MYSQL_USER: "pneutrinoutil"
+  MYSQL_PASSWORD: "userpass"
+  MYSQL_DSN: "${MYSQL_USER}:${MYSQL_PASSWORD}@tcp(${MYSQL_HOST}:${MYSQL_PORT})/${MYSQL_DATABASE}?parseTime=true"
+  REDIS_VERSION: "7.4.3"
+  REDIS_HOST: "127.0.0.1"
+  REDIS_DSN: "redis://${REDIS_HOST}:${REDIS_PORT}"
+
 jobs:
   build:
     timeout-minutes: 5
@@ -22,6 +35,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v4
+        with:
+          daemon-config: |
+            {
+              "registry-mirrors": [
+                "https://mirror.gcr.io"
+              ]
+            }
+      - name: Start docker services
+        run: docker compose up -d
       - name: Setup Go ${{ matrix.go-version }}
         uses: actions/setup-go@v5.4.0
         with:
@@ -32,7 +56,14 @@ jobs:
         run: go version
       - name: Lint
         run: ./task lint
+      - name: Wait redis
+        run: ./bin/redis.sh wait
+      - name: Wait mysql
+        run: ./bin/mysql.sh wait
       - name: Test
         run: ./task test
+      - name: Stop docker services
+        if: ${{ always() }}
+        run: docker compose down
       - name: Build
         run: ./task build
