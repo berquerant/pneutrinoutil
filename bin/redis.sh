@@ -1,7 +1,7 @@
 #!/bin/bash
 
 client() {
-    docker compose exec redis redis-cli "$@"
+    docker compose exec redis redis-cli -h "$REDIS_HOST" "$@"
 }
 
 ping() {

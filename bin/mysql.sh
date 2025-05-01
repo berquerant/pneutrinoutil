@@ -1,7 +1,7 @@
 #!/bin/bash
 
 client() {
-    docker compose exec -it mysql mysql "$@"
+    docker compose exec -it mysql mysql -h"$MYSQL_HOST" "$@"
 }
 
 root() {
@@ -13,7 +13,7 @@ user() {
 }
 
 ping() {
-    docker compose exec -it mysql mysqladmin ping -u"$MYSQL_USER" -p"$MYSQL_PASSWORD"
+    docker compose exec -it mysql mysqladmin ping -uroot -p"$MYSQL_ROOT_PASSWORD"
 }
 
 wait_ping() {
