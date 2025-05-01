@@ -64,6 +64,8 @@ jobs:
         run: ./task lint
       - name: Test
         run: ./task test
+      - name: E2E test
+        run: ./task e2e
       - name: Stop docker services
         if: ${{ always() }}
         run: docker compose down
