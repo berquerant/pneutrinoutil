@@ -61,6 +61,8 @@ jobs:
         run: ./bin/redis.sh wait
       - name: Wait mysql
         run: ./bin/mysql.sh wait
+      - name: Prepare mysql data
+        run: ./task mysql
       - name: Test
         run: ./task test
       - name: Stop docker services
