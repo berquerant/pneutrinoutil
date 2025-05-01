@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/berquerant/execx"
 	"github.com/berquerant/pneutrinoutil/cli/ctl"
@@ -28,11 +29,16 @@ type Generator struct {
 
 func (g Generator) dyldLibraryPath() string {
 	x, _ := filepath.Abs(g.dir.NeutrinoDir())
-	return fmt.Sprintf(
-		"%s/bin:%s",
-		x,
+	xs := []string{}
+	for _, a := range []string{
 		os.Getenv("DYLD_LIBRARY_PATH"),
-	)
+		x + "/bin",
+	} {
+		if a != "" {
+			xs = append(xs, a)
+		}
+	}
+	return strings.Join(xs, ":") + ":"
 }
 
 func (g Generator) env() execx.Env {
@@ -51,7 +57,8 @@ func (g Generator) ExecutableTasks() *execx.ExecutableTasks {
 	tasks := execx.NewTasks().
 		Add(execx.NewTask(
 			"init",
-			fmt.Sprintf(`chmod 755 %[1]s/*
+			fmt.Sprintf(`export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH"
+chmod 755 %[1]s/*
 xattr -dr com.apple.quarantine "%[1]s"
 cp -f "${Score}" "%[2]s/"
 mkdir -p "${ResultDestDir}"`,

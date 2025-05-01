@@ -102,6 +102,8 @@ pneutrinoutil --neutrinoDir /path/to/NEUTRINO --workDir /path/to/install-result 
 		environWhiteList, _ := cmd.Flags().GetStringSlice("env")
 		tasks.Env.Merge(prepareAdditionalEnviron(environWhiteList))
 
+		tasks.Env.Set("PWD", dir.NeutrinoDir())
+
 		if dry, _ := cmd.Flags().GetBool("dry"); dry {
 			slog.Info("generated script should be called on the dir", "dir", dir.NeutrinoDir())
 			fmt.Println(tasks.String())
