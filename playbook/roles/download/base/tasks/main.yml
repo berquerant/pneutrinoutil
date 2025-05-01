@@ -19,3 +19,17 @@
   ansible.builtin.shell:
     cmd: "ditto -V -x -k --sequesterRsrc {{ get_neutrino_result.dest }} {{ dist_dir }}"
   # when: get_neutrino_result.changed
+
+- name: Change permissions
+  ansible.builtin.file:
+    path: "{{ dist_dir }}/{{ item }}"
+    mode: "0755"
+  loop:
+    - "NEUTRINO/Run.sh"
+    - "NEUTRINO/Run_single_phrase.sh"
+    - "NEUTRINO/bin/musicXMLtoLabel"
+    - "NEUTRINO/bin/NEUTRINO"
+    - "NEUTRINO/bin/NSF"
+    - "NEUTRINO/bin/WORLD"
+    - "NEUTRINO/bin/world_f0.bin"
+    - "NEUTRINO/bin/world_spec.bin"
