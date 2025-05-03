@@ -82,7 +82,7 @@ tasks:
   # Prepare mysql data
   mysql:
     cmds:
-      - ./bin/ddl.sh db
+      - ./bin/retry.sh -- ./bin/ddl.sh db
       - ./bin/ddl.sh users
       - ./bin/ddl.sh tables $MYSQL_DATABASE
   # Prepare storage
@@ -114,20 +114,24 @@ tasks:
       - ./bin/redis.sh wait
   # Drop test data
   drop-test-data:
+    deps:
+      - services
     cmds:
-      - ./bin/ddl.sh drop db test
+      - ./bin/retry.sh -- ./bin/ddl.sh drop db test
       - ./bin/ddl.sh drop storage test
       - ./bin/ddl.sh drop kvs "${REDIS_TEST_DB}"
   # Drop persistent data
   drop-data:
     deps:
-      - drop-mysql
-      - drop-storage
-      - drop-redis
+      - services
+    cmds::
+      - task: drop-mysql
+      - task: drop-storage
+      - task: drop-redis
   # Drop mysql data
   drop-mysql:
     cmds:
-      - ./bin/ddl.sh drop db "${MYSQL_DATABASE}"
+      - ./bin/retry.sh -- ./bin/ddl.sh drop db "${MYSQL_DATABASE}"
   # Drop storage data
   drop-storage:
     cmds:
@@ -136,3 +140,7 @@ tasks:
   drop-redis:
     cmds:
       - ./bin/ddl.sh drop kvs "${REDIS_DB}"
+  # Down services
+  down-services:
+    cmds:
+      - ./bin/docker.sh down
