@@ -1,7 +1,7 @@
 #!/bin/bash
 
 client() {
-    docker compose exec -it mysql mysql -h"$MYSQL_HOST" "$@"
+    docker compose exec -it mysql mysql "$@"
 }
 
 root() {
