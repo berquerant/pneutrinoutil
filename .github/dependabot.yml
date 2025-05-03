@@ -20,3 +20,8 @@ updates:
     directory: "/docker/mysql"
     schedule:
       interval: "weekly"
+
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
