@@ -15,6 +15,7 @@ wait_ping() {
             sleep 1
         fi
         if ping ; then
+            echo >&2 "ping redis success!"
             return
         fi
     done

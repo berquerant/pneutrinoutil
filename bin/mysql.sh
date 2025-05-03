@@ -23,6 +23,7 @@ wait_ping() {
             sleep 1
         fi
         if ping ; then
+            echo >&2 "ping mysql success!"
             return
         fi
     done
