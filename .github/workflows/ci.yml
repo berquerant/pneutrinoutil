@@ -61,10 +61,14 @@ jobs:
             }
       - name: Setup Go ${{ matrix.go-version }}
         uses: actions/setup-go@v5.4.0
+        id: setup-go
         with:
           go-version: ${{ matrix.go-version }}
           check-latest: true
           cache-dependency-path: go.sum
+      - name: Download go modules
+        if: ${{ steps.setup-go.outputs.cache-hit != 'true' }}
+        run: go mod download
       - name: Display Go version
         run: go version
       - name: Lint
