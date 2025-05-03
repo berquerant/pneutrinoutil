@@ -15,8 +15,6 @@ My [NEUTRIONO](https://studio-neutrino.com/) utilities.
 ## HTTP server
 
 ``` shell
-docker compose up -d
-./task mysql
 ./task start
 ```
 
@@ -29,6 +27,7 @@ docker compose up -d
 - [uv](https://github.com/astral-sh/uv)
 - [direnv](https://github.com/direnv/direnv)
 - Docker
+- AWS CLI
 
 # Installation
 

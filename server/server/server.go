@@ -43,20 +43,26 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 		return nil, err
 	}
 
+	objectStorage, err := cfg.NewStorage(ctx)
+	if err != nil {
+		_ = db.Close()
+		return nil, err
+	}
+
 	client, err := cfg.NewAsynqClient()
 	if err != nil {
+		_ = db.Close()
 		return nil, err
 	}
 
 	var (
-		objectStorage = infra.NewFileSystem(cfg.StorageDir)
-		objectConn    = infra.NewConn[domain.Object](db)
-		objects       = repo.NewObject(objectConn, objectConn)
-		objectAdmin   = repo.NewObjectAdmin(objects, objects, objectStorage, objectStorage)
-		detailConn    = infra.NewConn[domain.ProcessDetails](db)
-		details       = repo.NewProcessDetails(detailConn, detailConn)
-		processConn   = infra.NewConn[domain.Process](db)
-		processes     = repo.NewProcess(processConn, processConn)
+		objectConn  = infra.NewConn[domain.Object](db)
+		objects     = repo.NewObject(objectConn, objectConn)
+		objectAdmin = repo.NewObjectAdmin(objects, objects, objectStorage, objectStorage)
+		detailConn  = infra.NewConn[domain.ProcessDetails](db)
+		details     = repo.NewProcessDetails(detailConn, detailConn)
+		processConn = infra.NewConn[domain.Process](db)
+		processes   = repo.NewProcess(processConn, processConn)
 	)
 
 	//

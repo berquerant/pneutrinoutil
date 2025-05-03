@@ -1,11 +1,11 @@
 #!/bin/bash
 
 client() {
-    docker compose exec redis redis-cli -h "$REDIS_HOST" "$@"
+    aws s3 "$@"
 }
 
 ping() {
-    client ping >/dev/null 2>&1
+    client ls >/dev/null 2>&1
 }
 
 wait_ping() {

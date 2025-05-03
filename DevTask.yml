@@ -25,16 +25,18 @@ tasks:
       - vuln
       - vet
   test:
+    deps:
+      - prepare-test-data
     cmds:
       # - go tool gotestsum --format pkgname --format-icons hivis -- -cover -race ./...
-      - go test -cover -race $(go list ./... | grep -v tests)
+      - go test -cover -race $(go list ./... | grep -v tests) ${DEBUG+-v -count=1}
   # E2E test
   e2e:
+    deps:
+      - drop-test-data
     cmds:
-      - ./bin/ddl.sh db
-      - ./bin/ddl.sh users
-      - ./bin/ddl.sh tables test
-      - go test -cover -race $(go list ./... | grep tests) -count=1
+      - task: prepare-test-data
+      - go test -cover -race $(go list ./... | grep tests) -count=1 ${DEBUG+-v -count=1}
   vuln:
     cmds:
       - go tool govulncheck ./...
@@ -60,12 +62,77 @@ tasks:
   # Start servers
   start:
     deps:
-      - mysql
+      - prepare-data
     cmds:
       - go tool goreman -b $GOREMAN_BASE_PORT start
+  # Prepare test data
+  prepare-test-data:
+    deps:
+      - prepare-data
+    cmds:
+      - ./bin/ddl.sh tables test
+      - ./bin/ddl.sh storage test
+  # Prepare data
+  prepare-data:
+    deps:
+      - services
+    cmds:
+      - task: mysql
+      - task: storage
   # Prepare mysql data
   mysql:
     cmds:
       - ./bin/ddl.sh db
       - ./bin/ddl.sh users
       - ./bin/ddl.sh tables $MYSQL_DATABASE
+  # Prepare storage
+  storage:
+    cmds:
+      - ./bin/ddl.sh storage
+  # Start docker services
+  services:
+    cmds:
+      - ./bin/docker.sh up -d
+      - task: wait-services
+  # Wait docker services
+  wait-services:
+    deps:
+      - wait-mysql
+      - wait-storage
+      - wait-redis
+  # Wait mysql
+  wait-mysql:
+    cmds:
+      - ./bin/mysql.sh wait
+  # Wait storage
+  wait-storage:
+    cmds:
+      - ./bin/s3.sh wait
+  # Wait redis
+  wait-redis:
+    cmds:
+      - ./bin/redis.sh wait
+  # Drop test data
+  drop-test-data:
+    cmds:
+      - ./bin/ddl.sh drop db test
+      - ./bin/ddl.sh drop storage test
+      - ./bin/ddl.sh drop kvs "${REDIS_TEST_DB}"
+  # Drop persistent data
+  drop-data:
+    deps:
+      - drop-mysql
+      - drop-storage
+      - drop-redis
+  # Drop mysql data
+  drop-mysql:
+    cmds:
+      - ./bin/ddl.sh drop db "${MYSQL_DATABASE}"
+  # Drop storage data
+  drop-storage:
+    cmds:
+      - ./bin/ddl.sh drop storage "${STORAGE_BUCKET}"
+  # Drop redis data
+  drop-redis:
+    cmds:
+      - ./bin/ddl.sh drop kvs "${REDIS_DB}"

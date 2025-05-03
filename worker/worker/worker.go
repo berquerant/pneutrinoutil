@@ -55,8 +55,11 @@ func (s *Server) init(ctx context.Context) error {
 	}
 	s.db = db
 
-	// TODO: use object storage
-	storageObjects := infra.NewFileSystem(s.c.StorageDir)
+	storageObjects, err := s.c.NewStorage(ctx)
+	if err != nil {
+		_ = s.db.Close()
+		return err
+	}
 	objectConn := infra.NewConn[domain.Object](db)
 	objectTable := repo.NewObject(objectConn, objectConn)
 	s.objects = repo.NewObjectAdmin(objectTable, objectTable, storageObjects, storageObjects)

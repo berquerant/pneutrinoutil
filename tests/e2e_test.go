@@ -48,9 +48,10 @@ func TestE2E(t *testing.T) {
 		serverHost    = "0.0.0.0"
 		serverPort    = "9101"
 		storageBucket = "test"
-		redisDB       = "10"
 	)
+
 	var (
+		redisDB  = os.Getenv("REDIS_TEST_DB")
 		redisDSN = fmt.Sprintf("redis://%s:%s/%s",
 			os.Getenv("REDIS_HOST"),
 			os.Getenv("REDIS_PORT"),
@@ -61,7 +62,6 @@ func TestE2E(t *testing.T) {
 			os.Getenv("MYSQL_PORT"),
 		)
 
-		storageDir    = filepath.Join(t.TempDir(), "storage")
 		workerWorkDir = filepath.Join(t.TempDir(), "worker_workspace")
 	)
 
@@ -74,7 +74,7 @@ func TestE2E(t *testing.T) {
 		workerBin,
 		"--redisDSN", redisDSN,
 		"--mysqlDSN", mysqlDSN,
-		"--storageDir", storageDir,
+		"--storageS3",
 		"--storageBucket", storageBucket,
 		"--pneutrinoutil", mockCliBin,
 		"--workDir", workerWorkDir,
@@ -92,7 +92,7 @@ func TestE2E(t *testing.T) {
 		serverBin,
 		"--redisDSN", redisDSN,
 		"--mysqlDSN", mysqlDSN,
-		"--storageDir", storageDir,
+		"--storageS3",
 		"--storageBucket", storageBucket,
 		"--host", serverHost,
 		"--port", serverPort,

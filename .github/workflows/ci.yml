@@ -22,7 +22,22 @@ env:
   REDIS_VERSION: "7.4.3"
   REDIS_HOST: "127.0.0.1"
   REDIS_PORT: "16379"
+  REDIS_TEST_DB: "10"
   REDIS_DSN: "redis://${REDIS_HOST}:${REDIS_PORT}"
+  MINIO_VERSION: "RELEASE.2025-04-22T22-12-26Z"
+  MINIO_HOST: "127.0.0.1"
+  MINIO_PORT: "19000"
+  MINIO_CONSOLE_PORT: "19001"
+  MINIO_ROOT_USER: "minio"
+  MINIO_ROOT_PASSWORD: "miniopassword"
+  MINIO_SITE_REGION: "us-east-1"
+  AWS_ACCESS_KEY_ID: "${MINIO_ROOT_USER}"
+  AWS_SECRET_ACCESS_KEY: "${MINIO_ROOT_PASSWORD}"
+  AWS_DEFAULT_REGION: "${MINIO_SITE_REGION}"
+  AWS_ENDPOINT_URL: "http://${MINIO_HOST}:${MINIO_PORT}"
+  AWS_USE_PATH_STYLE_ENDPOINT: "true"
+  AWS_S3_DISABLE_HTTPS: "true"
+  STORAGE_BUCKET: "pneutrinoutil"
 
 jobs:
   build:
@@ -44,14 +59,6 @@ jobs:
                 "https://mirror.gcr.io"
               ]
             }
-      - name: Start docker services
-        run: docker compose up -d
-      - name: Wait redis
-        run: ./bin/redis.sh wait
-      - name: Wait mysql
-        run: ./bin/mysql.sh wait
-      - name: Prepare mysql data
-        run: ./task mysql
       - name: Setup Go ${{ matrix.go-version }}
         uses: actions/setup-go@v5.4.0
         with:
