@@ -1,7 +1,9 @@
 #!/bin/bash
 
+readonly d="$(cd "$(dirname "$0")" || exit; pwd)"
+
 client() {
-    docker compose exec redis redis-cli -h "$REDIS_HOST" "$@"
+    "${d}/docker.sh" exec redis redis-cli -h "$REDIS_HOST" "$@"
 }
 
 ping() {
