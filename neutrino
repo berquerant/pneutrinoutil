@@ -7,7 +7,7 @@ bin="./dist/NEUTRINO/bin"
 
 if [ -z "$target" ] ; then
     echo "Require target:"
-    ls -1 "$bin" | grep -v "dylib"
+    find ./dist/NEUTRINO/bin -maxdepth 1 -type f -not -name "*.dylib" -print0 | xargs -0 basename
     exit 1
 fi
 

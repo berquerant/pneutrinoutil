@@ -90,3 +90,16 @@ jobs:
         run: docker compose down
       - name: Build
         run: ./task build
+
+  shell:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+      - name: Enable Shellcheck problem matcher
+        run: echo "::add-matcher::.github/shellcheck-matcher.json"
+      - name: Shellcheck
+        run: |
+          .github/bin/shellcheck.sh
+          echo "::remove-matcher owner=shellcheck-matcher::"

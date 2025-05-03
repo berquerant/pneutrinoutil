@@ -12,18 +12,18 @@ database() {
 
 init_db() {
     log "init_db"
-    database -e "$(cat ${d}/ddl/mysql/db.sql)"
+    database -e "$(cat "${d}/ddl/mysql/db.sql")"
 }
 
 init_tables() {
     local -r db="$1"
     log "init_tables ${db}"
-    database "$db" -e "$(cat ${d}/ddl/mysql/tables.sql)"
+    database "$db" -e "$(cat "${d}/ddl/mysql/tables.sql")"
 }
 
 init_users() {
     log "init_users"
-    database -e "$(cat ${d}/ddl/mysql/users.sql)"
+    database -e "$(cat "${d}/ddl/mysql/users.sql")"
 }
 
 storage() {

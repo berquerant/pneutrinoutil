@@ -1,0 +1,3 @@
+shell=bash
+# not specified as input
+disable=SC1091,SC2155
