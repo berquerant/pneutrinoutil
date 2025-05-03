@@ -96,8 +96,12 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 				"error=${error}",
 				"latency=${latency}",
 				"latency_human=${latency_human}",
-				"bytes_in=${bytes_in}",
-				"bytes_out=${bytes_out}",
+			}
+			if cfg.Debug {
+				entries = append(entries,
+					"bytes_in=${bytes_in}",
+					"bytes_out=${bytes_out}",
+				)
 			}
 			return strings.Join(entries, "\t")
 		}(),
