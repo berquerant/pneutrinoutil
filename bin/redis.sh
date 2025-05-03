@@ -5,6 +5,7 @@ client() {
 }
 
 ping() {
+    echo >&2 "ping redis"
     client ping >/dev/null 2>&1
 }
 

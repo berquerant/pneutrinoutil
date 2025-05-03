@@ -13,6 +13,7 @@ user() {
 }
 
 ping() {
+    echo >&2 "ping mysql"
     docker compose exec -it mysql mysqladmin ping -uroot -p"$MYSQL_ROOT_PASSWORD" >/dev/null 2>&1
 }
 
