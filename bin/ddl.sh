@@ -52,7 +52,7 @@ kvs() {
 drop_db() {
     local -r db="$1"
     log "drop_db ${db}"
-    database -e "drop database ${db};"
+    database -e "drop database if exists ${db};"
 }
 
 drop_storage() {
