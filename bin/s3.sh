@@ -6,7 +6,7 @@ client() {
 
 ping() {
     echo >&2 "ping s3"
-    client ls >/dev/null 2>&1
+    client ls
 }
 
 wait_ping() {
