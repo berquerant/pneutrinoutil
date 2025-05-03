@@ -28,7 +28,7 @@ tasks:
     deps:
       - prepare-test-data
     cmds:
-      # - go tool gotestsum --format pkgname --format-icons hivis -- -cover -race ./...
+      # - go tool gotestsum --format pkgname --format-icons hivis -- -cover -race $(go list ./... | grep -v tests) ${DEBUG+-v -count=1}
       - go test -cover -race $(go list ./... | grep -v tests) ${DEBUG+-v -count=1}
   # E2E test
   e2e:
@@ -36,7 +36,8 @@ tasks:
       - drop-test-data
     cmds:
       - task: prepare-test-data
-      - go test -cover -race $(go list ./... | grep tests) -count=1 ${DEBUG+-v -count=1}
+      # - go tool gotestsum --format pkgname --format-icons hivis -- -cover -race $(go list ./... | grep tests) -count=1 ${DEBUG+-v}
+      - go test -cover -race $(go list ./... | grep tests) -count=1 ${DEBUG+-v}
   vuln:
     cmds:
       - go tool govulncheck ./...
