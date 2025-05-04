@@ -55,16 +55,21 @@ type S3 struct {
 }
 
 func (s *S3) CreateObject(ctx context.Context, req *CreateObjectRequest) (*CreateObjectResponse, error) {
-	buf, err := io.ReadAll(req.Object.Blob)
+	if _, err := req.Object.Blob.Seek(0, io.SeekStart); err != nil {
+		return nil, fmt.Errorf("%w: s3 create object bucket=%s, path=%s", err, req.Object.Bucket, req.Object.Path)
+	}
+	sizeBytes, err := req.Object.Blob.Seek(0, io.SeekEnd)
 	if err != nil {
 		return nil, fmt.Errorf("%w: s3 create object bucket=%s, path=%s", err, req.Object.Bucket, req.Object.Path)
 	}
-	sizeBytes := len(buf)
+	if _, err := req.Object.Blob.Seek(0, io.SeekStart); err != nil {
+		return nil, fmt.Errorf("%w: s3 create object bucket=%s, path=%s", err, req.Object.Bucket, req.Object.Path)
+	}
 
 	if _, err := s.client.PutObject(ctx, &s3.PutObjectInput{
 		Bucket: ptr.To(req.Object.Bucket),
 		Key:    ptr.To(req.Object.Path),
-		Body:   bytes.NewReader(buf), // Body should be seekable (implement io.Seeker)
+		Body:   req.Object.Blob, // Body should be seekable (implement io.Seeker)
 	}); err != nil {
 		return nil, fmt.Errorf("%w: s3 create object bucket=%s, path=%s", err, req.Object.Bucket, req.Object.Path)
 	}
@@ -91,7 +96,7 @@ func (s *S3) GetObject(ctx context.Context, req *GetObjectRequest) (*domain.Stor
 	return &domain.StorageObject{
 		Bucket:    req.Bucket,
 		Path:      req.Path,
-		Blob:      &buf,
+		Blob:      bytes.NewReader(buf.Bytes()),
 		SizeBytes: uint64(sizeBytes),
 	}, nil
 }
@@ -125,7 +130,7 @@ func (f *FileSystem) GetObject(_ context.Context, req *GetObjectRequest) (*domai
 	return &domain.StorageObject{
 		Bucket:    req.Bucket,
 		Path:      req.Path,
-		Blob:      &buf,
+		Blob:      bytes.NewReader(buf.Bytes()),
 		SizeBytes: uint64(sizeBytes),
 	}, nil
 }

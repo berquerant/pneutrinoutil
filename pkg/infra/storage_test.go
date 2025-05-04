@@ -81,15 +81,15 @@ func testObject(t *testing.T, ctx context.Context, s infra.Object) {
 		assert.NotNil(t, err)
 	})
 	t.Run("create", func(t *testing.T) {
-		buf := bytes.NewBufferString(content)
-		_, err := s.CreateObject(ctx, &infra.CreateObjectRequest{
+		got, err := s.CreateObject(ctx, &infra.CreateObjectRequest{
 			Object: &domain.StorageObject{
 				Bucket: bucket,
 				Path:   path,
-				Blob:   buf,
+				Blob:   bytes.NewReader([]byte(content)),
 			},
 		})
 		assert.Nil(t, err)
+		assert.Equal(t, uint64(len([]byte(content))), got.SizeBytes)
 	})
 	t.Run("get", func(t *testing.T) {
 		got, err := s.GetObject(ctx, &infra.GetObjectRequest{
@@ -99,6 +99,7 @@ func testObject(t *testing.T, ctx context.Context, s infra.Object) {
 		if !assert.Nil(t, err) {
 			return
 		}
+		assert.Equal(t, uint64(len([]byte(content))), got.SizeBytes)
 		buf, err := io.ReadAll(got.Blob)
 		if !assert.Nil(t, err) {
 			return

@@ -326,7 +326,7 @@ func (p *PneutrinoutilProcessor) uploadResults(ctx context.Context, resultDir, r
 	return r.ID, nil
 }
 
-func (p *PneutrinoutilProcessor) writeObject(ctx context.Context, path string, blob io.Reader) (*domain.Object, error) {
+func (p *PneutrinoutilProcessor) writeObject(ctx context.Context, path string, blob io.ReadSeeker) (*domain.Object, error) {
 	typ := domain.ObjectTypeDir
 	if blob != nil {
 		typ = domain.ObjectTypeFile

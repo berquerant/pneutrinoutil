@@ -124,7 +124,7 @@ func (s *Start) NewProcess(c echo.Context) *StatusError {
 		Type:   domain.ObjectTypeFile,
 		Bucket: s.bucket,
 		Path:   filepath.Join(s.path, rid, score.Name),
-		Blob:   bytes.NewBuffer(score.Blob),
+		Blob:   bytes.NewReader(score.Blob),
 	})
 	if err != nil {
 		return NewStatusError(http.StatusInternalServerError, err, "failed to upload score")

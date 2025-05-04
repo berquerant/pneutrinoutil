@@ -22,7 +22,7 @@ type WriteObjectRequest struct {
 	Type   domain.ObjectType
 	Bucket string
 	Path   string
-	Blob   io.Reader
+	Blob   io.ReadSeeker
 }
 
 type WriteObjectResponse interface {

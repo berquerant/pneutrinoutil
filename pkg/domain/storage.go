@@ -5,6 +5,6 @@ import "io"
 type StorageObject struct {
 	Bucket    string
 	Path      string
-	Blob      io.Reader
+	Blob      io.ReadSeeker
 	SizeBytes uint64
 }
