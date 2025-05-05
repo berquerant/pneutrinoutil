@@ -123,35 +123,16 @@ func (p *PneutrinoutilProcessor) ProcessStart(ctx context.Context, t *asynq.Task
 	}
 
 	var processSucceed bool
-	updateProcessStatus := func() {
-		if p.Webhooker != nil {
-			defer func() {
-				if err := p.Webhooker.Webhook(ctx, &PneutrinoutilStartWebhookParams{
-					Type:      TypePneutrinoutilStart,
-					RequestID: payload.RequestID,
-					OK:        processSucceed,
-				}); err != nil {
-					alog.L().Error("webhook failed", attrs(logx.Err(err))...)
-					return
-				}
-			}()
+	defer func() {
+		if err := p.updateProcessStatus(ctx, proc.ID, time.Now(), processSucceed); err != nil {
+			alog.L().Error("update process status", attrs("succeed", processSucceed, logx.Err(err))...)
+		} else {
+			alog.L().Info("update process status", attrs("succeed", processSucceed)...)
 		}
-
-		status := ptr.To(domain.ProcessStatusFailed)
-		if processSucceed {
-			status = ptr.To(domain.ProcessStatusSucceed)
+		if err := p.webhook(ctx, payload.RequestID, processSucceed); err != nil {
+			alog.L().Error("webhook failed", attrs(logx.Err(err))...)
 		}
-		if _, err := p.ProcessUpdater.UpdateProcess(ctx, &repo.UpdateProcessRequest{
-			ID:          proc.ID,
-			Status:      status,
-			CompletedAt: ptr.To(time.Now()),
-		}); err != nil {
-			alog.L().Error("update process status", attrs("status", int(*status), logx.Err(err))...)
-			return
-		}
-		alog.L().Info("update process status", attrs("status", int(*status))...)
-	}
-	defer updateProcessStatus()
+	}()
 
 	alog.L().Info("get process details", attrs("id", proc.DetailsID)...)
 	details, err := p.ProcessDetailsGetter.GetProcessDetails(ctx, proc.DetailsID)
@@ -195,6 +176,7 @@ func (p *PneutrinoutilProcessor) ProcessStart(ctx context.Context, t *asynq.Task
 		ID:      details.ID,
 		Command: ptr.To(strings.Join(args, " ")),
 	}); err != nil {
+		_ = logFile.Close()
 		return withBaseErr(err, "failed to update process details(%d) command", details.ID)
 	}
 
@@ -364,4 +346,28 @@ func (p *PneutrinoutilProcessor) findResultDir(workDir string) (string, error) {
 		return "", fmt.Errorf("failed to read result internal dir: want single dir")
 	}
 	return filepath.Join(workDir, "result", d.Name()), nil
+}
+
+func (p *PneutrinoutilProcessor) updateProcessStatus(ctx context.Context, processID int, now time.Time, processSucceed bool) error {
+	status := ptr.To(domain.ProcessStatusFailed)
+	if processSucceed {
+		status = ptr.To(domain.ProcessStatusSucceed)
+	}
+	_, err := p.ProcessUpdater.UpdateProcess(ctx, &repo.UpdateProcessRequest{
+		ID:          processID,
+		Status:      status,
+		CompletedAt: ptr.To(now),
+	})
+	return err
+}
+
+func (p *PneutrinoutilProcessor) webhook(ctx context.Context, requestID string, processSucceed bool) error {
+	if p.Webhooker == nil {
+		return nil
+	}
+	return p.Webhooker.Webhook(ctx, &PneutrinoutilStartWebhookParams{
+		Type:      TypePneutrinoutilStart,
+		RequestID: requestID,
+		OK:        processSucceed,
+	})
 }
