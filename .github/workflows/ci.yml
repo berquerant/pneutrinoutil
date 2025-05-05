@@ -89,9 +89,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
-      - name: Set env vars
-        run: |
-          echo "GOLANGCI_LINT_CACHE=${GITHUB_WORKSPACE}/.cache/golangci-lint" >> $GITHUB_ENV
       - name: Setup Go
         uses: actions/setup-go@v5.4.0
         id: setup-go
@@ -102,12 +99,6 @@ jobs:
       - name: Download go modules
         if: ${{ steps.setup-go.outputs.cache-hit != 'true' }}
         run: go mod download
-      - name: Cache golangci-lint
-        uses: actions/cache@v4
-        with:
-          key: go-lint
-          path: |
-            ${GOLANGCI_LINT_CACHE}
       - name: Lint
         run: ./task lint
 
