@@ -113,7 +113,7 @@ func ReadFormFile(c echo.Context, name string, maxBytes int64) (*ReadFromFileRes
 			fmt.Sprintf("failed to open form file: %s", fh.Filename),
 		)
 	}
-	defer src.Close()
+	defer func() { _ = src.Close() }()
 
 	blob, err := io.ReadAll(src)
 	if err != nil {

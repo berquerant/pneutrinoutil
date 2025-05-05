@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/berquerant/pneutrinoutil/cli/cmd"
 	cli "github.com/berquerant/pneutrinoutil/cli/cmd"
 	"github.com/berquerant/pneutrinoutil/pkg/logx"
 	"github.com/berquerant/pneutrinoutil/pkg/pathx"
@@ -18,7 +17,7 @@ import (
 )
 
 func init() {
-	cmd.InitFlags(rootCmd)
+	cli.InitFlags(rootCmd)
 }
 
 var rootCmd = &cobra.Command{
@@ -65,7 +64,7 @@ var rootCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		defer score.Close()
+		defer func() { _ = score.Close() }()
 
 		// create result directory
 		workDir, _ := cmd.Flags().GetString("workDir")
@@ -82,7 +81,7 @@ var rootCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		defer configFile.Close()
+		defer func() { _ = configFile.Close() }()
 		configYaml, err := yaml.Marshal(c)
 		if err != nil {
 			return err
@@ -97,7 +96,7 @@ var rootCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		defer resultScore.Close()
+		defer func() { _ = resultScore.Close() }()
 		if _, err := io.Copy(resultScore, score); err != nil {
 			return err
 		}
@@ -108,13 +107,13 @@ var rootCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		wav.Close()
+		_ = wav.Close()
 		worldWavPath := filepath.Join(resultDir, c.Basename()+"_world.wav")
 		worldWav, err := create("world_wav", worldWavPath)
 		if err != nil {
 			return err
 		}
-		worldWav.Close()
+		_ = worldWav.Close()
 
 		return nil
 	},

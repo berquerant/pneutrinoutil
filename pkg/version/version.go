@@ -11,6 +11,6 @@ var (
 )
 
 func Write(w io.Writer) {
-	fmt.Fprintf(w, "Version: %s\n", Version)
-	fmt.Fprintf(w, "Revision: %s\n", Revision)
+	_, _ = fmt.Fprintf(w, "Version: %s\n", Version)
+	_, _ = fmt.Fprintf(w, "Revision: %s\n", Revision)
 }

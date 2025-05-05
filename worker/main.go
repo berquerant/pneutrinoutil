@@ -39,10 +39,10 @@ func main() {
 	err = c.Init()
 	if err != nil {
 		alog.L().Error("invalid config", logx.Err(err))
-		c.Close()
+		_ = c.Close()
 		os.Exit(1)
 	}
-	defer c.Close()
+	defer func() { _ = c.Close() }()
 
 	alog.Setup(os.Stdout, c.SLogLevel())
 	run(context.Background(), c)

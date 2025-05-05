@@ -2,7 +2,6 @@ package repo
 
 import (
 	"context"
-	"crypto/sha256"
 	"fmt"
 	"time"
 
@@ -56,11 +55,7 @@ func (*Object) scan(f func(...any) error) (*domain.Object, error) {
 		sizeBytes uint64
 		createdAt time.Time
 		updatedAt time.Time
-		// bucketPathSha256 []byte
 	)
-	// if err := f(&id, &typeId, &bucket, &path, &sizeBytes, &createdAt, &updatedAt, &bucketPathSha256); err != nil {
-	// 	return nil, err
-	// }
 	if err := f(&id, &typeId, &bucket, &path, &sizeBytes, &createdAt, &updatedAt); err != nil {
 		return nil, err
 	}
@@ -72,20 +67,13 @@ func (*Object) scan(f func(...any) error) (*domain.Object, error) {
 		SizeBytes: sizeBytes,
 		CreatedAt: createdAt,
 		UpdatedAt: updatedAt,
-		// BucketPathSha256: bucketPathSha256,
 	}, nil
-}
-
-func (*Object) bucketPathSha256(bucket, path string) []byte {
-	x := sha256.Sum256([]byte(bucket + "___" + path))
-	return x[:]
 }
 
 func (s *Object) GetObjectByPath(ctx context.Context, bucket, path string) (*domain.Object, error) {
 	// hash := s.bucketPathSha256(bucket, path)
 	alog.L().Debug("GetObjectByPath", "bucket", bucket, "path", path)
 	r, err := s.query.Query(ctx, &infra.QueryRequest[domain.Object]{
-		// Query: "select id, type_id, bucket, path, size_bytes, created_at, updated_at, bucket_path_sha256 from objects where bucket_path_sha256 = ? and bucket = ? and path = ?;",
 		Query: "select id, type_id, bucket, path, size_bytes, created_at, updated_at from objects where bucket = ? and path = ?;",
 		Args: []any{
 			// hash,

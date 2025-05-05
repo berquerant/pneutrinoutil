@@ -86,7 +86,7 @@ func (s *S3) GetObject(ctx context.Context, req *GetObjectRequest) (*domain.Stor
 	if err != nil {
 		return nil, fmt.Errorf("%w: s3 get object bucket=%s, path=%s", err, req.Bucket, req.Path)
 	}
-	defer r.Body.Close()
+	defer func() { _ = r.Body.Close() }()
 
 	var buf bytes.Buffer
 	sizeBytes, err := io.Copy(&buf, r.Body)
@@ -122,7 +122,7 @@ func (f *FileSystem) GetObject(_ context.Context, req *GetObjectRequest) (*domai
 	if err != nil {
 		return nil, fmt.Errorf("%w: fileystsem get object bucket=%s, path=%s", err, req.Bucket, req.Path)
 	}
-	defer fp.Close()
+	defer func() { _ = fp.Close() }()
 	sizeBytes, err := io.Copy(&buf, fp)
 	if err != nil {
 		return nil, fmt.Errorf("%w: filesystem get object bucket=%s, path=%s", err, req.Bucket, req.Path)
@@ -145,7 +145,7 @@ func (f *FileSystem) CreateObject(_ context.Context, req *CreateObjectRequest) (
 	if err != nil {
 		return nil, fmt.Errorf("%w: filesystem create object bucket=%s, path=%s", err, req.Object.Bucket, req.Object.Path)
 	}
-	defer fp.Close()
+	defer func() { _ = fp.Close() }()
 
 	sizeBytes, err := io.Copy(fp, req.Object.Blob)
 	if err != nil {

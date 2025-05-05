@@ -50,13 +50,13 @@ func (c *Conn[T]) Query(ctx context.Context, req *QueryRequest[T]) (*QueryRespon
 	if err != nil {
 		return nil, err
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	rows, err := conn.QueryContext(ctx, req.Query, req.Args...)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var items []*T
 	for rows.Next() {
@@ -144,7 +144,7 @@ func (c *Conn[T]) Exec(ctx context.Context, req *ExecRequest) (*ExecResponse, er
 	if err != nil {
 		return nil, err
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	tx, err := conn.BeginTx(ctx, &sql.TxOptions{
 		Isolation: sql.LevelRepeatableRead,

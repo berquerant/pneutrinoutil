@@ -24,6 +24,7 @@ tasks:
     deps:
       - vuln
       - vet
+      - golangci-lint
   test:
     deps:
       - prepare-test-data
@@ -44,6 +45,10 @@ tasks:
   vet:
     cmds:
       - go vet ./...
+  golangci-lint:
+    cmds:
+      - go tool golangci-lint config verify -v
+      - go tool golangci-lint run
   # Go generate
   generate:
     # deps:

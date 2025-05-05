@@ -86,7 +86,7 @@ func (p *PneutrinoutilProcessor) ProcessStart(ctx context.Context, t *asynq.Task
 	)
 
 	alog.L().Info("got task", attrs()...)
-	alog.L().Debug("got task", attrs("payload", fmt.Sprintf("%s", t.Payload()))...)
+	alog.L().Debug("got task", attrs("payload", string(t.Payload()))...)
 	var payload PneutrinoutilStartPayload
 	if err := json.Unmarshal(t.Payload(), &payload); err != nil {
 		return errors.Join(baseErr, err)
@@ -156,7 +156,7 @@ func (p *PneutrinoutilProcessor) ProcessStart(ctx context.Context, t *asynq.Task
 		if err != nil {
 			return err
 		}
-		defer f.Close()
+		defer func() { _ = f.Close() }()
 		_, err = io.Copy(f, score.Blob)
 		return err
 	}(); err != nil {
@@ -267,7 +267,7 @@ func (p *PneutrinoutilProcessor) uploadLog(ctx context.Context, logPath, resultO
 	if err != nil {
 		return 0, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	path := filepath.Join(resultObjectPath, filepath.Base(logPath))
 	r, err := p.writeObject(ctx, path, f)

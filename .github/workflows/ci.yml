@@ -43,10 +43,6 @@ jobs:
   build:
     timeout-minutes: 10
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        go-version:
-          - "1.24"
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
@@ -67,20 +63,16 @@ jobs:
                 "https://mirror.gcr.io"
               ]
             }
-      - name: Setup Go ${{ matrix.go-version }}
+      - name: Setup Go
         uses: actions/setup-go@v5.4.0
         id: setup-go
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version: "1.24"
           check-latest: true
           cache-dependency-path: go.sum
       - name: Download go modules
         if: ${{ steps.setup-go.outputs.cache-hit != 'true' }}
         run: go mod download
-      - name: Display Go version
-        run: go version
-      - name: Lint
-        run: ./task lint
       - name: Test
         run: ./task test
       - name: E2E test
@@ -91,7 +83,26 @@ jobs:
       - name: Build
         run: ./task build
 
-  shell:
+  go-lint:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+      - name: Setup Go
+        uses: actions/setup-go@v5.4.0
+        id: setup-go
+        with:
+          go-version: "1.24"
+          check-latest: true
+          cache-dependency-path: go.sum
+      - name: Download go modules
+        if: ${{ steps.setup-go.outputs.cache-hit != 'true' }}
+        run: go mod download
+      - name: Lint
+        run: ./task lint
+
+  shell-lint:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:

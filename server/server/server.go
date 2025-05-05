@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -70,7 +69,7 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 	//
 	l, ok := e.Logger.(*log.Logger)
 	if !ok {
-		panic(fmt.Sprintf("echo.Logger must be log.Logger"))
+		panic("echo.Logger must be log.Logger")
 	}
 	l.SetLevel(cfg.EchoLogLevel())
 	//
