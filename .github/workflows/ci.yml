@@ -86,6 +86,8 @@ jobs:
   go-lint:
     timeout-minutes: 5
     runs-on: ubuntu-latest
+    env:
+      GOLANGCI_LINT_CACHE: ".cache/golangci-lint"
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
@@ -99,6 +101,12 @@ jobs:
       - name: Download go modules
         if: ${{ steps.setup-go.outputs.cache-hit != 'true' }}
         run: go mod download
+      - name: Cache golangci-lint
+        uses: actions/cache@v4
+        with:
+          key: go-lint
+          path: |
+            ${GOLANGCI_LINT_CACHE}
       - name: Lint
         run: ./task lint
 
