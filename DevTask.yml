@@ -11,6 +11,7 @@ tasks:
     deps:
       - build-cli
       - build-server
+      - build-worker
   build-cli:
     cmds:
       - ./bin/build.sh -o dist/pneutrinoutil cli/main.go
