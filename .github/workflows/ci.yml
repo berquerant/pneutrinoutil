@@ -86,11 +86,12 @@ jobs:
   go-lint:
     timeout-minutes: 5
     runs-on: ubuntu-latest
-    env:
-      GOLANGCI_LINT_CACHE: ".cache/golangci-lint"
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
+      - name: Set env vars
+        run: |
+          echo "GOLANGCI_LINT_CACHE=${GITHUB_WORKSPACE}/.cache/golangci-lint" >> $GITHUB_ENV
       - name: Setup Go
         uses: actions/setup-go@v5.4.0
         id: setup-go
