@@ -34,7 +34,7 @@ My [NEUTRIONO](https://studio-neutrino.com/) utilities.
 Prepare libraries.
 
 ``` shell
-uv sync
+uv sync --frozen
 go mod download
 ```
 
