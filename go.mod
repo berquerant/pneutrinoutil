@@ -11,6 +11,7 @@ require (
 	github.com/berquerant/execx v0.11.0
 	github.com/berquerant/structconfig v0.5.0
 	github.com/go-sql-driver/mysql v1.9.2
+	github.com/goccy/go-yaml v1.18.0
 	github.com/google/uuid v1.6.0
 	github.com/hibiken/asynq v0.25.1
 	github.com/labstack/echo/v4 v4.13.3
@@ -20,7 +21,6 @@ require (
 	github.com/stretchr/testify v1.10.0
 	github.com/swaggo/echo-swagger v1.4.1
 	github.com/swaggo/swag v1.16.4
-	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -292,6 +292,7 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gotest.tools/gotestsum v1.12.0 // indirect
 	honnef.co/go/tools v0.6.1 // indirect
 	mvdan.cc/gofumpt v0.8.0 // indirect

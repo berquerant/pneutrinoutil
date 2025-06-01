@@ -11,9 +11,9 @@ import (
 	cli "github.com/berquerant/pneutrinoutil/cli/cmd"
 	"github.com/berquerant/pneutrinoutil/pkg/logx"
 	"github.com/berquerant/pneutrinoutil/pkg/pathx"
+	"github.com/goccy/go-yaml"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	"gopkg.in/yaml.v3"
 )
 
 func init() {

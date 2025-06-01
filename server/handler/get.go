@@ -13,8 +13,8 @@ import (
 	"github.com/berquerant/pneutrinoutil/pkg/echox"
 	"github.com/berquerant/pneutrinoutil/pkg/logx"
 	"github.com/berquerant/pneutrinoutil/pkg/repo"
+	"github.com/goccy/go-yaml"
 	"github.com/labstack/echo/v4"
-	"gopkg.in/yaml.v3"
 )
 
 func NewGet(

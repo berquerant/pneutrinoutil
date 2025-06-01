@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/berquerant/pneutrinoutil/cli/ctl"
+	"github.com/goccy/go-yaml"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v3"
 )
 
 func init() {

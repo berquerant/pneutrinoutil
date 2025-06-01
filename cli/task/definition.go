@@ -8,7 +8,7 @@ import (
 
 	"github.com/berquerant/execx"
 	"github.com/berquerant/pneutrinoutil/cli/ctl"
-	"gopkg.in/yaml.v3"
+	"github.com/goccy/go-yaml"
 )
 
 func NewGenerator(dir *Dir, c *ctl.Config, play, hook string) *Generator {

@@ -10,8 +10,8 @@ import (
 
 	"github.com/berquerant/pneutrinoutil/cli/ctl"
 	"github.com/berquerant/pneutrinoutil/cli/task"
+	"github.com/goccy/go-yaml"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v3"
 )
 
 func NewDir(cmd *cobra.Command, now time.Time) *task.Dir {
