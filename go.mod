@@ -4,7 +4,7 @@ go 1.24.2
 
 require (
 	al.essio.dev/pkg/shellescape v1.6.0
-	github.com/aws/aws-sdk-go-v2 v1.36.3
+	github.com/aws/aws-sdk-go-v2 v1.36.4
 	github.com/aws/aws-sdk-go-v2/config v1.29.15
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.80.1
 	github.com/aws/smithy-go v1.22.3
