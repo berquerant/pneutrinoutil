@@ -7,7 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.36.4
 	github.com/aws/aws-sdk-go-v2/config v1.29.16
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.80.2
-	github.com/aws/smithy-go v1.22.3
+	github.com/aws/smithy-go v1.22.4
 	github.com/berquerant/execx v0.11.0
 	github.com/berquerant/structconfig v0.5.0
 	github.com/go-sql-driver/mysql v1.9.3
