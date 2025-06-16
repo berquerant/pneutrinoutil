@@ -10,7 +10,7 @@ require (
 	github.com/aws/smithy-go v1.22.3
 	github.com/berquerant/execx v0.11.0
 	github.com/berquerant/structconfig v0.5.0
-	github.com/go-sql-driver/mysql v1.9.2
+	github.com/go-sql-driver/mysql v1.9.3
 	github.com/goccy/go-yaml v1.18.0
 	github.com/google/uuid v1.6.0
 	github.com/hibiken/asynq v0.25.1
