@@ -8,8 +8,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.29.17
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.80.2
 	github.com/aws/smithy-go v1.22.4
-	github.com/berquerant/execx v0.11.1
-	github.com/berquerant/structconfig v0.5.0
+	github.com/berquerant/execx v0.11.0
+	github.com/berquerant/structconfig v0.5.1
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/goccy/go-yaml v1.18.0
 	github.com/google/uuid v1.6.0
