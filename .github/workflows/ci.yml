@@ -38,6 +38,7 @@ env:
   AWS_USE_PATH_STYLE_ENDPOINT: "true"
   AWS_S3_DISABLE_HTTPS: "true"
   STORAGE_BUCKET: "pneutrinoutil"
+  GO_ARCH_LINT_VERSION: "v1.12.0"
 
 jobs:
   build:

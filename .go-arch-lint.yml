@@ -1,0 +1,228 @@
+version: 3
+workdir: .
+allow:
+  # when deepScan enabled, logx causes:
+  # Dependency server-handler -\-> logx not allowed
+  deepScan: false
+excludeFiles:
+  - "^.*_test\\.go$"
+  - "^.*\/test\/.*$"
+
+vendors:
+  shellescape:
+    in: al.essio.dev/pkg/shellescape
+  aws:
+    in: github.com/aws/**
+  execx:
+    in: github.com/berquerant/execx
+  structconfig:
+    in: github.com/berquerant/structconfig
+  mysql:
+    in: github.com/go-sql-driver/mysql
+  yaml:
+    in: github.com/goccy/go-yaml
+  google-uuid:
+    in: github.com/google/uuid
+  asynq:
+    in: github.com/hibiken/asynq
+  echo:
+    in:
+      - github.com/labstack/echo/**
+      - github.com/labstack/gommon/*
+  cobra:
+    in: github.com/spf13/*
+  testify:
+    in: github.com/stretchr/testify
+  swagger:
+    in: github.com/swaggo/*
+
+components:
+  #
+  # pkg
+  #
+  alog:
+    in: pkg/alog
+  domain:
+    in: pkg/domain
+  echox:
+    in: pkg/echox
+  infra:
+    in: pkg/infra
+  logx:
+    in: pkg/logx
+  pathx:
+    in: pkg/pathx
+  ptr:
+    in: pkg/ptr
+  repo:
+    in: pkg/repo
+  set:
+    in: pkg/set
+  task:
+    in: pkg/task
+  uuid:
+    in: pkg/uuid
+  version:
+    in: pkg/version
+  #
+  # cli
+  #
+  cli-cmd:
+    in: cli/cmd
+  cli-ctl:
+    in: cli/ctl
+  cli-task:
+    in: cli/task
+  cli:
+    in: cli
+  #
+  # mockcli
+  #
+  mockcli:
+    in: mockcli
+  #
+  # server
+  #
+  server-config:
+    in: server/config
+  server-docs:
+    in: server/docs
+  server-handler:
+    in: server/handler
+  server-server:
+    in: server/server
+  server:
+    in: server
+  #
+  # worker
+  #
+  worker-config:
+    in: worker/config
+  worker-worker:
+    in: worker/worker
+  worker:
+    in: worker
+
+commonVendors:
+  - yaml
+  - shellescape
+commonComponents:
+  - alog
+  - domain
+  - logx
+  - pathx
+  - ptr
+  - set
+  - version
+
+deps:
+  cli:
+    mayDependOn:
+      - cli-cmd
+  cli-cmd:
+    mayDependOn:
+      - cli-ctl
+      - cli-task
+    canUse:
+      - cobra
+      - execx
+  cli-ctl:
+    canUse:
+      - cobra
+      - structconfig
+      - execx
+  cli-task:
+    mayDependOn:
+      - cli-ctl
+    canUse:
+      - execx
+  mockcli:
+    mayDependOn:
+      - cli-cmd
+    canUse:
+      - cobra
+  echox:
+    canUse:
+      - echo
+  infra:
+    mayDependOn:
+      - domain
+    canUse:
+      - mysql
+      - aws
+  repo:
+    mayDependOn:
+      - domain
+      - infra
+  task:
+    mayDependOn:
+      - domain
+      - infra
+      - repo
+    canUse:
+      - asynq
+  uuid:
+    canUse:
+      - google-uuid
+  server-config:
+    mayDependOn:
+      - infra
+    canUse:
+      - mysql
+      - structconfig
+      - asynq
+      - echo
+      - cobra
+  server-docs:
+    canUse:
+      - swagger
+  server-handler:
+    mayDependOn:
+      - cli-ctl
+      - domain
+      - echox
+      - repo
+      - task
+    canUse:
+      - echo
+      - asynq
+  server-server:
+    mayDependOn:
+      - domain
+      - infra
+      - repo
+      - server-config
+      - server-handler
+    canUse:
+      - asynq
+      - echo
+      - swagger
+  server:
+    mayDependOn:
+      - server-config
+      - server-docs
+      - server-server
+    canUse:
+      - cobra
+  worker-config:
+    mayDependOn:
+      - infra
+    canUse:
+      - structconfig
+      - asynq
+      - cobra
+  worker-worker:
+    mayDependOn:
+      - domain
+      - infra
+      - repo
+      - task
+      - worker-config
+    canUse:
+      - asynq
+  worker:
+    mayDependOn:
+      - worker-config
+      - worker-worker
+    canUse:
+      - cobra

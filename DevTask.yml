@@ -26,6 +26,7 @@ tasks:
       - vuln
       - vet
       - golangci-lint
+      - go-arch-lint
   test:
     deps:
       - prepare-test-data
@@ -50,6 +51,12 @@ tasks:
     cmds:
       - go tool golangci-lint config verify -v
       - go tool golangci-lint run
+  go-arch-lint:
+    cmds:
+      - go install github.com/fe3dback/go-arch-lint@${GO_ARCH_LINT_VERSION}
+      - go-arch-lint check
+      - mkdir -p tmp
+      - go-arch-lint graph -t di --out tmp/go-arch-lint.svg
   # Go generate
   generate:
     # deps:
