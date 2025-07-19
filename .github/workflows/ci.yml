@@ -68,7 +68,7 @@ jobs:
         uses: actions/setup-go@v5.5.0
         id: setup-go
         with:
-          go-version: "1.24"
+          go-version-file: "go.mod"
           check-latest: true
           cache-dependency-path: go.sum
       - name: Download go modules
@@ -94,7 +94,7 @@ jobs:
         uses: actions/setup-go@v5.5.0
         id: setup-go
         with:
-          go-version: "1.24"
+          go-version-file: "go.mod"
           check-latest: true
           cache-dependency-path: go.sum
       - name: Download go modules
