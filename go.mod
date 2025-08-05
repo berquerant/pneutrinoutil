@@ -20,7 +20,7 @@ require (
 	github.com/spf13/pflag v1.0.6
 	github.com/stretchr/testify v1.10.0
 	github.com/swaggo/echo-swagger v1.4.1
-	github.com/swaggo/swag v1.16.4
+	github.com/swaggo/swag v1.16.6
 )
 
 require (
