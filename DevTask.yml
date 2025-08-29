@@ -60,9 +60,16 @@ tasks:
     #   - clean-generated
     cmds:
       - go generate ./...
+  clean:
+    deps:
+      - clean-generated
+      - clean-tools
   clean-generated:
     cmds:
       - find . -name "*_generated.go" -type f -delete
+  clean-tools:
+    cmds:
+      - rm -rf ./bin/tools
   tidy:
     cmds:
       - go mod tidy -v
