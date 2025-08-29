@@ -17,7 +17,7 @@ log() {
 __os="$(uname -s)"
 case "$__os" in
     "Darwin" | "Linux")
-        os_name="$(echo "$__os" | tr '[:upper:]' '[:lower:]')"
+        __os="$(echo "$__os" | tr '[:upper:]' '[:lower:]')"
         ;;
     *)
         log "${__os} not supported"
