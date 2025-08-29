@@ -18,6 +18,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5.0.0
+      - name: Setup Go
+        uses: ./.github/actions/setup-go
+      - name: Build
+        run: ./task build
+
+  test:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5.0.0
       - name: Set env vars
         uses: ./.github/actions/setup-env
       - name: Set up Docker
@@ -26,13 +37,27 @@ jobs:
         uses: ./.github/actions/setup-go
       - name: Test
         run: ./task test
-      - name: E2E test
+      - name: Stop docker services
+        if: ${{ always() }}
+        run: docker compose down
+
+  e2e:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5.0.0
+      - name: Set env vars
+        uses: ./.github/actions/setup-env
+      - name: Set up Docker
+        uses: ./.github/actions/setup-docker
+      - name: Setup Go
+        uses: ./.github/actions/setup-go
+      - name: E2E
         run: ./task e2e
       - name: Stop docker services
         if: ${{ always() }}
         run: docker compose down
-      - name: Build
-        run: ./task build
 
   go-lint:
     timeout-minutes: 5
