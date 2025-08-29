@@ -8,7 +8,11 @@ runs:
       with:
         go-version-file: "go.mod"
         check-latest: true
-        cache-dependency-path: go.sum
+        cache-dependency-path: |
+          go.sum
+          tools/go.sum
     - name: Download go modules
       shell: bash
-      run: go mod download
+      run: |
+        go mod download
+        go -C tools mod download
