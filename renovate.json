@@ -74,7 +74,7 @@
       "description": "Manage minio version",
       "customType": "regex",
       "fileMatch": ["^.github/.env$"],
-      "matchStrings": ["MINIO_VERSION=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "matchStrings": ["MINIO_VERSION=(?<currentValue>RELEASE\\..+Z)"],
       "datasourceTemplate": "docker",
       "depNameTemplate": "quay.io/minio/minio"
     },
