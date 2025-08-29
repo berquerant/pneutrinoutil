@@ -1,0 +1,90 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "baseBranches": ["main"],
+  "extends": [
+    "config:recommended",
+    ":label(renovate)",
+    ":timezone(Asia/Tokyo)",
+    ":prHourlyLimitNone",
+    ":prConcurrentLimitNone",
+    ":rebaseStalePrs",
+    ":disableDependencyDashboard",
+    "helpers:pinGitHubActionDigests",
+    "schedule:weekly"
+  ],
+  "platformAutomerge": false,
+  "fetchChangeLogs": "off",
+  "rangeStrategy": "auto",
+  "minimumReleaseAge": "7 days",
+  "internalChecksFilter": "strict",
+  "postUpdateOptions": ["gomodTidy"],
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "digest": {
+    "addLabels": ["digest"]
+  },
+  "pin": {
+    "addLabels": ["pin"]
+  },
+  "patch": {
+    "addLabels": ["patch"]
+  },
+  "minor": {
+    "addLabels": ["minor"]
+  },
+  "major": {
+    "addLabels": ["major"]
+  },
+  "github-actions": {
+    "enabled": false
+  },
+  "packageRules": [
+    {
+      "description": "Group docker dependencies",
+      "groupName": "docker({{updateType}}): {{depName}}",
+      "addLabels": ["docker"],
+      "matchDatasources": ["docker"]
+    },
+    {
+      "description": "Group go dependencies",
+      "groupName": "go({{updateType}}) in {{#if packageFileDir}}{{packageFileDir}}{{else}}root{{/if}}",
+      "addLabels": ["go"],
+      "matchDatasources": ["go"]
+    }
+  ],
+  "customManagers":[
+    {
+      "description": "Manage mysql version",
+      "customType": "regex",
+      "fileMatch": ["^.github/.env$"],
+      "matchStrings": ["MYSQL_VERSION=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "mysql"
+    },
+    {
+      "description": "Manage redis version",
+      "customType": "regex",
+      "fileMatch": ["^.github/.env$"],
+      "matchStrings": ["REDIS_VERSION=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "redis"
+    },
+    {
+      "description": "Manage minio version",
+      "customType": "regex",
+      "fileMatch": ["^.github/.env$"],
+      "matchStrings": ["MINIO_VERSION=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "quay.io/minio/minio"
+    },
+    {
+      "description": "Manage go-arch-lint version",
+      "customType": "regex",
+      "fileMatch": ["^.github/.env$"],
+      "matchStrings":["GO_ARCH_LINT_VERSION=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "fe3dback/go-arch-lint"
+    }
+  ]
+}

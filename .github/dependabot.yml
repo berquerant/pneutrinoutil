@@ -5,23 +5,3 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "gomod"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "docker-compose"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "docker"
-    directory: "/docker/mysql"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "uv"
-    directory: "/"
-    schedule:
-      interval: "weekly"
