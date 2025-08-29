@@ -1,0 +1,14 @@
+name: Go Setup
+description: Install Go
+runs:
+  using: "composite"
+  steps:
+    - name: Install Go
+      uses: actions/setup-go@v5.5.0
+      with:
+        go-version-file: "go.mod"
+        check-latest: true
+        cache-dependency-path: go.sum
+    - name: Download go modules
+      shell: bash
+      run: go mod download

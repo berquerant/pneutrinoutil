@@ -1,0 +1,17 @@
+name: Env Setup
+description: Setup environment variables
+runs:
+  using: "composite"
+  steps:
+    - name: Load .env
+      shell: bash
+      run: cat .github/.env >> $GITHUB_ENV
+    - name: Set dependent variables
+      shell: bash
+      run: |
+        echo "MYSQL_DSN=${MYSQL_USER}:${MYSQL_PASSWORD}@tcp(${MYSQL_HOST}:${MYSQL_PORT})/${MYSQL_DATABASE}?parseTime=true" >> $GITHUB_ENV
+        echo "REDIS_DSN=redis://${REDIS_HOST}:${REDIS_PORT}" >> $GITHUB_ENV
+        echo "AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}" >> $GITHUB_ENV
+        echo "AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}" >> $GITHUB_ENV
+        echo "AWS_DEFAULT_REGION=${MINIO_SITE_REGION}" >> $GITHUB_ENV
+        echo "AWS_ENDPOINT_URL=http://${MINIO_HOST}:${MINIO_PORT}" >> $GITHUB_ENV

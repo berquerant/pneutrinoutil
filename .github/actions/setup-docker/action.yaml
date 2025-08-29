@@ -1,0 +1,14 @@
+name: Docker Setup
+description: Setup docker daemon
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Docker
+      uses: docker/setup-docker-action@v4
+      with:
+        daemon-config: |
+          {
+            "registry-mirrors": [
+              "https://mirror.gcr.io"
+            ]
+          }
