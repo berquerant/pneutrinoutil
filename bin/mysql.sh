@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readonly d="$(cd "$(dirname "$0")" || exit; pwd)"
+readonly d="$(cd "$(dirname "$0")" || exit 1; pwd)"
 
 client() {
     "${d}/docker.sh" exec -it mysql mysql -h "$MYSQL_HOST" "$@"

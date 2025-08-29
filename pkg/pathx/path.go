@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-//go:generate go tool goconfig -field "Mode os.FileMode|Truncate bool" -option -output path_config_generated.go
+//go:generate ./tools/run.sh goconfig -field "Mode os.FileMode|Truncate bool" -option -output path_config_generated.go
 
 const (
 	defaultDirPermission  = 0755

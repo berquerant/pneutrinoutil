@@ -1,3 +1,4 @@
 #!/bin/bash
 
-go tool task "$@"
+readonly d="$(cd "$(dirname "$0")" || exit 1; pwd)"
+"${d}/tools/run.sh" task "$@"

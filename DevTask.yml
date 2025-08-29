@@ -31,7 +31,6 @@ tasks:
     deps:
       - prepare-test-data
     cmds:
-      # - go tool gotestsum --format pkgname --format-icons hivis -- -cover -race $(go list ./... | grep -v tests) ${DEBUG+-v -count=1}
       - go test -cover -race $(go list ./... | grep -v tests) ${DEBUG+-v -count=1}
   # E2E test
   e2e:
@@ -39,24 +38,22 @@ tasks:
       - drop-test-data
     cmds:
       - task: prepare-test-data
-      # - go tool gotestsum --format pkgname --format-icons hivis -- -cover -race $(go list ./... | grep tests) -count=1 ${DEBUG+-v}
       - go test -cover -race $(go list ./... | grep tests) -count=1 ${DEBUG+-v}
   vuln:
     cmds:
-      - go tool govulncheck ./...
+      - ./tools/run.sh govulncheck ./...
   vet:
     cmds:
       - go vet ./...
   golangci-lint:
     cmds:
-      - go tool golangci-lint config verify -v
-      - go tool golangci-lint run
+      - ./tools/run.sh golangci-lint config verify -v
+      - ./tools/run.sh golangci-lint run
   go-arch-lint:
     cmds:
-      - go install github.com/fe3dback/go-arch-lint@${GO_ARCH_LINT_VERSION}
-      - go-arch-lint check
+      - ./tools/run.sh go-arch-lint check
       - mkdir -p tmp
-      - go-arch-lint graph -t di --out tmp/go-arch-lint.svg
+      - ./tools/run.sh go-arch-lint graph -t di --out tmp/go-arch-lint.svg
   # Go generate
   generate:
     # deps:
@@ -72,13 +69,13 @@ tasks:
   # Generate API document
   swag:
     cmds:
-      - go tool swag init -g ./server/main.go -o ./server/docs
+      - ./tools/run.sh swag init -g ./server/main.go -o ./server/docs
   # Start servers
   start:
     deps:
       - prepare-data
     cmds:
-      - go tool goreman -b $GOREMAN_BASE_PORT start
+      - ./tools/run.sh goreman -b $GOREMAN_BASE_PORT start
   # Prepare test data
   prepare-test-data:
     deps:
