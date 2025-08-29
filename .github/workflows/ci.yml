@@ -19,11 +19,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5.0.0
       - name: Set env vars
-        uses: .github/actions/setup-env
+        uses: ./.github/actions/setup-env
       - name: Set up Docker
-        uses: .github/actions/setup-docker
+        uses: ./.github/actions/setup-docker
       - name: Setup Go
-        uses: .github/actions/setup-go
+        uses: ./.github/actions/setup-go
       - name: Test
         run: ./task test
       - name: E2E test
@@ -41,9 +41,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5.0.0
       - name: Set env vars
-        uses: .github/actions/setup-env
+        uses: ./.github/actions/setup-env
       - name: Setup Go
-        uses: .github/actions/setup-go
+        uses: ./.github/actions/setup-go
       - name: Lint
         run: ./task lint
 
@@ -54,7 +54,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5.0.0
       - name: Set env vars
-        uses: .github/actions/setup-env
+        uses: ./.github/actions/setup-env
       - name: Enable Shellcheck problem matcher
         run: echo "::add-matcher::.github/shellcheck-matcher.json"
       - name: Shellcheck
