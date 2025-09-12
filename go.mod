@@ -1,6 +1,6 @@
 module github.com/berquerant/pneutrinoutil
 
-go 1.25.0
+go 1.25.1
 
 require (
 	al.essio.dev/pkg/shellescape v1.6.0
