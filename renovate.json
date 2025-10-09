@@ -2,39 +2,11 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "baseBranches": ["main"],
   "extends": [
-    "config:recommended",
-    ":label(renovate)",
-    ":timezone(Asia/Tokyo)",
-    ":prHourlyLimitNone",
-    ":prConcurrentLimitNone",
-    ":rebaseStalePrs",
-    ":disableDependencyDashboard",
-    "helpers:pinGitHubActionDigests",
-    "schedule:weekly"
+    "github>berquerant/renovate-config"
   ],
-  "platformAutomerge": false,
-  "fetchChangeLogs": "off",
-  "rangeStrategy": "auto",
-  "minimumReleaseAge": "7 days",
-  "internalChecksFilter": "strict",
   "postUpdateOptions": ["gomodTidy"],
   "lockFileMaintenance": {
     "enabled": true
-  },
-  "digest": {
-    "addLabels": ["digest"]
-  },
-  "pin": {
-    "addLabels": ["pin"]
-  },
-  "patch": {
-    "addLabels": ["patch"]
-  },
-  "minor": {
-    "addLabels": ["minor"]
-  },
-  "major": {
-    "addLabels": ["major"]
   },
   "github-actions": {
     "enabled": false
