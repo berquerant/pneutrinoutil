@@ -6,8 +6,8 @@ tasks:
       - lint
       - test
       - build
-  # Build binaries
   build:
+    desc: Build binaries
     deps:
       - build-cli
       - build-server
@@ -22,18 +22,20 @@ tasks:
     cmds:
       - ./bin/build.sh -o dist/pneutrinoutil-worker worker/main.go
   lint:
+    desc: Run linters
     deps:
       - vuln
       - vet
       - golangci-lint
       - go-arch-lint
   test:
+    desc: Run unit tests
     deps:
       - prepare-test-data
     cmds:
       - go test -cover -race $(go list ./... | grep -v tests) ${DEBUG+-v -count=1}
-  # E2E test
   e2e:
+    desc: Run E2E tests
     deps:
       - drop-test-data
     cmds:
@@ -54,8 +56,8 @@ tasks:
       - ./tools/run.sh go-arch-lint check
       - mkdir -p tmp
       - ./tools/run.sh go-arch-lint graph -t di --out tmp/go-arch-lint.svg
-  # Go generate
   generate:
+    desc: Go generate
     # deps:
     #   - clean-generated
     cmds:
@@ -73,92 +75,92 @@ tasks:
   tidy:
     cmds:
       - go mod tidy -v
-  # Generate API document
   swag:
+    desc: Generate API document
     cmds:
       - ./tools/run.sh swag init -g ./server/main.go -o ./server/docs
-  # Start servers
   start:
+    desc: Start servers
     deps:
       - prepare-data
     cmds:
       - ./tools/run.sh goreman -b $GOREMAN_BASE_PORT start
-  # Prepare test data
   prepare-test-data:
+    desc: Prepare test data
     deps:
       - prepare-data
     cmds:
       - ./bin/ddl.sh tables test
       - ./bin/ddl.sh storage test
-  # Prepare data
   prepare-data:
+    desc: Prepare data
     deps:
       - services
     cmds:
       - task: mysql
       - task: storage
-  # Prepare mysql data
   mysql:
+    desc: Prepare mysql data
     cmds:
       - ./bin/retry.sh -- ./bin/ddl.sh db
       - ./bin/ddl.sh users
       - ./bin/ddl.sh tables $MYSQL_DATABASE
-  # Prepare storage
   storage:
+    desc: Prepare storage
     cmds:
       - ./bin/ddl.sh storage
-  # Start docker services
   services:
+    desc: Start docker services
     cmds:
       - ./bin/docker.sh up -d
       - task: wait-services
-  # Wait docker services
   wait-services:
+    desc: Wait docker services
     deps:
       - wait-mysql
       - wait-storage
       - wait-redis
-  # Wait mysql
   wait-mysql:
+    desc: Wait mysql
     cmds:
       - ./bin/mysql.sh wait
-  # Wait storage
   wait-storage:
+    desc: Wait storage
     cmds:
       - ./bin/s3.sh wait
-  # Wait redis
   wait-redis:
+    desc: Wait redis
     cmds:
       - ./bin/redis.sh wait
-  # Drop test data
   drop-test-data:
+    desc: Drop test data
     deps:
       - services
     cmds:
       - ./bin/retry.sh -- ./bin/ddl.sh drop db test
       - ./bin/ddl.sh drop storage test
       - ./bin/ddl.sh drop kvs "${REDIS_TEST_DB}"
-  # Drop persistent data
   drop-data:
+    desc: Drop persistent data
     deps:
       - services
     cmds::
       - task: drop-mysql
       - task: drop-storage
       - task: drop-redis
-  # Drop mysql data
   drop-mysql:
+    desc: Drop mysql data
     cmds:
       - ./bin/retry.sh -- ./bin/ddl.sh drop db "${MYSQL_DATABASE}"
-  # Drop storage data
   drop-storage:
+    desc: Drop storage data
     cmds:
       - ./bin/ddl.sh drop storage "${STORAGE_BUCKET}"
-  # Drop redis data
   drop-redis:
+    desc: Drop redis data
     cmds:
       - ./bin/ddl.sh drop kvs "${REDIS_DB}"
-  # Down services
   down-services:
+    desc: Down services
     cmds:
       - ./bin/docker.sh down
