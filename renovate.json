@@ -57,6 +57,14 @@
       "matchStrings":["GO_ARCH_LINT_VERSION=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "fe3dback/go-arch-lint"
+    },
+    {
+      "description": "Manage shellcheck version",
+      "customType": "regex",
+      "fileMatch": ["^.github/.env$"],
+      "matchStrings":["SHELLCHECK_VERSION=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "koalaman/shellcheck"
     }
   ]
 }

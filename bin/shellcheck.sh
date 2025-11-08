@@ -1,5 +1,7 @@
 #!/bin/bash
 
+readonly d="$(cd "$(dirname "$0")" || exit 1; pwd)"
+
 find_by_shebang() {
     git grep -l "^${1}"
 }
@@ -18,4 +20,4 @@ find_by_interpreter() {
 }
 
 
-find_by_interpreter bash sh | xargs -n 4 shellcheck -f gcc
+find_by_interpreter bash sh | xargs -n 4 "${d}/../tools/run.sh" shellcheck -f gcc

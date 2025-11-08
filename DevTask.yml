@@ -56,6 +56,9 @@ tasks:
       - ./tools/run.sh go-arch-lint check
       - mkdir -p tmp
       - ./tools/run.sh go-arch-lint graph -t di --out tmp/go-arch-lint.svg
+  shellcheck:
+    cmds:
+      - ./bin/shellcheck.sh
   generate:
     desc: Go generate
     # deps:

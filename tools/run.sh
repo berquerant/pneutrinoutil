@@ -27,6 +27,10 @@ case "$name" in
     go-arch-lint)
         "${d}/setup-go-arch-lint.sh" "$GO_ARCH_LINT_VERSION" "$binary"
         ;;
+    shellcheck)
+        "${d}/shellcheck.sh" "$SHELLCHECK_VERSION" "$binary" "$@"
+        exit
+        ;;
     *)
         if [[ "$(package_name | wc -l | xargs)" != "1" ]] ; then
             log "name(${name}) is invalid"

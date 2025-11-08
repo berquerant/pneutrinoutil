@@ -103,5 +103,5 @@ jobs:
         run: echo "::add-matcher::.github/shellcheck-matcher.json"
       - name: Shellcheck
         run: |
-          .github/bin/shellcheck.sh
+          ./bin/shellcheck.sh
           echo "::remove-matcher owner=shellcheck-matcher::"
