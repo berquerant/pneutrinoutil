@@ -90,17 +90,35 @@ tasks:
       - prepare-data
     cmds:
       - task: start-server
-      - ./tools/run.sh goreman start
+      - task: start-worker
+  stop:
+    desc: Stop services
+    deps:
+      - stop-worker
+      - stop-server
+    cmds:
+      - task: drop-infra
   start-server:
     desc: Start server
     deps:
       - infra
     cmds:
       - ./bin/docker.sh up -d server
+  start-worker:
+    desc: Start worker
+    deps:
+      - infra
+      - build-worker
+    cmds:
+      - ./bin/worker.sh start
   stop-server:
     desc: Stop server
     cmds:
       - ./bin/docker.sh stop server
+  stop-worker:
+    desc: Stop worker
+    cmds:
+      - ./bin/worker.sh stop
   prepare-test-data:
     desc: Prepare test data
     deps:
@@ -176,7 +194,7 @@ tasks:
     desc: Drop redis data
     cmds:
       - ./bin/ddl.sh drop kvs "${REDIS_DB}"
-  down-infra:
+  drop-infra:
     desc: Down infra
     cmds:
       - ./bin/docker.sh -f docker-infra.yml down

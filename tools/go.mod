@@ -6,7 +6,6 @@ tool (
 	github.com/berquerant/goconfig
 	github.com/go-task/task/v3/cmd/task
 	github.com/golangci/golangci-lint/v2/cmd/golangci-lint
-	github.com/mattn/goreman
 	github.com/swaggo/swag/cmd/swag
 	golang.org/x/vuln/cmd/govulncheck
 )
@@ -171,7 +170,6 @@ require (
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
-	github.com/mattn/goreman v0.3.16 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/mgechev/revive v1.12.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
