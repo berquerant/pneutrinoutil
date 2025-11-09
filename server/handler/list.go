@@ -26,6 +26,24 @@ type ListProcessParam struct {
 	Status string `query:"status"` // (pending|running|succeed|failed)
 }
 
+type ListProcessResponseData []*ListProcessResponseDataElement
+
+func (d ListProcessResponseData) Len() int { return len(d) }
+
+type ListProcessResponseDataElement struct {
+	RequestID      string `json:"rid"` // request id, or just id
+	DetailsID      int    `json:"details_id"`
+	Basename       string `json:"basename"` // title
+	Command        string `json:"command,omitempty"`
+	Status         string `json:"status"`
+	CreatedAt      string `json:"created_at"`
+	StartedAt      string `json:"started_at,omitempty"`
+	CompletedAt    string `json:"completed_at,omitempty"`
+	ScoreObjectID  int    `json:"score_object_id"`
+	LogObjectID    int    `json:"log_object_id,omitempty"`
+	ResultObjectID int    `json:"result_object_id,omitempty"`
+}
+
 func (p ListProcessParam) intoRequest() *repo.ListProcessRequest {
 	var r repo.ListProcessRequest
 	if x := p.Limit; x > 0 {
@@ -67,6 +85,7 @@ func (s *List) ListProcess(c echo.Context) error {
 
 		y := &ListProcessResponseDataElement{
 			RequestID: x.RequestID,
+			DetailsID: x.DetailsID,
 			Status:    x.Status.String(),
 			CreatedAt: x.CreatedAt.Format(time.DateTime),
 		}
@@ -91,22 +110,15 @@ func (s *List) ListProcess(c echo.Context) error {
 			if v := x.Command; v != nil {
 				y.Command = *v
 			}
+			y.ScoreObjectID = x.ScoreObjectID
+			if v := x.LogObjectID; v != nil {
+				y.LogObjectID = *v
+			}
+			if v := x.ResultObjectID; v != nil {
+				y.ResultObjectID = *v
+			}
 		}
 	}
 
 	return Success(c, http.StatusOK, ListProcessResponseData(data))
-}
-
-type ListProcessResponseData []*ListProcessResponseDataElement
-
-func (d ListProcessResponseData) Len() int { return len(d) }
-
-type ListProcessResponseDataElement struct {
-	RequestID   string `json:"rid"` // request id, or just id
-	Basename    string `json:"basename"`
-	Command     string `json:"command,omitempty"`
-	Status      string `json:"status"`
-	CreatedAt   string `json:"created_at"`
-	StartedAt   string `json:"started_at,omitempty"`
-	CompletedAt string `json:"completed_at,omitempty"`
 }

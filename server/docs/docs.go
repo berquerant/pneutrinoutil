@@ -493,6 +493,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "basename": {
+                    "description": "title",
                     "type": "string"
                 },
                 "command": {
@@ -504,9 +505,21 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
+                "details_id": {
+                    "type": "integer"
+                },
+                "log_object_id": {
+                    "type": "integer"
+                },
+                "result_object_id": {
+                    "type": "integer"
+                },
                 "rid": {
                     "description": "request id, or just id",
                     "type": "string"
+                },
+                "score_object_id": {
+                    "type": "integer"
                 },
                 "started_at": {
                     "type": "string"

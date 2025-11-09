@@ -82,14 +82,21 @@ export interface HandlerGetDetailResponseData {
     'status'?: string;
 }
 export interface HandlerListProcessResponseDataElement {
+    /**
+     * title
+     */
     'basename'?: string;
     'command'?: string;
     'completed_at'?: string;
     'created_at'?: string;
+    'details_id'?: number;
+    'log_object_id'?: number;
+    'result_object_id'?: number;
     /**
      * request id, or just id
      */
     'rid'?: string;
+    'score_object_id'?: number;
     'started_at'?: string;
     'status'?: string;
 }
