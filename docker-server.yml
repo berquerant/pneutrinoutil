@@ -21,6 +21,9 @@ services:
       AWS_S3_DISABLE_HTTPS: "$AWS_S3_DISABLE_HTTPS"
       # Containers delay access logs outputting to stdout/stderr,
       # so they should be written to a file
+      #
+      # To tail the log:
+      #   docker compose exec -t server tail -f /var/log/access.log
       ACCESSLOGFILE: "/var/log/access.log"
     networks:
       pneutrinoutil:
