@@ -1,9 +1,12 @@
 package ctl
 
 import (
+	"context"
 	"fmt"
+	"path/filepath"
 
 	"github.com/berquerant/execx"
+	"github.com/berquerant/pneutrinoutil/cli/info"
 	"github.com/berquerant/pneutrinoutil/pkg/pathx"
 	"github.com/berquerant/structconfig"
 	"github.com/spf13/pflag"
@@ -41,6 +44,9 @@ type Config struct {
 	SmoothPitch        float32 `json:"smoothPitch" yaml:"smoothPitch" name:"smoothPitch" usage:"[0, 100]%"`
 	SmoothFormant      float32 `json:"smoothFormant" yaml:"smoothFormant" name:"smoothFormant" usage:"[0, 100]%"`
 	EnhanceBreathiness float32 `json:"enhanceBreathiness" yaml:"enhanceBreathiness" name:"enhanceBreathiness" usage:"[0, 100]%"`
+	// Info
+	NeutrinoVersion string `json:"neutrinoVersion" yaml:"neutrinoVersion"`
+	ModelData       any    `json:"modelData" yaml:"modelData"`
 }
 
 func (c Config) Basename() string { return pathx.Basename(c.Score) }
@@ -110,4 +116,24 @@ func (c *Config) ApplyFlagValues(fs *pflag.FlagSet) error {
 func (c Config) SetFlags(fs *pflag.FlagSet) error {
 	sc := structconfig.New[Config]()
 	return sc.SetFlags(fs)
+}
+
+func (c *Config) SetInfo(ctx context.Context, neutrinoDir string) error {
+	dir, err := filepath.Abs(neutrinoDir)
+	if err != nil {
+		return err
+	}
+
+	neutrinoVersion, err := info.GetNeutrinoVersion(ctx, dir)
+	if err != nil {
+		return err
+	}
+	c.NeutrinoVersion = neutrinoVersion
+
+	model, err := info.ReadModelInfo(filepath.Join(dir, "model", c.ModelDir))
+	if err != nil {
+		return err
+	}
+	c.ModelData = model
+	return nil
 }

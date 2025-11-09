@@ -31,7 +31,7 @@ func getModels(neutrinoDir string) ([]Model, error) {
 		m := Model{
 			ID: x.Name(),
 		}
-		data, err := readModelInfo(filepath.Join(dir, x.Name()))
+		data, err := ReadModelInfo(filepath.Join(dir, x.Name()))
 		if err == nil {
 			m.Data = data
 		} else {
@@ -42,7 +42,7 @@ func getModels(neutrinoDir string) ([]Model, error) {
 	return models, nil
 }
 
-func readModelInfo(modelDir string) (map[string]any, error) {
+func ReadModelInfo(modelDir string) (map[string]any, error) {
 	var m map[string]any
 	if _, err := toml.DecodeFile(filepath.Join(modelDir, "info.toml"), &m); err != nil {
 		return nil, err

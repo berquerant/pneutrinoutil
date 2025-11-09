@@ -12,7 +12,7 @@ import (
 
 var ErrNeutrinoVersion = errors.New("NeutrinoVersion")
 
-func getNeutrinoVersion(ctx context.Context, dir string) (string, error) {
+func GetNeutrinoVersion(ctx context.Context, dir string) (string, error) {
 	x, err := filepath.Abs(dir)
 	if err != nil {
 		return "", errors.Join(ErrNeutrinoVersion, err)

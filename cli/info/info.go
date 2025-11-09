@@ -37,7 +37,7 @@ func (b Builder) Build(ctx context.Context) (*Info, error) {
 	if err != nil {
 		return nil, err
 	}
-	neutrinoVersion, err := getNeutrinoVersion(ctx, b.neutrinoDir)
+	neutrinoVersion, err := GetNeutrinoVersion(ctx, b.neutrinoDir)
 	if err != nil {
 		return nil, err
 	}
