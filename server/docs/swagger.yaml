@@ -16,6 +16,10 @@ definitions:
         default: MERROW
         description: NEUTRINO
         type: string
+      modelData: {}
+      neutrinoVersion:
+        description: Info
+        type: string
       parallel:
         default: 1
         type: integer

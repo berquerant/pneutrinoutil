@@ -403,6 +403,11 @@ const docTemplate = `{
                     "type": "string",
                     "default": "MERROW"
                 },
+                "modelData": {},
+                "neutrinoVersion": {
+                    "description": "Info",
+                    "type": "string"
+                },
                 "parallel": {
                     "type": "integer",
                     "default": 1
