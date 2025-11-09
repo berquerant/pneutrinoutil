@@ -158,7 +158,7 @@ func (p *ProcessDetails) GetProcessDetails(ctx context.Context, id int) (*domain
 		return nil, fmt.Errorf("%w: get process details: id=%d", err, id)
 	}
 	if err := r.AssertRows(1); err != nil {
-		return nil, fmt.Errorf("%w: get process details: ud=%d", err, id)
+		return nil, fmt.Errorf("%w: get process details: id=%d", err, id)
 	}
 	return r.Items[0], nil
 }
