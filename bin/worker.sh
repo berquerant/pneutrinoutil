@@ -20,7 +20,7 @@ start() {
 }
 
 stop() {
-    kill "$(cat "$pidfile")"
+    kill "$(cat "$pidfile")" || true
 }
 
 
