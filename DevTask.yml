@@ -144,12 +144,36 @@ tasks:
       - stop-server
     cmds:
       - ./bin/docker.sh up -d server --build
+  restart-worker:
+    desc: Restart worker
+    deps:
+      - stop-worker
+    cmds:
+      - task: build-worker
+      - task: start-worker
   restart-ui:
     desc: Restart ui
     deps:
       - stop-ui
     cmds:
       - ./bin/docker.sh up -d ui --build
+  start-host-server:
+    desc: Start server on host
+    deps:
+      - infra
+    cmds:
+      - ./bin/server.sh start
+  stop-host-server:
+    desc: Stop server on host
+    cmds:
+      - ./bin/server.sh stop
+  restart-host-server:
+    desc: Restart server on host
+    deps:
+      - stop-host-server
+    cmds:
+      - task: build-server
+      - task: start-host-server
   prepare-test-data:
     desc: Prepare test data
     deps:
