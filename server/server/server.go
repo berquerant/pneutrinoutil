@@ -117,7 +117,7 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 	v1.GET("/debug", handler.Debug).Name = "debug"
 	v1.GET("/swagger/*", echoSwagger.WrapHandler)
 	v1.POST("/proc", handler.NewStart(client, cfg.ProcessTimeout(), cfg.StorageBucket, cfg.StoragePath, objectAdmin, details, processes).Handler).Name = "createProcess"
-	v1.GET("/proc", handler.NewList(processes, details).Handler).Name = "listProcess"
+	v1.GET("/proc", handler.NewList(processes, details).ListProcess).Name = "listProcess"
 	getGroup := v1.Group("/proc/:id")
 	getHandler := handler.NewGet(processes, details, objectAdmin, objects)
 	getGroup.GET("/detail", getHandler.Detail).Name = "getDetail"

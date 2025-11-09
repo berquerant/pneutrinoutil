@@ -74,7 +74,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.SuccessResponse-handler_ListResponseData"
+                            "$ref": "#/definitions/handler.SuccessResponse-handler_ListProcessResponseData"
                         }
                     }
                 }
@@ -489,7 +489,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.ListResponseDataElement": {
+        "handler.ListProcessResponseDataElement": {
             "type": "object",
             "properties": {
                 "basename": {
@@ -552,13 +552,13 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.SuccessResponse-handler_ListResponseData": {
+        "handler.SuccessResponse-handler_ListProcessResponseData": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/handler.ListResponseDataElement"
+                        "$ref": "#/definitions/handler.ListProcessResponseDataElement"
                     }
                 },
                 "ok": {

@@ -105,7 +105,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **procGet**
-> HandlerSuccessResponseHandlerListResponseData procGet()
+> HandlerSuccessResponseHandlerListProcessResponseData procGet()
 
 list results of processes
 
@@ -139,7 +139,7 @@ const { status, data } = await apiInstance.procGet(
 
 ### Return type
 
-**HandlerSuccessResponseHandlerListResponseData**
+**HandlerSuccessResponseHandlerListProcessResponseData**
 
 ### Authorization
 

@@ -79,7 +79,7 @@ definitions:
       status:
         type: string
     type: object
-  handler.ListResponseDataElement:
+  handler.ListProcessResponseDataElement:
     properties:
       basename:
         type: string
@@ -121,11 +121,11 @@ definitions:
         description: "true"
         type: boolean
     type: object
-  handler.SuccessResponse-handler_ListResponseData:
+  handler.SuccessResponse-handler_ListProcessResponseData:
     properties:
       data:
         items:
-          $ref: '#/definitions/handler.ListResponseDataElement'
+          $ref: '#/definitions/handler.ListProcessResponseDataElement'
         type: array
       ok:
         description: "true"
@@ -203,7 +203,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.SuccessResponse-handler_ListResponseData'
+            $ref: '#/definitions/handler.SuccessResponse-handler_ListProcessResponseData'
       summary: list results
     post:
       description: start a pneutrinoutil process with given arguments

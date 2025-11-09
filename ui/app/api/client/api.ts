@@ -81,7 +81,7 @@ export interface HandlerGetDetailResponseData {
     'started_at'?: string;
     'status'?: string;
 }
-export interface HandlerListResponseDataElement {
+export interface HandlerListProcessResponseDataElement {
     'basename'?: string;
     'command'?: string;
     'completed_at'?: string;
@@ -114,8 +114,8 @@ export interface HandlerSuccessResponseHandlerGetDetailResponseData {
      */
     'ok'?: boolean;
 }
-export interface HandlerSuccessResponseHandlerListResponseData {
-    'data'?: Array<HandlerListResponseDataElement>;
+export interface HandlerSuccessResponseHandlerListProcessResponseData {
+    'data'?: Array<HandlerListProcessResponseDataElement>;
     /**
      * true
      */
@@ -612,7 +612,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async procGet(limit?: number, status?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<HandlerSuccessResponseHandlerListResponseData>> {
+        async procGet(limit?: number, status?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<HandlerSuccessResponseHandlerListProcessResponseData>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.procGet(limit, status, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DefaultApi.procGet']?.[localVarOperationServerIndex]?.url;
@@ -765,7 +765,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        procGet(limit?: number, status?: string, options?: RawAxiosRequestConfig): AxiosPromise<HandlerSuccessResponseHandlerListResponseData> {
+        procGet(limit?: number, status?: string, options?: RawAxiosRequestConfig): AxiosPromise<HandlerSuccessResponseHandlerListProcessResponseData> {
             return localVarFp.procGet(limit, status, options).then((request) => request(axios, basePath));
         },
         /**

@@ -1,4 +1,4 @@
-# HandlerListResponseDataElement
+# HandlerListProcessResponseDataElement
 
 
 ## Properties
@@ -16,9 +16,9 @@ Name | Type | Description | Notes
 ## Example
 
 ```typescript
-import { HandlerListResponseDataElement } from './api';
+import { HandlerListProcessResponseDataElement } from './api';
 
-const instance: HandlerListResponseDataElement = {
+const instance: HandlerListProcessResponseDataElement = {
     basename,
     command,
     completed_at,

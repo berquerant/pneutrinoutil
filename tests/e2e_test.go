@@ -201,7 +201,7 @@ func TestE2E(t *testing.T) {
 	})
 
 	t.Run("process added", func(t *testing.T) {
-		data, ok := assertAndGet[handler.ListResponseData](t, newUrl("/proc"))
+		data, ok := assertAndGet[handler.ListProcessResponseData](t, newUrl("/proc"))
 		if !assert.True(t, ok) {
 			return
 		}

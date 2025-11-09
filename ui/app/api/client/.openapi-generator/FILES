@@ -9,11 +9,11 @@ docs/DefaultApi.md
 docs/HandlerDebugResponseData.md
 docs/HandlerErrorResponse.md
 docs/HandlerGetDetailResponseData.md
-docs/HandlerListResponseDataElement.md
+docs/HandlerListProcessResponseDataElement.md
 docs/HandlerSuccessResponseCtlConfig.md
 docs/HandlerSuccessResponseHandlerDebugResponseData.md
 docs/HandlerSuccessResponseHandlerGetDetailResponseData.md
-docs/HandlerSuccessResponseHandlerListResponseData.md
+docs/HandlerSuccessResponseHandlerListProcessResponseData.md
 docs/HandlerSuccessResponseHandlerVersionResponseData.md
 docs/HandlerSuccessResponseString.md
 docs/HandlerVersionResponseData.md

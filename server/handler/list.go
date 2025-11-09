@@ -21,12 +21,12 @@ func NewList(processLister repo.ProcessLister, detailsGetter repo.ProcessDetails
 	}
 }
 
-type ListParam struct {
+type ListProcessParam struct {
 	Limit  int    `query:"limit"`  // default: 5
 	Status string `query:"status"` // (pending|running|succeed|failed)
 }
 
-func (p ListParam) intoRequest() *repo.ListProcessRequest {
+func (p ListProcessParam) intoRequest() *repo.ListProcessRequest {
 	var r repo.ListProcessRequest
 	if x := p.Limit; x > 0 {
 		r.Limit = x
@@ -46,10 +46,10 @@ func (p ListParam) intoRequest() *repo.ListProcessRequest {
 // @param limit query int false "query limit; default: 5"
 // @param status query string false "process status; (pending|running|succeed|failed)"
 // @produce json
-// @success 200 {object} handler.SuccessResponse[ListResponseData]
+// @success 200 {object} handler.SuccessResponse[ListProcessResponseData]
 // @router /proc [get]
-func (s *List) Handler(c echo.Context) error {
-	var p ListParam
+func (s *List) ListProcess(c echo.Context) error {
+	var p ListProcessParam
 	if err := c.Bind(&p); err != nil {
 		return err
 	}
@@ -59,13 +59,13 @@ func (s *List) Handler(c echo.Context) error {
 		return err
 	}
 
-	ids := make([]int, len(xs))                              // details_id
-	idMap := make(map[int]*ListResponseDataElement, len(xs)) // details_id -> element
-	data := make([]*ListResponseDataElement, len(xs))
+	ids := make([]int, len(xs))                                     // details_id
+	idMap := make(map[int]*ListProcessResponseDataElement, len(xs)) // details_id -> element
+	data := make([]*ListProcessResponseDataElement, len(xs))
 	for i, x := range xs {
 		ids[i] = x.DetailsID
 
-		y := &ListResponseDataElement{
+		y := &ListProcessResponseDataElement{
 			RequestID: x.RequestID,
 			Status:    x.Status.String(),
 			CreatedAt: x.CreatedAt.Format(time.DateTime),
@@ -94,14 +94,14 @@ func (s *List) Handler(c echo.Context) error {
 		}
 	}
 
-	return Success(c, http.StatusOK, ListResponseData(data))
+	return Success(c, http.StatusOK, ListProcessResponseData(data))
 }
 
-type ListResponseData []*ListResponseDataElement
+type ListProcessResponseData []*ListProcessResponseDataElement
 
-func (d ListResponseData) Len() int { return len(d) }
+func (d ListProcessResponseData) Len() int { return len(d) }
 
-type ListResponseDataElement struct {
+type ListProcessResponseDataElement struct {
 	RequestID   string `json:"rid"` // request id, or just id
 	Basename    string `json:"basename"`
 	Command     string `json:"command,omitempty"`
