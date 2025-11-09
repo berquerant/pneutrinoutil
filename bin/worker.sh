@@ -15,7 +15,7 @@ start() {
         --shell /bin/bash \
         --storageBucket "$STORAGE_BUCKET" \
         --storageS3 \
-        --debug >> "$logfile" &
+        --debug >> "$logfile" 2>&1 &
     echo $! > "$pidfile"
 }
 
