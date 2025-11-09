@@ -212,6 +212,40 @@ func TestE2E(t *testing.T) {
 		assert.Equal(t, newRid, got.RequestID)
 	})
 
+	t.Run("find process by title", func(t *testing.T) {
+		for _, tc := range []struct {
+			title  string
+			prefix string
+			hit    int
+		}{
+			{
+				title:  "not found",
+				prefix: "a" + basename,
+				hit:    0,
+			},
+			{
+				title:  "hit",
+				prefix: basename,
+				hit:    1,
+			},
+			{
+				title:  "hit by prefix",
+				prefix: basename[:4],
+				hit:    1,
+			},
+		} {
+			t.Run(tc.title, func(t *testing.T) {
+				data, ok := assertAndGet[handler.ListProcessResponseData](t, newUrl("/proc/title?prefix="+tc.prefix))
+				if !assert.True(t, ok) {
+					return
+				}
+				if !assert.Equal(t, tc.hit, data.Len()) {
+					return
+				}
+			})
+		}
+	})
+
 	t.Run("download config", func(t *testing.T) {
 		got, ok := assertAndGet[ctl.Config](t, newUrl("/proc/"+newRid+"/config"))
 		if !assert.True(t, ok) {

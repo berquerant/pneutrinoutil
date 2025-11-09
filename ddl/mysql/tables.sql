@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS process_details (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
+  INDEX title_prefix_idx (title(64)),
   CONSTRAINT fk_score_object_ids FOREIGN KEY (score_object_id) REFERENCES objects(id),
   CONSTRAINT fk_log_object_ids FOREIGN KEY (log_object_id) REFERENCES objects(id),
   CONSTRAINT fk_result_object_ids FOREIGN KEY (result_object_id) REFERENCES objects(id)
@@ -61,6 +62,7 @@ CREATE TABLE IF NOT EXISTS processes (
 
   INDEX (status_id),
   UNIQUE INDEX request_id_idx (request_id),
+  UNIQUE INDEX details_id_idx (details_id),
   CONSTRAINT fk_status_id FOREIGN KEY (status_id) REFERENCES master_statuses(id),
   CONSTRAINT fk_details_id FOREIGN KEY (details_id) REFERENCES process_details(id)
 );

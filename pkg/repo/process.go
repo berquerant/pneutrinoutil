@@ -42,6 +42,7 @@ type ProcessUpdater interface {
 type ProcessGetter interface {
 	GetProcess(ctx context.Context, id int) (*domain.Process, error)
 	GetProcessByRequestId(ctx context.Context, rid string) (*domain.Process, error)
+	GetProcessByDetailsList(ctx context.Context, detailsID ...int) ([]*domain.Process, error)
 }
 
 type ListProcessRequest struct {
@@ -187,6 +188,27 @@ func (p *Process) GetProcessByRequestId(ctx context.Context, rid string) (*domai
 		return nil, fmt.Errorf("%w: get process by request id %s", err, rid)
 	}
 	return r.Items[0], nil
+}
+
+func (p *Process) GetProcessByDetailsList(ctx context.Context, detailsID ...int) ([]*domain.Process, error) {
+	if len(detailsID) == 0 {
+		return nil, nil
+	}
+
+	xs := make([]string, len(detailsID))
+	for i, v := range detailsID {
+		xs[i] = fmt.Sprint(v)
+	}
+	r, err := p.query.Query(ctx, &infra.QueryRequest[domain.Process]{
+		Query: fmt.Sprintf("select id, request_id, status_id, details_id, started_at, completed_at, created_at, updated_at from processes where details_id in (%s);",
+			strings.Join(xs, ","),
+		),
+		Scan: p.scan,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("%w: get process list by details_id: id=%v", err, detailsID)
+	}
+	return r.Items, nil
 }
 
 func (p *Process) ListProcess(ctx context.Context, req *ListProcessRequest) ([]*domain.Process, error) {

@@ -549,6 +549,48 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * find processes by title prefix
+         * @summary find processes by title prefix
+         * @param {string} prefix title prefix
+         * @param {number} [limit] query limit; default: 5
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        procTitleGet: async (prefix: string, limit?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'prefix' is not null or undefined
+            assertParamExists('procTitleGet', 'prefix', prefix)
+            const localVarPath = `/proc/title`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (prefix !== undefined) {
+                localVarQueryParameter['prefix'] = prefix;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * get server version
          * @summary get server version
          * @param {*} [options] Override http request option.
@@ -726,6 +768,20 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * find processes by title prefix
+         * @summary find processes by title prefix
+         * @param {string} prefix title prefix
+         * @param {number} [limit] query limit; default: 5
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async procTitleGet(prefix: string, limit?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<HandlerSuccessResponseHandlerListProcessResponseData>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.procTitleGet(prefix, limit, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.procTitleGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * get server version
          * @summary get server version
          * @param {*} [options] Override http request option.
@@ -853,6 +909,17 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         procPost(score: File, enhanceBreathiness?: number, formantShift?: number, inference?: number, model?: string, pitchShiftNsf?: number, pitchShiftWorld?: number, smoothFormant?: number, smoothPitch?: number, styleShift?: number, options?: RawAxiosRequestConfig): AxiosPromise<HandlerSuccessResponseString> {
             return localVarFp.procPost(score, enhanceBreathiness, formantShift, inference, model, pitchShiftNsf, pitchShiftWorld, smoothFormant, smoothPitch, styleShift, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * find processes by title prefix
+         * @summary find processes by title prefix
+         * @param {string} prefix title prefix
+         * @param {number} [limit] query limit; default: 5
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        procTitleGet(prefix: string, limit?: number, options?: RawAxiosRequestConfig): AxiosPromise<HandlerSuccessResponseHandlerListProcessResponseData> {
+            return localVarFp.procTitleGet(prefix, limit, options).then((request) => request(axios, basePath));
         },
         /**
          * get server version
@@ -986,6 +1053,18 @@ export class DefaultApi extends BaseAPI {
      */
     public procPost(score: File, enhanceBreathiness?: number, formantShift?: number, inference?: number, model?: string, pitchShiftNsf?: number, pitchShiftWorld?: number, smoothFormant?: number, smoothPitch?: number, styleShift?: number, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).procPost(score, enhanceBreathiness, formantShift, inference, model, pitchShiftNsf, pitchShiftWorld, smoothFormant, smoothPitch, styleShift, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * find processes by title prefix
+     * @summary find processes by title prefix
+     * @param {string} prefix title prefix
+     * @param {number} [limit] query limit; default: 5
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public procTitleGet(prefix: string, limit?: number, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).procTitleGet(prefix, limit, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

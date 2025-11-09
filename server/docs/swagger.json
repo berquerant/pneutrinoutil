@@ -176,6 +176,38 @@
                 }
             }
         },
+        "/proc/title": {
+            "get": {
+                "description": "find processes by title prefix",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "find processes by title prefix",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "query limit; default: 5",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "title prefix",
+                        "name": "prefix",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.SuccessResponse-handler_ListProcessResponseData"
+                        }
+                    }
+                }
+            }
+        },
         "/proc/{id}/config": {
             "get": {
                 "description": "download pneutrinoutil config as json",

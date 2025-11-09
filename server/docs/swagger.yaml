@@ -400,6 +400,27 @@ paths:
           schema:
             $ref: '#/definitions/handler.ErrorResponse'
       summary: download world wav
+  /proc/title:
+    get:
+      description: find processes by title prefix
+      parameters:
+      - description: 'query limit; default: 5'
+        in: query
+        name: limit
+        type: integer
+      - description: title prefix
+        in: query
+        name: prefix
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.SuccessResponse-handler_ListProcessResponseData'
+      summary: find processes by title prefix
   /version:
     get:
       description: get server version
