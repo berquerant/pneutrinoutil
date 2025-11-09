@@ -1,0 +1,12 @@
+networks:
+  pneutrinoutil:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+          gateway: 172.20.0.1
+
+include:
+  - docker-database.yml
+  - docker-storage.yml
+  - docker-kvs.yml
