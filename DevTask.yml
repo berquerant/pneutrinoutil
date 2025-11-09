@@ -1,5 +1,10 @@
 version: '3'
 
+includes:
+  ui:
+    taskfile: ./ui/Taskfile.yml
+    dir: ./ui
+
 tasks:
   default:
     deps:
@@ -28,6 +33,7 @@ tasks:
       - vet
       - golangci-lint
       - go-arch-lint
+      - ui:lint
   test:
     desc: Run unit tests
     deps:
@@ -84,6 +90,7 @@ tasks:
     desc: Generate API document
     cmds:
       - ./tools/run.sh swag init -g ./server/main.go -o ./server/docs
+      - task: ui:swag
   start:
     desc: Start services
     deps:
@@ -91,11 +98,13 @@ tasks:
     cmds:
       - task: start-server
       - task: start-worker
+      - task: start-ui
   stop:
     desc: Stop services
     deps:
       - stop-worker
       - stop-server
+      - stop-ui
     cmds:
       - task: drop-infra
   start-server:
@@ -111,6 +120,12 @@ tasks:
       - build-worker
     cmds:
       - ./bin/worker.sh start
+  start-ui:
+    desc: Start ui
+    deps:
+      - start-server
+    cmds:
+      - ./bin/docker.sh up -d ui
   stop-server:
     desc: Stop server
     cmds:
@@ -119,6 +134,22 @@ tasks:
     desc: Stop worker
     cmds:
       - ./bin/worker.sh stop
+  stop-ui:
+    desc: Stop ui
+    cmds:
+      - ./bin/docker.sh stop ui
+  restart-server:
+    desc: Restart server
+    deps:
+      - stop-server
+    cmds:
+      - ./bin/docker.sh up -d server --build
+  restart-ui:
+    desc: Restart ui
+    deps:
+      - stop-ui
+    cmds:
+      - ./bin/docker.sh up -d ui --build
   prepare-test-data:
     desc: Prepare test data
     deps:

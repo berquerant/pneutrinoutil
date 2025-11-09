@@ -1,0 +1,38 @@
+version: '3'
+
+tasks:
+  default:
+    deps:
+      - dev
+  install:
+    cmds:
+      - npm i
+  build:
+    deps:
+      - install
+    cmds:
+      - npm run build
+  build-image:
+    cmds:
+      - docker build -t pneutrinoutil-ui:dev .
+  dev:
+    deps:
+      - install
+    cmds:
+      - npm run dev
+  start:
+    cmds:
+      - npm run start
+  lint:
+    deps:
+      - typecheck
+      - eslint
+  typecheck:
+    cmds:
+      - npm run typecheck
+  eslint:
+    cmds:
+      - npm run eslint
+  swag:
+    cmds:
+      - npm run swag
