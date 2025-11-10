@@ -27,8 +27,8 @@ var rootCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		now := time.Now()
 		logger := logx.NewLTSVLogger(os.Stdout, slog.LevelDebug)
-		if v, _ := cmd.Flags().GetBool("fail"); v || os.Getenv("FAIL") != "" {
-			logger.Error("Should fail due to --fail or environ FAIL is not empty")
+		if v, _ := cmd.Flags().GetBool("fail"); v {
+			logger.Error("Should fail due to --fail")
 			os.Exit(1)
 		}
 		// collect flag values
