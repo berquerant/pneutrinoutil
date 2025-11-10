@@ -75,12 +75,11 @@ const (
 )
 
 type Object struct {
-	ID               int
-	Type             ObjectType
-	Bucket           string
-	Path             string
-	SizeBytes        uint64
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
-	BucketPathSha256 []byte
+	ID        int
+	Type      ObjectType
+	Bucket    string
+	Path      string
+	SizeBytes uint64
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
