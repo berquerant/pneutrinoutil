@@ -26,6 +26,9 @@ tasks:
   build-worker:
     cmds:
       - ./bin/build.sh -o dist/pneutrinoutil-worker worker/main.go
+  build-mockcli:
+    cmds:
+      - ./bin/build.sh -o dist/pneutrinoutil-mockcli mockcli/main.go
   lint:
     desc: Run linters
     deps:
