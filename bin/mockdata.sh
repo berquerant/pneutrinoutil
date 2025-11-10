@@ -39,14 +39,19 @@ Please execute task restart-worker once the worker's process finishes,
 as we will restart it using the normal cli.
 
 You can create a failed artifact by setting FAIL.
+You can delay artifact generation by setting DURATION.
 EOS
 }
 
 prepare_dummycli() {
     local -r fail="$1"
+    local -r duration="$2"
     local cmd="$mockcli"
     if [[ -n "$fail" ]] ; then
         cmd="${cmd} --fail"
+    fi
+    if [[ -n "$duration" ]] ; then
+        cmd="${cmd} --duration ${duration}"
     fi
     cat <<EOS > "$dummycli"
 #!/bin/bash
@@ -59,7 +64,7 @@ main() {
     local -r count="${1}"
     local -r basename="${2:-mockdata_basename}"
     local -r basecontent="${3:-mockdata_content}"
-    prepare_dummycli "$FAIL"
+    prepare_dummycli "$FAIL" "$DURATION"
     task ping-infra
     task build-mockcli
     task build-worker

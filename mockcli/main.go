@@ -19,6 +19,7 @@ import (
 func init() {
 	cli.InitFlags(rootCmd)
 	rootCmd.Flags().Bool("fail", false, "If true, exit with 1")
+	rootCmd.Flags().Duration("duration", 0, "Process duration")
 }
 
 var rootCmd = &cobra.Command{
@@ -27,6 +28,9 @@ var rootCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		now := time.Now()
 		logger := logx.NewLTSVLogger(os.Stdout, slog.LevelDebug)
+		duration, _ := cmd.Flags().GetDuration("duration")
+		logger.Info("Sleep", slog.Duration("duration", duration))
+		time.Sleep(duration)
 		if v, _ := cmd.Flags().GetBool("fail"); v {
 			logger.Error("Should fail due to --fail")
 			os.Exit(1)
