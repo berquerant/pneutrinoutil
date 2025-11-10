@@ -4,9 +4,9 @@ set -e
 set -o pipefail
 
 readonly d="$(cd "$(dirname "$0")" || exit 1; pwd)"
-readonly mockcli="./dist/pneutrinoutil-mockcli"
 readonly worker="${d}/worker.sh"
 readonly docker="${d}/docker.sh"
+readonly mockcli="${d}/../dist/pneutrinoutil-mockcli"
 
 task() {
     "${d}/../task" --dir "${d}/.." "$@"
@@ -14,6 +14,7 @@ task() {
 
 tmpd="$(mktemp -d)"
 mkdir -p "$tmpd"
+readonly dummycli="${tmpd}/pneutrinoutil-dummycli"
 
 post() {
     local -r basename="$1"
@@ -36,13 +37,29 @@ mockdata.sh COUNT [BASENAME] [SCORE_CONTENT]
 The worker will be started using mockcli.
 Please execute task restart-worker once the worker's process finishes,
 as we will restart it using the normal cli.
+
+You can create a failed artifact by setting FAIL.
 EOS
+}
+
+prepare_dummycli() {
+    local -r fail="$1"
+    local cmd="$mockcli"
+    if [[ -n "$fail" ]] ; then
+        cmd="${cmd} --fail"
+    fi
+    cat <<EOS > "$dummycli"
+#!/bin/bash
+${cmd} "\$@"
+EOS
+    chmod +x "$dummycli"
 }
 
 main() {
     local -r count="${1}"
     local -r basename="${2:-mockdata_basename}"
     local -r basecontent="${3:-mockdata_content}"
+    prepare_dummycli "$FAIL"
     task ping-infra
     task build-mockcli
     task build-worker
@@ -53,7 +70,8 @@ main() {
         post "${basename}_${i}" \
              "${basecontent}_${i}"
     done
-    PNEUTRINOUTIL="$mockcli" "$worker" start
+    echo >&2 "Use ${dummycli} as PNEUTRINOUTIL"
+    PNEUTRINOUTIL="$dummycli" "$worker" start
 }
 
 case "$1" in
