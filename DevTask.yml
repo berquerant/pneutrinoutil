@@ -256,3 +256,21 @@ tasks:
     desc: Down infra
     cmds:
       - ./bin/docker.sh -f docker-infra.yml down
+  ping-mysql:
+    desc: Ping mysql
+    cmds:
+      - ./bin/mysql.sh ping >/dev/null 2>&1
+  ping-redis:
+    desc: Ping redis
+    cmds:
+      - ./bin/redis.sh ping >/dev/null 2>&1
+  ping-s3:
+    desc: Ping s3
+    cmds:
+      - ./bin/s3.sh ping >/dev/null 2>&1
+  ping-infra:
+    desc: Check infra alive
+    deps:
+      - ping-mysql
+      - ping-redis
+      - ping-s3
