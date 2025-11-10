@@ -1,8 +1,7 @@
 import type { Route } from "./+types/info"
 import { defaultApi } from '../api/env';
-import type { HandlerSuccessResponseHandlerVersionResponseData } from '../api/client'
 
-export async function loader({}: Route.LoaderArgs): Promise<HandlerSuccessResponseHandlerVersionResponseData> {
+export async function loader({}: Route.LoaderArgs) {
   const r = await defaultApi.versionGet()
   return r.data.data
 }
