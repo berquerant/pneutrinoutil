@@ -25,5 +25,7 @@ services:
       # To tail the log:
       #   docker compose exec -t server tail -f /var/log/access.log
       ACCESSLOGFILE: "/var/log/access.log"
+    volumes:
+      - ./tmp/server.log:/var/log/access.log
     networks:
       pneutrinoutil:
