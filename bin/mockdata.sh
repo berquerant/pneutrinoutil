@@ -4,7 +4,7 @@ set -e
 set -o pipefail
 
 readonly d="$(cd "$(dirname "$0")" || exit 1; pwd)"
-readonly mockcli="${d}/../dist/pneutrinoutil-mockcli"
+readonly mockcli="./dist/pneutrinoutil-mockcli"
 readonly worker="${d}/worker.sh"
 readonly docker="${d}/docker.sh"
 
@@ -32,6 +32,10 @@ usage() {
     cat <<EOS
 Generate dummy artifacts using mockcli.
 mockdata.sh COUNT [BASENAME] [SCORE_CONTENT]
+
+The worker will be started using mockcli.
+Please execute task restart-worker once the worker's process finishes,
+as we will restart it using the normal cli.
 EOS
 }
 
@@ -44,13 +48,12 @@ main() {
     task build-worker
     "$docker" up -d server
     "$worker" stop
-    PNEUTRINOUTIL="$mockcli" "$worker" start
+    sleep 3
     for i in $(seq "$count") ; do
         post "${basename}_${i}" \
              "${basecontent}_${i}"
     done
-    "$worker" stop
-    "$worker" start
+    PNEUTRINOUTIL="$mockcli" "$worker" start
 }
 
 case "$1" in
