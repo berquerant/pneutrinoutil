@@ -215,15 +215,15 @@ tasks:
   wait-mysql:
     desc: Wait mysql
     cmds:
-      - ./bin/mysql.sh wait
+      - ./bin/mysql.sh wait >/dev/null 2>&1
   wait-storage:
     desc: Wait storage
     cmds:
-      - ./bin/s3.sh wait
+      - ./bin/s3.sh wait >/dev/null 2>&1
   wait-redis:
     desc: Wait redis
     cmds:
-      - ./bin/redis.sh wait
+      - ./bin/redis.sh wait >/dev/null 2>&1
   drop-test-data:
     desc: Drop test data
     deps:
