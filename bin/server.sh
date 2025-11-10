@@ -9,6 +9,10 @@ readonly pidfile="${d}/../tmp/server.pid"
 mkdir -p "$(dirname "$pidfile")"
 
 start() {
+    if [[ -s "$pidfile" ]] ; then
+        echo >&2 "Cannot start server because ${pidfile} exist"
+        return 1
+    fi
     "${d}/../dist/pneutrinoutil-server" \
         --port "$SERVER_PORT" \
         --mysqlDSN "$MYSQL_DSN" \
@@ -17,10 +21,16 @@ start() {
         --storageS3 \
         --debug >> "$logfile" 2>&1 &
     echo $! > "$pidfile"
+    echo >&2 "Server started with pid $(cat "$pidfile")"
 }
 
 stop() {
+    if [[ ! -s "$pidfile" ]] ; then
+        echo >&2 "Cannot stop server because ${pidfile} is not found"
+        return
+    fi
     kill "$(cat "$pidfile")" || true
+    rm -f "$pidfile"
 }
 
 
