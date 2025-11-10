@@ -21,7 +21,12 @@ function showAxiosRequestConfig(c: AxiosRequestConfig) {
   const path = c.url || ''
   const params = c.params instanceof URLSearchParams
     ? c.params : new URLSearchParams(c.params || {})
-  return method + ' ' + baseURL + path + '?' + params.toString()
+  const paramsString = params.toString()
+  const msg = method + ' ' + baseURL + path
+  if (paramsString != "") {
+    return msg + '?' + paramsString
+  }
+  return msg
 }
 
 function showAxiosResponse(r: AxiosResponse) {
