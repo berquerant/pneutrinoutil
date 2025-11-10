@@ -3,7 +3,7 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 export function enableAxiosLogger(instance: AxiosInstnace): AxiosInstance {
   instance.interceptors.request.use(request => {
     const x = showAxiosRequestConfig(request)
-    console.log("Request:", x)
+    console.log("Request :", x)
     return request
   })
   instance.interceptors.response.use(response => {
