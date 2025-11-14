@@ -5,5 +5,5 @@ description = "NEUTRINO util"
 readme = "README.md"
 requires-python = "==3.13.7"
 dependencies = [
-    "ansible==10.6.0",
+    "ansible==10.7.0",
 ]
