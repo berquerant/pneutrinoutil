@@ -193,13 +193,13 @@ func TestE2E(t *testing.T) {
 		newRid = d[basename]
 	})
 
-	eventually(t, func(c *assert.CollectT) {
+	t.Run("details", func(t *testing.T) {
 		got, ok := assertAndGet[handler.GetDetailResponseData](c, newUrl("/proc/"+newRid+"/detail"))
 		assert.True(c, ok)
 		assert.Equal(c, "succeed", got.Status)
 		assert.Equal(c, newRid, got.RequestID)
 		assert.Equal(c, basename, got.Basename)
-	}, "wait process completed")
+	})
 
 	t.Run("download config", func(t *testing.T) {
 		got, ok := assertAndGet[ctl.Config](t, newUrl("/proc/"+newRid+"/config"))
