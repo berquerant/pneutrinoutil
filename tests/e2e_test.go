@@ -1,15 +1,16 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
-	"mime/multipart"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"syscall"
 	"testing"
 	"time"
@@ -63,6 +64,36 @@ func assertAndGet[T any](t assert.TestingT, url string) (T, bool) {
 
 func eventually(t *testing.T, condition func(c *assert.CollectT), msgAndArgs ...any) bool {
 	return assert.EventuallyWithT(t, condition, eventuallyWaitForMax, eventuallyTick, msgAndArgs...)
+}
+
+func generateData(content string, basename ...string) (map[string]string, error) { // basename to rid
+	d := map[string]string{}
+	if len(basename) == 0 {
+		return d, nil
+	}
+
+	stdin := bytes.NewBufferString(strings.Join(basename, "\n"))
+	var stdout bytes.Buffer
+	cmd := exec.Command(gendata, "--content", content)
+	cmd.Stdin = stdin
+	cmd.Stdout = &stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return nil, err
+	}
+	scanner := bufio.NewScanner(&stdout)
+	for scanner.Scan() {
+		xs := strings.SplitN(scanner.Text(), " ", 2)
+		d[xs[1]] = xs[0]
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
+	if len(d) != len(basename) {
+		return nil, fmt.Errorf("want %d data but got %d", len(basename), len(d))
+	}
+	return d, nil
 }
 
 func TestE2E(t *testing.T) {
@@ -155,34 +186,11 @@ func TestE2E(t *testing.T) {
 
 	var newRid string
 	t.Run("new process", func(t *testing.T) {
-		var body bytes.Buffer
-		w := multipart.NewWriter(&body)
-		fw, err := w.CreateFormFile("score", scoreFileName)
-		if !assertNil(t, err) {
+		d, err := generateData(scoreContent, basename)
+		if !assert.Nil(t, err) {
 			return
 		}
-		if _, err := fmt.Fprintf(fw, scoreContent); !assertNil(t, err) {
-			return
-		}
-		if !assertNil(t, w.Close()) {
-			return
-		}
-		req, err := http.NewRequest(http.MethodPost, newUrl("/proc"), &body)
-		if !assertNil(t, err) {
-			return
-		}
-		req.Header.Set("content-type", w.FormDataContentType())
-		resp, err := http.DefaultClient.Do(req)
-		if !assertNil(t, err) {
-			return
-		}
-		_ = resp.Body.Close()
-		if !assert.Equal(t, http.StatusAccepted, resp.StatusCode) {
-			return
-		}
-		rid := resp.Header.Get("x-request-id")
-		assert.NotEqual(t, "", rid)
-		newRid = rid
+		newRid = d[basename]
 	})
 
 	eventually(t, func(c *assert.CollectT) {
