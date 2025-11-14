@@ -17,6 +17,8 @@ tasks:
       - build-cli
       - build-server
       - build-worker
+      - build-mockcli
+      - build-gendata
   build-cli:
     cmds:
       - ./bin/build.sh -o dist/pneutrinoutil cli/main.go
@@ -29,6 +31,9 @@ tasks:
   build-mockcli:
     cmds:
       - ./bin/build.sh -o dist/pneutrinoutil-mockcli mockcli/main.go
+  build-gendata:
+    cmds:
+      - ./bin/build.sh -o dist/pneutrinoutil-gendata gendata/main.go
   lint:
     desc: Run linters
     deps:
@@ -47,11 +52,20 @@ tasks:
   e2e:
     desc: Run E2E tests
     deps:
-      - task: stop-server
+      - stop-server
+      - stop-worker
       - drop-test-data
+      - build-mockcli
+      - build-gendata
+      - build-worker
+      - build-server
     cmds:
       - task: prepare-test-data
       - go test -cover -race $(go list ./... | grep tests) -count=1 ${DEBUG+-v}
+  mockdata:
+    desc: Generate artifacts
+    cmds:
+      - ./bin/mockdata.sh {{.CLI_ARGS}}
   vuln:
     cmds:
       - ./tools/run.sh govulncheck ./...

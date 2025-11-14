@@ -7,6 +7,7 @@ readonly d="$(cd "$(dirname "$0")" || exit 1; pwd)"
 readonly worker="${d}/worker.sh"
 readonly docker="${d}/docker.sh"
 readonly mockcli="${d}/../dist/pneutrinoutil-mockcli"
+readonly gendata="${d}/../dist/pneutrinoutil-gendata"
 
 task() {
     "${d}/../task" --dir "${d}/.." "$@"
@@ -15,19 +16,6 @@ task() {
 tmpd="$(mktemp -d)"
 mkdir -p "$tmpd"
 readonly dummycli="${tmpd}/pneutrinoutil-dummycli"
-
-post() {
-    local -r basename="$1"
-    local -r content="$2"
-    local -r url="${SERVER_URI}/proc"
-    local -r score="${tmpd}/${basename}.musicxml"
-    echo "$content" > "$score"
-    echo >&2 "Create proc from ${score}"
-    curl -s -D- -X POST "$url" \
-         -H 'accept: application/json' \
-         -H 'Content-Type: multipart/form-data' \
-         -F "score=@${score}"
-}
 
 usage() {
     cat <<EOS
@@ -63,20 +51,19 @@ EOS
 main() {
     local -r count="${1}"
     local -r basename="${2:-mockdata_basename}"
-    local -r basecontent="${3:-mockdata_content}"
+    local -r content="${3:-mockdata_content}"
     prepare_dummycli "$FAIL" "$DURATION"
     task ping-infra
     task build-mockcli
+    task build-gendata
     task build-worker
     "$docker" up -d server
     "$worker" stop
     sleep 3
-    for i in $(seq "$count") ; do
-        post "${basename}_${i}" \
-             "${basecontent}_${i}"
-    done
-    echo >&2 "Use ${dummycli} as PNEUTRINOUTIL"
     PNEUTRINOUTIL="$dummycli" "$worker" start
+    seq "$count" | awk -v x="$basename" '{print $x"_"$0}' | "$gendata" -c "$content"
+    "$worker" stop
+    "$worker" start
 }
 
 case "$1" in
