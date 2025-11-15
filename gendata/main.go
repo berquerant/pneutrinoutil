@@ -18,6 +18,7 @@ import (
 
 	"github.com/berquerant/pneutrinoutil/pkg/logx"
 	"github.com/spf13/cobra"
+	"golang.org/x/sync/errgroup"
 )
 
 func init() {
@@ -55,16 +56,20 @@ var rootCmd = &cobra.Command{
 			ids[rid] = basename
 		}
 
+		eg, _ := errgroup.WithContext(ctx)
 		for rid, basename := range ids {
-			lg := logger.With(slog.String("rid", rid), slog.String("basename", basename))
-			lg.Info("wait")
-			if err := wait(ctx, url, rid); err != nil {
-				lg.Error("wait", slog.String("err", err.Error()))
-				continue
-			}
-			fmt.Printf("%s %s\n", rid, basename)
+			attr := []any{"basename", basename, "rid", rid}
+			logger.Info("wait", attr...)
+			eg.Go(func() error {
+				if err := wait(ctx, url, rid); err != nil {
+					logger.Error("wait", append(attr, "err", err.Error())...)
+					return err
+				}
+				fmt.Printf("%s %s\n", rid, basename)
+				return nil
+			})
 		}
-		return nil
+		return eg.Wait()
 	},
 }
 
@@ -87,7 +92,6 @@ func wait(ctx context.Context, url, rid string) error {
 		} `json:"data"`
 	}
 	for {
-		time.Sleep(time.Millisecond * 300)
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
@@ -115,6 +119,7 @@ func wait(ctx context.Context, url, rid string) error {
 			if slices.Contains([]string{"succeed", "failed"}, data.Data.Status) {
 				return nil
 			}
+			time.Sleep(time.Millisecond * 300)
 		}
 	}
 }
