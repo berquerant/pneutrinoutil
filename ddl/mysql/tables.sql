@@ -60,7 +60,8 @@ CREATE TABLE IF NOT EXISTS processes (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-  INDEX (status_id),
+  INDEX status_id_idx (status_id),
+  INDEX created_at_idx (created_at),
   UNIQUE INDEX request_id_idx (request_id),
   UNIQUE INDEX details_id_idx (details_id),
   CONSTRAINT fk_status_id FOREIGN KEY (status_id) REFERENCES master_statuses(id),
