@@ -155,7 +155,7 @@ const docTemplate = `{
         },
         "/proc/search": {
             "get": {
-                "description": "search processes by status, created_at, title prefix, order by created_at",
+                "description": "search processes by status, created_at, title prefix, order by created_at desc",
                 "produces": [
                     "application/json"
                 ],
