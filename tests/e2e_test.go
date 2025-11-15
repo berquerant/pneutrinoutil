@@ -6,10 +6,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"maps"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 	"syscall"
 	"testing"
@@ -30,7 +32,7 @@ const (
 	serverPort    = "9101"
 	storageBucket = "test"
 
-	eventuallyWaitForMax = time.Second * 20
+	eventuallyWaitForMax = time.Second * 5
 	eventuallyTick       = time.Millisecond * 300
 )
 
@@ -38,28 +40,35 @@ func assertNil[T any](t assert.TestingT, v T) bool {
 	return assert.Nil(t, v, "%v should be nil", v)
 }
 
-func assertAndGet[T any](t assert.TestingT, url string) (T, bool) {
-	var d T
-	r, err := http.Get(url)
-	if !assertNil(t, err) {
-		return d, false
-	}
-	defer r.Body.Close()
-	if !assert.Equal(t, http.StatusOK, r.StatusCode) {
-		return d, false
-	}
-	b, err := io.ReadAll(r.Body)
-	if !assertNil(t, err) {
-		return d, false
-	}
-	var body handler.SuccessResponse[T]
-	if !assertNil(t, json.Unmarshal(b, &body)) {
-		return d, false
-	}
-	if !assert.True(t, body.OK) {
-		return d, false
-	}
-	return body.Data, true
+func assertAndGet[T any](t *testing.T, url string) (T, bool) {
+	var (
+		d    T
+		retb bool
+	)
+	t.Run("assertAndGet:"+url, func(t *testing.T) {
+		r, err := http.Get(url)
+		if !assertNil(t, err) {
+			return
+		}
+		defer r.Body.Close()
+		if !assert.Equal(t, http.StatusOK, r.StatusCode) {
+			return
+		}
+		b, err := io.ReadAll(r.Body)
+		if !assertNil(t, err) {
+			return
+		}
+		var body handler.SuccessResponse[T]
+		if !assertNil(t, json.Unmarshal(b, &body)) {
+			return
+		}
+		if !assert.True(t, body.OK) {
+			return
+		}
+		d = body.Data
+		retb = true
+	})
+	return d, retb
 }
 
 func eventually(t *testing.T, condition func(c *assert.CollectT), msgAndArgs ...any) bool {
@@ -104,7 +113,7 @@ func TestE2E(t *testing.T) {
 			os.Getenv("REDIS_PORT"),
 			redisDB,
 		)
-		mysqlDSN = fmt.Sprintf("test:test@tcp(%s:%s)/test?parseTime=true",
+		mysqlDSN = fmt.Sprintf("test:test@tcp(%s:%s)/test?parseTime=true&loc=Asia%%2FTokyo",
 			os.Getenv("MYSQL_HOST"),
 			os.Getenv("MYSQL_PORT"),
 		)
@@ -194,11 +203,11 @@ func TestE2E(t *testing.T) {
 	})
 
 	t.Run("details", func(t *testing.T) {
-		got, ok := assertAndGet[handler.GetDetailResponseData](c, newUrl("/proc/"+newRid+"/detail"))
-		assert.True(c, ok)
-		assert.Equal(c, "succeed", got.Status)
-		assert.Equal(c, newRid, got.RequestID)
-		assert.Equal(c, basename, got.Basename)
+		got, ok := assertAndGet[handler.GetDetailResponseData](t, newUrl("/proc/"+newRid+"/detail"))
+		assert.True(t, ok)
+		assert.Equal(t, "succeed", got.Status)
+		assert.Equal(t, newRid, got.RequestID)
+		assert.Equal(t, basename, got.Basename)
 	})
 
 	t.Run("download config", func(t *testing.T) {
@@ -250,6 +259,159 @@ func TestE2E(t *testing.T) {
 		}
 		r.Body.Close()
 		assert.Equal(t, http.StatusOK, r.StatusCode)
+	})
+
+	t.Run("search", func(t *testing.T) {
+		r, ok := assertAndGet[handler.SearchProcessResponseData](t, newUrl("/proc/search"))
+		if !ok {
+			return
+		}
+		if !assert.Len(t, r, 1) {
+			return
+		}
+		x := r[0]
+		assert.Equal(t, newRid, x.RequestID)
+		assert.Equal(t, basename, x.Title)
+	})
+
+	t.Run("search complex", func(t *testing.T) {
+		joinMap := func(d1, d2 map[string]string) map[string]string {
+			for k, v := range d2 {
+				d1[k] = v
+			}
+			return d1
+		}
+
+		//
+		// data to be prepared
+		//
+		// basename
+		// t=start1
+		// a1, a2
+		// t=start2
+		// b1, b2, a3
+		// t=start3
+		// c1
+		// d1
+
+		d := map[string]string{
+			basename: newRid,
+		}
+		time.Sleep(time.Second)
+		// start1 := time.Now()
+		{
+			x, err := generateData("content1", "a1", "a2")
+			if !assert.Nil(t, err) {
+				return
+			}
+			d = joinMap(d, x)
+		}
+		time.Sleep(time.Second)
+		start2 := time.Now()
+		time.Sleep(time.Second)
+		{
+			x, err := generateData("content2", "b1", "b2", "a3")
+			if !assert.Nil(t, err) {
+				return
+			}
+			d = joinMap(d, x)
+		}
+		time.Sleep(time.Second)
+		start3 := time.Now()
+		time.Sleep(time.Second)
+		{
+			x, err := generateData("content3", "c1")
+			if !assert.Nil(t, err) {
+				return
+			}
+			d = joinMap(d, x)
+		}
+		time.Sleep(time.Second)
+		{
+			x, err := generateData("content4", "d1")
+			if !assert.Nil(t, err) {
+				return
+			}
+			d = joinMap(d, x)
+		}
+
+		t.Run("order by craeted_at desc", func(t *testing.T) {
+			r, ok := assertAndGet[handler.SearchProcessResponseData](t,
+				newUrl("/proc/search?limit=2"),
+			)
+			if !ok {
+				return
+			}
+			if !assert.Len(t, r, 2) {
+				return
+			}
+			assert.Equal(t, "d1", r[0].Title)
+			assert.Equal(t, "c1", r[1].Title)
+		})
+
+		t.Run("show all", func(t *testing.T) {
+			r, ok := assertAndGet[handler.SearchProcessResponseData](t,
+				newUrl("/proc/search?limit=100"),
+			)
+			if !ok {
+				return
+			}
+			t.Logf("%v", d)
+			for _, x := range r {
+				t.Logf("%s %d %s %s", x.CreatedAt, x.CreatedAt.Unix(), x.RequestID, x.Title)
+			}
+		})
+
+		for _, tc := range []struct {
+			title     string
+			q         string
+			basenames []string
+		}{
+			{
+				title:     "all",
+				q:         "limit=100",
+				basenames: slices.Collect(maps.Keys(d)),
+			},
+			{
+				title: "no running",
+				q:     "status=running",
+			},
+			{
+				title:     "prefix",
+				q:         "prefix=a",
+				basenames: []string{"a1", "a2", "a3"},
+			},
+			{
+				title:     "title and start",
+				q:         fmt.Sprintf("prefix=a&start=%d", start2.Unix()),
+				basenames: []string{"a3"},
+			},
+			{
+				title:     "time range",
+				q:         fmt.Sprintf("start=%d&end=%d", start2.Unix(), start3.Unix()),
+				basenames: []string{"b1", "b2", "a3"},
+			},
+		} {
+			t.Run(tc.title, func(t *testing.T) {
+				u := newUrl("/proc/search")
+				if tc.q != "" {
+					u += "?" + tc.q
+				}
+				r, ok := assertAndGet[handler.SearchProcessResponseData](t, u)
+				if !ok {
+					return
+				}
+				got := map[string]string{}
+				for _, x := range r {
+					got[x.Title] = x.RequestID
+				}
+				want := map[string]string{}
+				for _, x := range tc.basenames {
+					want[x] = d[x]
+				}
+				assert.Equal(t, want, got)
+			})
+		}
 	})
 
 	t.Log("cancel")

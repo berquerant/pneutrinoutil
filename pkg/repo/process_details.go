@@ -47,7 +47,6 @@ type GetProcessDetailsByTitlePrefixOrderbyUpdatedAtDescRequest struct {
 type ProcessDetailsGetter interface {
 	GetProcessDetails(ctx context.Context, id int) (*domain.ProcessDetails, error)
 	GetProcessDetailsList(ctx context.Context, id ...int) ([]*domain.ProcessDetails, error)
-	GetProcessDetailsByTitlePrefixOrderbyUpdatedAtDesc(ctx context.Context, req *GetProcessDetailsByTitlePrefixOrderbyUpdatedAtDescRequest) ([]*domain.ProcessDetails, error)
 }
 
 var (
@@ -186,24 +185,6 @@ func (p *ProcessDetails) GetProcessDetailsList(ctx context.Context, id ...int) (
 	})
 	if err != nil {
 		return nil, fmt.Errorf("%w: get process details list: id=%v", err, id)
-	}
-	return r.Items, nil
-}
-
-func (p *ProcessDetails) GetProcessDetailsByTitlePrefixOrderbyUpdatedAtDesc(ctx context.Context, req *GetProcessDetailsByTitlePrefixOrderbyUpdatedAtDescRequest) ([]*domain.ProcessDetails, error) {
-	args := []any{req.TitlePrefix + "%"}
-	if x := req.Limit; x > 0 {
-		args = append(args, x)
-	} else {
-		args = append(args, 5)
-	}
-	r, err := p.query.Query(ctx, &infra.QueryRequest[domain.ProcessDetails]{
-		Query: "select id, command, title, score_object_id, log_object_id, result_object_id, created_at, updated_at from process_details where title like ? order by updated_at desc limit ?;",
-		Args:  args,
-		Scan:  p.scan,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("%w: get process details list by title prefix: prefix=%s", err, req.TitlePrefix)
 	}
 	return r.Items, nil
 }

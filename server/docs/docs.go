@@ -50,35 +50,6 @@ const docTemplate = `{
             }
         },
         "/proc": {
-            "get": {
-                "description": "list results of processes",
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "list results",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "query limit; default: 5",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "process status; (pending|running|succeed|failed)",
-                        "name": "status",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handler.SuccessResponse-handler_ListProcessResponseData"
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "start a pneutrinoutil process with given arguments",
                 "produces": [
@@ -182,13 +153,12 @@ const docTemplate = `{
                 }
             }
         },
-        "/proc/title": {
+        "/proc/search": {
             "get": {
-                "description": "find processes by title prefix",
+                "description": "search processes by status, created_at, title prefix, order by created_at",
                 "produces": [
                     "application/json"
                 ],
-                "summary": "find processes by title prefix",
                 "parameters": [
                     {
                         "type": "integer",
@@ -200,15 +170,32 @@ const docTemplate = `{
                         "type": "string",
                         "description": "title prefix",
                         "name": "prefix",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "process status; (pending|running|succeed|failed)",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "created_at",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "created_at",
+                        "name": "end",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.SuccessResponse-handler_ListProcessResponseData"
+                            "$ref": "#/definitions/handler.SuccessResponse-handler_SearchProcessResponseData"
                         }
                     }
                 }
@@ -521,13 +508,9 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.ListProcessResponseDataElement": {
+        "handler.SearchProcessResponseDataElement": {
             "type": "object",
             "properties": {
-                "basename": {
-                    "description": "title",
-                    "type": "string"
-                },
                 "command": {
                     "type": "string"
                 },
@@ -543,12 +526,12 @@ const docTemplate = `{
                 "log_object_id": {
                     "type": "integer"
                 },
-                "result_object_id": {
-                    "type": "integer"
-                },
-                "rid": {
+                "request_id": {
                     "description": "request id, or just id",
                     "type": "string"
+                },
+                "result_object_id": {
+                    "type": "integer"
                 },
                 "score_object_id": {
                     "type": "integer"
@@ -557,6 +540,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -597,13 +586,13 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.SuccessResponse-handler_ListProcessResponseData": {
+        "handler.SuccessResponse-handler_SearchProcessResponseData": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/handler.ListProcessResponseDataElement"
+                        "$ref": "#/definitions/handler.SearchProcessResponseDataElement"
                     }
                 },
                 "ok": {

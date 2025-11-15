@@ -50,15 +50,10 @@ type ListProcessRequest struct {
 	Status *domain.ProcessStatus
 }
 
-type ProcessLister interface {
-	ListProcess(ctx context.Context, req *ListProcessRequest) ([]*domain.Process, error)
-}
-
 var (
 	_ ProcessCreator = &Process{}
 	_ ProcessUpdater = &Process{}
 	_ ProcessGetter  = &Process{}
-	_ ProcessLister  = &Process{}
 )
 
 func NewProcess(query infra.Queryer[domain.Process], exec infra.Execer) *Process {
@@ -207,31 +202,6 @@ func (p *Process) GetProcessByDetailsList(ctx context.Context, detailsID ...int)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("%w: get process list by details_id: id=%v", err, detailsID)
-	}
-	return r.Items, nil
-}
-
-func (p *Process) ListProcess(ctx context.Context, req *ListProcessRequest) ([]*domain.Process, error) {
-	var (
-		where string
-		args  []any
-	)
-	if x := req.Status; x != nil {
-		where = "where status = ?"
-		args = append(args, int(*x))
-	}
-	if x := req.Limit; x > 0 {
-		args = append(args, x)
-	} else {
-		args = append(args, 5)
-	}
-	r, err := p.query.Query(ctx, &infra.QueryRequest[domain.Process]{
-		Query: fmt.Sprintf("select id, request_id, status_id, details_id, started_at, completed_at, created_at, updated_at from processes %s order by id desc limit ?;", where),
-		Args:  args,
-		Scan:  p.scan,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("%w: list process", err)
 	}
 	return r.Items, nil
 }

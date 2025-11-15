@@ -79,11 +79,8 @@ definitions:
       status:
         type: string
     type: object
-  handler.ListProcessResponseDataElement:
+  handler.SearchProcessResponseDataElement:
     properties:
-      basename:
-        description: title
-        type: string
       command:
         type: string
       completed_at:
@@ -94,16 +91,20 @@ definitions:
         type: integer
       log_object_id:
         type: integer
-      result_object_id:
-        type: integer
-      rid:
+      request_id:
         description: request id, or just id
         type: string
+      result_object_id:
+        type: integer
       score_object_id:
         type: integer
       started_at:
         type: string
       status:
+        type: string
+      title:
+        type: string
+      updated_at:
         type: string
     type: object
   handler.SuccessResponse-ctl_Config:
@@ -130,11 +131,11 @@ definitions:
         description: "true"
         type: boolean
     type: object
-  handler.SuccessResponse-handler_ListProcessResponseData:
+  handler.SuccessResponse-handler_SearchProcessResponseData:
     properties:
       data:
         items:
-          $ref: '#/definitions/handler.ListProcessResponseDataElement'
+          $ref: '#/definitions/handler.SearchProcessResponseDataElement'
         type: array
       ok:
         description: "true"
@@ -195,25 +196,6 @@ paths:
             $ref: '#/definitions/handler.SuccessResponse-string'
       summary: health check
   /proc:
-    get:
-      description: list results of processes
-      parameters:
-      - description: 'query limit; default: 5'
-        in: query
-        name: limit
-        type: integer
-      - description: process status; (pending|running|succeed|failed)
-        in: query
-        name: status
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handler.SuccessResponse-handler_ListProcessResponseData'
-      summary: list results
     post:
       description: start a pneutrinoutil process with given arguments
       parameters:
@@ -400,9 +382,10 @@ paths:
           schema:
             $ref: '#/definitions/handler.ErrorResponse'
       summary: download world wav
-  /proc/title:
+  /proc/search:
     get:
-      description: find processes by title prefix
+      description: search processes by status, created_at, title prefix, order by
+        created_at
       parameters:
       - description: 'query limit; default: 5'
         in: query
@@ -411,7 +394,18 @@ paths:
       - description: title prefix
         in: query
         name: prefix
-        required: true
+        type: string
+      - description: process status; (pending|running|succeed|failed)
+        in: query
+        name: status
+        type: string
+      - description: created_at
+        in: query
+        name: start
+        type: string
+      - description: created_at
+        in: query
+        name: end
         type: string
       produces:
       - application/json
@@ -419,8 +413,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.SuccessResponse-handler_ListProcessResponseData'
-      summary: find processes by title prefix
+            $ref: '#/definitions/handler.SuccessResponse-handler_SearchProcessResponseData'
   /version:
     get:
       description: get server version

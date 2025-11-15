@@ -55,13 +55,15 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 	}
 
 	var (
-		objectConn  = infra.NewConn[domain.Object](db)
-		objects     = repo.NewObject(objectConn, objectConn)
-		objectAdmin = repo.NewObjectAdmin(objects, objects, objectStorage, objectStorage)
-		detailConn  = infra.NewConn[domain.ProcessDetails](db)
-		details     = repo.NewProcessDetails(detailConn, detailConn)
-		processConn = infra.NewConn[domain.Process](db)
-		processes   = repo.NewProcess(processConn, processConn)
+		objectConn   = infra.NewConn[domain.Object](db)
+		objects      = repo.NewObject(objectConn, objectConn)
+		objectAdmin  = repo.NewObjectAdmin(objects, objects, objectStorage, objectStorage)
+		detailConn   = infra.NewConn[domain.ProcessDetails](db)
+		details      = repo.NewProcessDetails(detailConn, detailConn)
+		processConn  = infra.NewConn[domain.Process](db)
+		processes    = repo.NewProcess(processConn, processConn)
+		searcherConn = infra.NewConn[repo.SearchProcessResultElement](db)
+		searcher     = repo.NewSearcher(searcherConn)
 	)
 
 	//
@@ -117,9 +119,7 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 	v1.GET("/debug", handler.Debug).Name = "debug"
 	v1.GET("/swagger/*", echoSwagger.WrapHandler)
 	v1.POST("/proc", handler.NewStart(client, cfg.ProcessTimeout(), cfg.StorageBucket, cfg.StoragePath, objectAdmin, details, processes).Handler).Name = "createProcess"
-	listHandler := handler.NewList(processes, processes, details)
-	v1.GET("/proc", listHandler.ListProcess).Name = "listProcess"
-	v1.GET("/proc/title", listHandler.ListProcessByTitlePrefix).Name = "listProcessByTitlePrefix"
+	v1.GET("/proc/search", handler.NewSearch(searcher).SearchProcess).Name = "searchProcess"
 	getGroup := v1.Group("/proc/:id")
 	getHandler := handler.NewGet(processes, details, objectAdmin, objects)
 	getGroup.GET("/detail", getHandler.Detail).Name = "getDetail"
