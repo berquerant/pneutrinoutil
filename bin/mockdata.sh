@@ -61,7 +61,7 @@ main() {
     "$worker" stop
     sleep 3
     PNEUTRINOUTIL="$dummycli" "$worker" start
-    seq "$count" | awk -v x="$basename" '{print $x"_"$0}' | "$gendata" -c "$content"
+    seq "$count" | awk -v x="$basename" '{print x"_"$0}' | "$gendata" -c "$content"
     "$worker" stop
     "$worker" start
 }
