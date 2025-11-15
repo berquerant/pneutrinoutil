@@ -5,6 +5,7 @@ WORKDIR /src
 
 RUN --mount=type=cache,target=/go/pkg/mod/ \
     --mount=type=bind,source=go.mod,target=go.mod \
+    --mount=type=bind,source=go.sum,target=go.sum \
     go mod download
 
 ARG TARGETARCH
@@ -17,7 +18,7 @@ FROM debian:trixie-slim AS final
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    apt update && apt-get --no-install-recommends install -y ca-certificates tzdata adduser
+    apt update && apt --no-install-recommends install -y ca-certificates tzdata adduser
 
 COPY --from=build /bin/server /bin/
 
