@@ -520,21 +520,9 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "details_id": {
-                    "type": "integer"
-                },
-                "log_object_id": {
-                    "type": "integer"
-                },
                 "request_id": {
                     "description": "request id, or just id",
                     "type": "string"
-                },
-                "result_object_id": {
-                    "type": "integer"
-                },
-                "score_object_id": {
-                    "type": "integer"
                 },
                 "started_at": {
                     "type": "string"

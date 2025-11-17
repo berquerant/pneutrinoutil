@@ -6,7 +6,6 @@ All URIs are relative to *http://localhost:9101/v1*
 |------------- | ------------- | -------------|
 |[**debugGet**](#debugget) | **GET** /debug | debug info|
 |[**healthGet**](#healthget) | **GET** /health | health check|
-|[**procGet**](#procget) | **GET** /proc | list results|
 |[**procIdConfigGet**](#procidconfigget) | **GET** /proc/{id}/config | download config|
 |[**procIdDetailGet**](#prociddetailget) | **GET** /proc/{id}/detail | get process info|
 |[**procIdLogGet**](#procidlogget) | **GET** /proc/{id}/log | download log|
@@ -14,7 +13,7 @@ All URIs are relative to *http://localhost:9101/v1*
 |[**procIdWavGet**](#procidwavget) | **GET** /proc/{id}/wav | download wav|
 |[**procIdWorldWavGet**](#procidworldwavget) | **GET** /proc/{id}/world_wav | download world wav|
 |[**procPost**](#procpost) | **POST** /proc | start a process|
-|[**procTitleGet**](#proctitleget) | **GET** /proc/title | find processes by title prefix|
+|[**procSearchGet**](#procsearchget) | **GET** /proc/search | |
 |[**versionGet**](#versionget) | **GET** /version | get server version|
 
 # **debugGet**
@@ -87,60 +86,6 @@ This endpoint does not have any parameters.
 ### Return type
 
 **HandlerSuccessResponseString**
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** | OK |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **procGet**
-> HandlerSuccessResponseHandlerListProcessResponseData procGet()
-
-list results of processes
-
-### Example
-
-```typescript
-import {
-    DefaultApi,
-    Configuration
-} from './api';
-
-const configuration = new Configuration();
-const apiInstance = new DefaultApi(configuration);
-
-let limit: number; //query limit; default: 5 (optional) (default to undefined)
-let status: string; //process status; (pending|running|succeed|failed) (optional) (default to undefined)
-
-const { status, data } = await apiInstance.procGet(
-    limit,
-    status
-);
-```
-
-### Parameters
-
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **limit** | [**number**] | query limit; default: 5 | (optional) defaults to undefined|
-| **status** | [**string**] | process status; (pending|running|succeed|failed) | (optional) defaults to undefined|
-
-
-### Return type
-
-**HandlerSuccessResponseHandlerListProcessResponseData**
 
 ### Authorization
 
@@ -552,10 +497,10 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **procTitleGet**
-> HandlerSuccessResponseHandlerListProcessResponseData procTitleGet()
+# **procSearchGet**
+> HandlerSuccessResponseHandlerSearchProcessResponseData procSearchGet()
 
-find processes by title prefix
+search processes by status, created_at, title prefix, order by created_at desc
 
 ### Example
 
@@ -568,12 +513,18 @@ import {
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
 
-let prefix: string; //title prefix (default to undefined)
 let limit: number; //query limit; default: 5 (optional) (default to undefined)
+let prefix: string; //title prefix (optional) (default to undefined)
+let status: string; //process status; (pending|running|succeed|failed) (optional) (default to undefined)
+let start: string; //created_at (optional) (default to undefined)
+let end: string; //created_at (optional) (default to undefined)
 
-const { status, data } = await apiInstance.procTitleGet(
+const { status, data } = await apiInstance.procSearchGet(
+    limit,
     prefix,
-    limit
+    status,
+    start,
+    end
 );
 ```
 
@@ -581,13 +532,16 @@ const { status, data } = await apiInstance.procTitleGet(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **prefix** | [**string**] | title prefix | defaults to undefined|
 | **limit** | [**number**] | query limit; default: 5 | (optional) defaults to undefined|
+| **prefix** | [**string**] | title prefix | (optional) defaults to undefined|
+| **status** | [**string**] | process status; (pending|running|succeed|failed) | (optional) defaults to undefined|
+| **start** | [**string**] | created_at | (optional) defaults to undefined|
+| **end** | [**string**] | created_at | (optional) defaults to undefined|
 
 
 ### Return type
 
-**HandlerSuccessResponseHandlerListProcessResponseData**
+**HandlerSuccessResponseHandlerSearchProcessResponseData**
 
 ### Authorization
 

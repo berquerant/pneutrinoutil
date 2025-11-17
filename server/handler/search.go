@@ -55,18 +55,14 @@ func (p SearchProcessParam) intoRequest() *repo.SearchProcessRequest {
 }
 
 type SearchProcessResponseDataElement struct {
-	RequestID      string    `json:"request_id"` // request id, or just id
-	Status         string    `json:"status"`
-	DetailsID      int       `json:"details_id"`
-	StartedAt      time.Time `json:"started_at,omitempty"`
-	CompletedAt    time.Time `json:"completed_at,omitempty"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
-	Command        string    `json:"command,omitempty"`
-	Title          string    `json:"title"`
-	ScoreObjectID  int       `json:"score_object_id"`
-	LogObjectID    int       `json:"log_object_id,omitempty"`
-	ResultObjectID int       `json:"result_object_id,omitempty"`
+	RequestID   string    `json:"request_id"` // request id, or just id
+	Status      string    `json:"status"`
+	StartedAt   time.Time `json:"started_at,omitempty"`
+	CompletedAt time.Time `json:"completed_at,omitempty"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	Command     string    `json:"command,omitempty"`
+	Title       string    `json:"title"`
 }
 
 type SearchProcessResponseData []*SearchProcessResponseDataElement
@@ -97,13 +93,11 @@ func (s *Search) SearchProcess(c echo.Context) error {
 	data := make([]*SearchProcessResponseDataElement, len(xs.Items))
 	for i, x := range xs.Items {
 		y := &SearchProcessResponseDataElement{
-			RequestID:     x.Process.RequestID,
-			Status:        x.Process.Status.String(),
-			DetailsID:     x.Process.DetailsID,
-			CreatedAt:     x.Process.CreatedAt,
-			UpdatedAt:     x.Process.UpdatedAt,
-			Title:         x.Details.Title,
-			ScoreObjectID: x.Details.ScoreObjectID,
+			RequestID: x.Process.RequestID,
+			Status:    x.Process.Status.String(),
+			CreatedAt: x.Process.CreatedAt,
+			UpdatedAt: x.Process.UpdatedAt,
+			Title:     x.Details.Title,
 		}
 		if v := x.Process.StartedAt; v != nil {
 			y.StartedAt = *v
@@ -113,12 +107,6 @@ func (s *Search) SearchProcess(c echo.Context) error {
 		}
 		if v := x.Details.Command; v != nil {
 			y.Command = *v
-		}
-		if v := x.Details.LogObjectID; v != nil {
-			y.LogObjectID = *v
-		}
-		if v := x.Details.ResultObjectID; v != nil {
-			y.ResultObjectID = *v
 		}
 		data[i] = y
 	}

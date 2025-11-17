@@ -81,24 +81,18 @@ export interface HandlerGetDetailResponseData {
     'started_at'?: string;
     'status'?: string;
 }
-export interface HandlerListProcessResponseDataElement {
-    /**
-     * title
-     */
-    'basename'?: string;
+export interface HandlerSearchProcessResponseDataElement {
     'command'?: string;
     'completed_at'?: string;
     'created_at'?: string;
-    'details_id'?: number;
-    'log_object_id'?: number;
-    'result_object_id'?: number;
     /**
      * request id, or just id
      */
-    'rid'?: string;
-    'score_object_id'?: number;
+    'request_id'?: string;
     'started_at'?: string;
     'status'?: string;
+    'title'?: string;
+    'updated_at'?: string;
 }
 export interface HandlerSuccessResponseCtlConfig {
     'data'?: CtlConfig;
@@ -121,8 +115,8 @@ export interface HandlerSuccessResponseHandlerGetDetailResponseData {
      */
     'ok'?: boolean;
 }
-export interface HandlerSuccessResponseHandlerListProcessResponseData {
-    'data'?: Array<HandlerListProcessResponseDataElement>;
+export interface HandlerSuccessResponseHandlerSearchProcessResponseData {
+    'data'?: Array<HandlerSearchProcessResponseDataElement>;
     /**
      * true
      */
@@ -206,46 +200,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * list results of processes
-         * @summary list results
-         * @param {number} [limit] query limit; default: 5
-         * @param {string} [status] process status; (pending|running|succeed|failed)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        procGet: async (limit?: number, status?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/proc`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            if (limit !== undefined) {
-                localVarQueryParameter['limit'] = limit;
-            }
-
-            if (status !== undefined) {
-                localVarQueryParameter['status'] = status;
-            }
 
 
     
@@ -549,17 +503,17 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * find processes by title prefix
-         * @summary find processes by title prefix
-         * @param {string} prefix title prefix
+         * search processes by status, created_at, title prefix, order by created_at desc
          * @param {number} [limit] query limit; default: 5
+         * @param {string} [prefix] title prefix
+         * @param {string} [status] process status; (pending|running|succeed|failed)
+         * @param {string} [start] created_at
+         * @param {string} [end] created_at
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        procTitleGet: async (prefix: string, limit?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'prefix' is not null or undefined
-            assertParamExists('procTitleGet', 'prefix', prefix)
-            const localVarPath = `/proc/title`;
+        procSearchGet: async (limit?: number, prefix?: string, status?: string, start?: string, end?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/proc/search`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -577,6 +531,18 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             if (prefix !== undefined) {
                 localVarQueryParameter['prefix'] = prefix;
+            }
+
+            if (status !== undefined) {
+                localVarQueryParameter['status'] = status;
+            }
+
+            if (start !== undefined) {
+                localVarQueryParameter['start'] = start;
+            }
+
+            if (end !== undefined) {
+                localVarQueryParameter['end'] = end;
             }
 
 
@@ -651,20 +617,6 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.healthGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DefaultApi.healthGet']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * list results of processes
-         * @summary list results
-         * @param {number} [limit] query limit; default: 5
-         * @param {string} [status] process status; (pending|running|succeed|failed)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async procGet(limit?: number, status?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<HandlerSuccessResponseHandlerListProcessResponseData>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.procGet(limit, status, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['DefaultApi.procGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -768,17 +720,19 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * find processes by title prefix
-         * @summary find processes by title prefix
-         * @param {string} prefix title prefix
+         * search processes by status, created_at, title prefix, order by created_at desc
          * @param {number} [limit] query limit; default: 5
+         * @param {string} [prefix] title prefix
+         * @param {string} [status] process status; (pending|running|succeed|failed)
+         * @param {string} [start] created_at
+         * @param {string} [end] created_at
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async procTitleGet(prefix: string, limit?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<HandlerSuccessResponseHandlerListProcessResponseData>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.procTitleGet(prefix, limit, options);
+        async procSearchGet(limit?: number, prefix?: string, status?: string, start?: string, end?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<HandlerSuccessResponseHandlerSearchProcessResponseData>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.procSearchGet(limit, prefix, status, start, end, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['DefaultApi.procTitleGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.procSearchGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -819,17 +773,6 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         healthGet(options?: RawAxiosRequestConfig): AxiosPromise<HandlerSuccessResponseString> {
             return localVarFp.healthGet(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * list results of processes
-         * @summary list results
-         * @param {number} [limit] query limit; default: 5
-         * @param {string} [status] process status; (pending|running|succeed|failed)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        procGet(limit?: number, status?: string, options?: RawAxiosRequestConfig): AxiosPromise<HandlerSuccessResponseHandlerListProcessResponseData> {
-            return localVarFp.procGet(limit, status, options).then((request) => request(axios, basePath));
         },
         /**
          * download pneutrinoutil config as json
@@ -911,15 +854,17 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.procPost(score, enhanceBreathiness, formantShift, inference, model, pitchShiftNsf, pitchShiftWorld, smoothFormant, smoothPitch, styleShift, options).then((request) => request(axios, basePath));
         },
         /**
-         * find processes by title prefix
-         * @summary find processes by title prefix
-         * @param {string} prefix title prefix
+         * search processes by status, created_at, title prefix, order by created_at desc
          * @param {number} [limit] query limit; default: 5
+         * @param {string} [prefix] title prefix
+         * @param {string} [status] process status; (pending|running|succeed|failed)
+         * @param {string} [start] created_at
+         * @param {string} [end] created_at
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        procTitleGet(prefix: string, limit?: number, options?: RawAxiosRequestConfig): AxiosPromise<HandlerSuccessResponseHandlerListProcessResponseData> {
-            return localVarFp.procTitleGet(prefix, limit, options).then((request) => request(axios, basePath));
+        procSearchGet(limit?: number, prefix?: string, status?: string, start?: string, end?: string, options?: RawAxiosRequestConfig): AxiosPromise<HandlerSuccessResponseHandlerSearchProcessResponseData> {
+            return localVarFp.procSearchGet(limit, prefix, status, start, end, options).then((request) => request(axios, basePath));
         },
         /**
          * get server version
@@ -955,18 +900,6 @@ export class DefaultApi extends BaseAPI {
      */
     public healthGet(options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).healthGet(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * list results of processes
-     * @summary list results
-     * @param {number} [limit] query limit; default: 5
-     * @param {string} [status] process status; (pending|running|succeed|failed)
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public procGet(limit?: number, status?: string, options?: RawAxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).procGet(limit, status, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1056,15 +989,17 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * find processes by title prefix
-     * @summary find processes by title prefix
-     * @param {string} prefix title prefix
+     * search processes by status, created_at, title prefix, order by created_at desc
      * @param {number} [limit] query limit; default: 5
+     * @param {string} [prefix] title prefix
+     * @param {string} [status] process status; (pending|running|succeed|failed)
+     * @param {string} [start] created_at
+     * @param {string} [end] created_at
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public procTitleGet(prefix: string, limit?: number, options?: RawAxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).procTitleGet(prefix, limit, options).then((request) => request(this.axios, this.basePath));
+    public procSearchGet(limit?: number, prefix?: string, status?: string, start?: string, end?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).procSearchGet(limit, prefix, status, start, end, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

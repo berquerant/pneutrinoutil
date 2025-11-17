@@ -1,19 +1,19 @@
-# HandlerSuccessResponseHandlerListProcessResponseData
+# HandlerSuccessResponseHandlerSearchProcessResponseData
 
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**data** | [**Array&lt;HandlerListProcessResponseDataElement&gt;**](HandlerListProcessResponseDataElement.md) |  | [optional] [default to undefined]
+**data** | [**Array&lt;HandlerSearchProcessResponseDataElement&gt;**](HandlerSearchProcessResponseDataElement.md) |  | [optional] [default to undefined]
 **ok** | **boolean** | true | [optional] [default to undefined]
 
 ## Example
 
 ```typescript
-import { HandlerSuccessResponseHandlerListProcessResponseData } from './api';
+import { HandlerSuccessResponseHandlerSearchProcessResponseData } from './api';
 
-const instance: HandlerSuccessResponseHandlerListProcessResponseData = {
+const instance: HandlerSuccessResponseHandlerSearchProcessResponseData = {
     data,
     ok,
 };
