@@ -1,5 +1,5 @@
 import type { Route } from "./+types/info"
-import { defaultApi } from '../api/env';
+import { defaultApi } from '../api/env'
 
 export async function loader({}: Route.LoaderArgs) {
   const r = await defaultApi.versionGet()
@@ -16,8 +16,8 @@ export function meta({}: Route.MetaArgs) {
 export default async function Info({
   loaderData: { version, revision },
 }: Route.ComponentProps) {
-  return <div class="container">
-    <table class="table">
+  return <div className="container">
+    <table className="table">
     <tbody>
     <tr>
     <td>Version</td>

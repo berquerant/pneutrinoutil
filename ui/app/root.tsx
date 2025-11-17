@@ -8,6 +8,7 @@ import {
 } from "react-router"
 
 import type { Route } from "./+types/root"
+import Search from './search'
 import "./app.css"
 
 export const links: Route.LinksFunction = () => [
@@ -23,6 +24,17 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+function Navbar() {
+  return <nav className="navbar navbar-expand-lg bg-body-tertiary">
+    <div className="container-fluid">
+    <a className="navbar-brand" href="/">Pneutrinoutil UI</a>
+    <div className="collapse navbar-collapse" id="navbarSupportedContent">
+    <Search />
+    </div>
+    </div>
+    </nav>
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -33,6 +45,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+        <Navbar />
         {children}
         <ScrollRestoration />
         <Scripts />
