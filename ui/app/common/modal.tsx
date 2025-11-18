@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react'
 import Modal from 'react-modal'
 import { CodeBlock } from './code'
 
-export default function CodeModal({ code }) {
+export default function CodeModal({ name, code }) {
   const [modalOpen, setModalOpen] = useState(false)
   const openModal = () => setModalOpen(true)
   const closeModal = () => setModalOpen(false)
@@ -22,9 +22,9 @@ export default function CodeModal({ code }) {
   const copyButtonClassName = "btn btn-primary " + (isCopied ? "btn-success" : "btn-primary")
   const copyButtonText = isCopied ? "Copied!" : "Copy"
   return (
-    <div className="container">
+    <div>
     <button type="button" className="btn btn-primary" onClick={openModal} onRequestClose={closeModal}>
-    Config
+    {name}
     </button>
       <Modal isOpen={modalOpen}>
       <div class="row align-items-start">
