@@ -1,5 +1,5 @@
 import type { Route } from "./+types/root"
-import { useState } from 'react';
+import { useState } from 'react'
 import { useSearchParams, useNavigate } from "react-router"
 
 function fromApiDatetime(x: string | null): string | null {

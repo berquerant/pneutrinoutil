@@ -1,17 +1,24 @@
 import type { Route } from "./+type/detail"
 import { defaultApi } from '../api/env'
 import Detail from '../detail/detail'
+import Config from '../detail/config'
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const r = await defaultApi.procIdDetailGet(params.id)
-  const d = r.data.data
-  const s = {
+  const detail = await defaultApi.procIdDetailGet(params.id)
+  const config = await defaultApi.procIdConfigGet(params.id)
+  const d = detail.data.data
+  const d2 = {
     request_id: d.rid,
     title: d.basename,
   }
-  return {
+  const detailData = {
     ...d,
-    ...s,
+    ...d2,
+  }
+  const configData = config.data.data
+  return {
+    detail: detailData,
+    config: configData,
   }
 }
 
@@ -23,9 +30,13 @@ export function meta({ params }: Route.MetaArgs) {
 }
 
 export default function Component({
-  loaderData,
+  loaderData: {
+    detail,
+    config,
+  },
 }: Route.ComponentProps) {
   return <div className="container">
-    {Detail(loaderData)}
-    </div>
+  {Detail(detail)}
+  {Config(config)}
+  </div>
 }
