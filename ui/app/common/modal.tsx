@@ -27,14 +27,14 @@ export default function CodeModal({ name, code }) {
     {name}
     </button>
       <Modal isOpen={modalOpen}>
-      <div class="row align-items-start">
-      <div class="col d-flex gap-3">
+      <div className="row align-items-start">
+      <div className="col d-flex gap-3">
       <button type="button" className="btn btn-danger" onClick={closeModal}>Close</button>
       <button type="button" className={copyButtonClassName} onClick={handleCopy}>{copyButtonText}</button>
       </div>
       </div>
       <hr/>
-      <div class="row">
+      <div className="row">
       {CodeBlock({code: code})}
       </div>
     </Modal>
