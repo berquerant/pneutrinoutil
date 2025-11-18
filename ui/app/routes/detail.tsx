@@ -5,7 +5,6 @@ import Config from '../detail/config'
 
 export async function loader({ params }: Route.LoaderArgs) {
   const detail = await defaultApi.procIdDetailGet(params.id)
-  const config = await defaultApi.procIdConfigGet(params.id)
   const d = detail.data.data
   const d2 = {
     request_id: d.rid,
@@ -15,10 +14,21 @@ export async function loader({ params }: Route.LoaderArgs) {
     ...d,
     ...d2,
   }
-  const configData = config.data.data
-  return {
-    detail: detailData,
-    config: configData,
+  try {
+    const config = await defaultApi.procIdConfigGet(params.id)
+    const configData = config.data.data
+    return {
+      detail: detailData,
+      config: configData,
+    }
+  } catch(err) {
+    if (err.response && err.response.status == 404) {
+      return {
+        detail: detailData,
+        config: null,
+      }
+    }
+    throw err
   }
 }
 
@@ -37,6 +47,6 @@ export default function Component({
 }: Route.ComponentProps) {
   return <div className="container">
   {Detail(detail)}
-  {Config(config)}
+  {config != null && Config(config)}
   </div>
 }
