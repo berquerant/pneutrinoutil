@@ -2,25 +2,55 @@ import { useCallback, useState } from 'react'
 import Modal from 'react-modal'
 import { CodeBlock } from './code'
 
+enum CopyState {
+  Init,
+  Success,
+  Failed,
+}
+
+function toCopyButtonText(s: CopyState): string {
+  switch (s) {
+    case CopyState.Init:
+      return 'Copy'
+    case CopyState.Success:
+      return 'Copied!'
+    default:
+      return 'Copy failed'
+  }
+}
+
+function toCopyButtonClassName(s: CopyState): string {
+  switch (s) {
+    case CopyState.Init:
+      return 'btn-primary'
+    case CopyState.Success:
+      return 'btn-success'
+    default:
+      return 'btn-danger'
+  }
+}
+
 export default function CodeModal({ name, code }) {
   const [modalOpen, setModalOpen] = useState(false)
   const openModal = () => setModalOpen(true)
   const closeModal = () => setModalOpen(false)
 
-  const [isCopied, setIsCopied] = useState(false)
+  const [copyState, setCopyState] = useState(CopyState.Init)
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(code)
-      setIsCopied(true)
+      setCopyState(CopyState.Success)
       setTimeout(() => {
-        setIsCopied(false);
+        setCopyState(CopyState.Init)
       }, 3000)
     } catch (err) {
-      console.error('Failed to copy', err);
+      setTimeout(() => {
+        setCopyState(CopyState.Failed)
+      }, 3000)
     }
   }, [code])
-  const copyButtonClassName = "btn btn-primary " + (isCopied ? "btn-success" : "btn-primary")
-  const copyButtonText = isCopied ? "Copied!" : "Copy"
+  const copyButtonClassName = 'btn ' + toCopyButtonClassName(copyState)
+  const copyButtonText = toCopyButtonText(copyState)
   return (
     <div>
     <button type="button" className="btn btn-primary" onClick={openModal} onRequestClose={closeModal}>
