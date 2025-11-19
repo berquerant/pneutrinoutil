@@ -1,8 +1,9 @@
 import type { Route } from "./+type/detail"
-import { defaultApi } from '../api/env'
+import { defaultApi, apiServerUri } from '../api/env'
 import Detail from '../detail/detail'
 import Config from '../detail/config'
 import Log from '../detail/log'
+import MusicXML from '../detail/musicxml'
 
 export async function loader({ params }: Route.LoaderArgs) {
   const detail = await defaultApi.procIdDetailGet(params.id)
@@ -36,6 +37,8 @@ export async function loader({ params }: Route.LoaderArgs) {
       throw err
     }
   }
+
+  result['apiServerUri'] = apiServerUri
   return result
 }
 
@@ -51,6 +54,7 @@ export default function Component({
     detail,
     config,
     log,
+    apiServerUri,
   },
 }: Route.ComponentProps) {
   return (
@@ -61,6 +65,7 @@ export default function Component({
     <div className="col d-flex gap-3">
     {config != null && Config(config)}
     {log != null && Log(log)}
+    {MusicXML({ apiServerUri: apiServerUri, rid: detail.request_id })}
     </div>
     </div>
     </div>

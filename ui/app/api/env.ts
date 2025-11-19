@@ -18,6 +18,9 @@ const configuration = new Configuration({
 })
 const defaultApi = new DefaultApi(configuration, undefined, axiosInstance)
 
+const apiServerUri = SERVER_URI
+
 export {
   defaultApi,
+  apiServerUri,
 };

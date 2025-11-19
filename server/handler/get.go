@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -252,6 +253,7 @@ func (g *Get) Config(c echo.Context) error {
 func (g *Get) MusicXML(c echo.Context) error {
 	return g.withResult(func(c echo.Context, r *result) error {
 		if objectID := r.resultObjectID; objectID != nil {
+			c.Response().Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s.musicxml"`, r.basename))
 			return g.withResultObjectFileBlob(*objectID, "application/vnd.recordare.musicxml+xml", r.basename+".musicxml")(c)
 		}
 		return Error(c, http.StatusNotFound, "not found")
