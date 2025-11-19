@@ -6,5 +6,9 @@ export default function MusicXML({
   rid,
 }: Route.ComponentProps) {
   const url = `${apiServerUri}/proc/${rid}/musicxml`
-  return Download({url: url, name: "MusicXML"})
+  return (
+    <div>
+      {Download({url: url, name: "Download MusicXML"})}
+    </div>
+  )
 }
