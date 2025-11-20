@@ -33,16 +33,16 @@ export default function Create({
     )
     : null;
   return (
-    <div>
+    <div className="container">
       {result}
       <Form
         className="form-floating"
         method="post"
         encType="multipart/form-data"
       >
-        <div>
+        <div className="mb-3">
           <label className="form-label" htmlFor="score" required>
-            Score(musicxml)
+            Score
           </label>
           <input
             className="form-control"
@@ -51,10 +51,11 @@ export default function Create({
             type="file"
             accept=".musicxml,application/vnd.recordare.musicxml+xml"
           />
+          <div className="form-text" id="score">musicxml</div>
         </div>
-        <div>
+        <div className="mb-3">
           <label className="form-label" htmlFor="enhanceBreathiness">
-            EnhanceBreathiness(%)
+            EnhanceBreathiness
           </label>
           <input
             className="form-control"
@@ -64,8 +65,9 @@ export default function Create({
             inputMode="numeric"
             defaultValue="0"
           />
+          <div className="form-text" id="enhanceBreathiness">[0, 100]%</div>
         </div>
-        <div>
+        <div className="mb-3">
           <label className="form-label" htmlFor="formantShift">
             FormantShift
           </label>
@@ -77,8 +79,12 @@ export default function Create({
             inputMode="numeric"
             defaultValue="1.0"
           />
+          <div className="form-text" id="formantShift">
+            Higher values result in a younger tone; lower values result in a
+            mature tone
+          </div>
         </div>
-        <div>
+        <div className="mb-3">
           <label className="form-label" htmlFor="inference">Inference</label>
           <select
             className="form-select"
@@ -86,12 +92,13 @@ export default function Create({
             name="inference"
             defaultValue="2"
           >
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
+            <option value="2">Elements</option>
+            <option value="3">Standard</option>
+            <option value="4">Advanced</option>
           </select>
+          <div className="form-text" id="inference">Inference quality</div>
         </div>
-        <div>
+        <div className="mb-3">
           <label className="form-label" htmlFor="model">Model</label>
           <input
             className="form-control"
@@ -100,6 +107,7 @@ export default function Create({
             type="text"
             defaultValue="KIRITAN"
           />
+          <div className="form-text" id="model">Singer library</div>
         </div>
         <div>
           <label className="form-label" htmlFor="pitchShiftNsf">
@@ -114,7 +122,7 @@ export default function Create({
             defaultValue="0"
           />
         </div>
-        <div>
+        <div className="mb-3">
           <label className="form-label" htmlFor="pitchShiftWorld">
             PitchShiftWorld
           </label>
@@ -127,9 +135,9 @@ export default function Create({
             defaultValue="0"
           />
         </div>
-        <div>
+        <div className="mb-3">
           <label className="form-label" htmlFor="smoothFormant">
-            SmoothFormant(%)
+            SmoothFormant
           </label>
           <input
             className="form-control"
@@ -139,10 +147,11 @@ export default function Create({
             inputMode="numeric"
             defaultValue="0"
           />
+          <div className="form-text" id="smoothFormant">[0, 100]%</div>
         </div>
-        <div>
+        <div className="mb-3">
           <label className="form-label" htmlFor="smoothPitch">
-            SmoothPitch(%)
+            SmoothPitch
           </label>
           <input
             className="form-control"
@@ -152,8 +161,9 @@ export default function Create({
             inputMode="numeric"
             defaultValue="0"
           />
+          <div className="form-text" id="smoothPitch">[0, 100]%</div>
         </div>
-        <div>
+        <div className="mb-3">
           <label className="form-label" htmlFor="styleShift">StyleShift</label>
           <input
             className="form-control"
@@ -164,8 +174,11 @@ export default function Create({
             pattern="\d*"
             defaultValue="0"
           />
+          <div className="form-text" id="styleShift">
+            Infer by raising the score by the specified key
+          </div>
         </div>
-        <button className="btn btn-primary" type="submit">Create</button>
+        <button className="btn btn-primary" type="submit">Create new process</button>
       </Form>
     </div>
   );
