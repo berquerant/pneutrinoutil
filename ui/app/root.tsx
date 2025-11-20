@@ -28,8 +28,10 @@ function Navbar() {
   return <nav className="navbar navbar-expand-lg bg-body-tertiary">
     <div className="container-fluid">
     <a className="navbar-brand" href="/">Pneutrinoutil UI</a>
-    <div className="collapse navbar-collapse" id="navbarSupportedContent">
+    <div className="collapse navbar-collapse gap-3" id="navbarSupportedContent">
     <Search />
+    <div className="vr"></div>
+    <a href="/create" className="btn btn-primary">Create</a>
     </div>
     </div>
     </nav>
