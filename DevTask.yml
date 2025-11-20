@@ -118,12 +118,8 @@ tasks:
       - task: start-ui
   stop:
     desc: Stop services
-    deps:
-      - stop-worker
-      - stop-server
-      - stop-ui
     cmds:
-      - task: drop-infra
+      - ./bin/docker.sh down
   start-server:
     desc: Start server
     deps:
