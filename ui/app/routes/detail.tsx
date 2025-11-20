@@ -4,6 +4,8 @@ import Detail from '../detail/detail'
 import Config from '../detail/config'
 import Log from '../detail/log'
 import MusicXML from '../detail/musicxml'
+import Wav from '../detail/wav'
+import WorldWav from '../detail/worldwav'
 
 export async function loader({ params }: Route.LoaderArgs) {
   const detail = await defaultApi.procIdDetailGet(params.id)
@@ -66,6 +68,8 @@ export default function Component({
     {config != null && Config(config)}
     {log != null && Log(log)}
     {MusicXML({ apiServerUri: apiServerUri, rid: detail.request_id })}
+    {Wav({ apiServerUri: apiServerUri, rid: detail.request_id })}
+    {WorldWav({ apiServerUri: apiServerUri, rid: detail.request_id })}
     </div>
     </div>
     </div>
