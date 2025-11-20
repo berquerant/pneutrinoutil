@@ -6,19 +6,29 @@ export async function action({
   request,
 }: Route.ActionArgs) {
   const d = await request.formData();
-  const r = await defaultApi.procPost(
-    d.get("score"),
-    d.get("enhanceBreathiness"),
-    d.get("formantShift"),
-    d.get("inference"),
-    d.get("model"),
-    d.get("pitchShiftNsf"),
-    d.get("pitchShiftWorld"),
-    d.get("smoothFormant"),
-    d.get("smoothPitch"),
-    d.get("styleShift"),
-  );
-  return r;
+  try {
+    const r = await defaultApi.procPost(
+      d.get("score"),
+      d.get("enhanceBreathiness"),
+      d.get("formantShift"),
+      d.get("inference"),
+      d.get("model"),
+      d.get("pitchShiftNsf"),
+      d.get("pitchShiftWorld"),
+      d.get("smoothFormant"),
+      d.get("smoothPitch"),
+      d.get("styleShift"),
+    );
+    return {
+      ok: true,
+      data: r.headers["x-request-id"],
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      err: String(err),
+    };
+  }
 }
 
 export default function Create({
@@ -26,10 +36,18 @@ export default function Create({
 }: Route.ComponentProps) {
   const result = actionData
     ? (
-      <div className="alert alert-success" role="alert">
-        Successfully created process! RequestID={actionData
-          .headers["x-request-id"]}
-      </div>
+      actionData.ok
+        ? (
+          <div className="alert alert-success" role="alert">
+            Successfully created process! RequestID={actionData
+              .data}
+          </div>
+        )
+        : (
+          <div className="alert alert-danger" role="alert">
+            Failed to create process! {actionData.err}
+          </div>
+        )
     )
     : null;
   return (
