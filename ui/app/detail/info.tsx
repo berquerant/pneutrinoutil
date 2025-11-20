@@ -1,4 +1,4 @@
-import type { Route } from "./+types/detail"
+import type { Route } from "./+types/detail";
 
 export default function Info({
   request_id,
@@ -10,42 +10,44 @@ export default function Info({
   command,
   title,
 }: Route.ComponentProps) {
-  return <div className="container">
-    <table className="table">
-    <tbody>
-    <tr>
-    <td>Title</td>
-    <td>{title}</td>
-    </tr>
-    <tr>
-    <td>RequestID</td>
-    <td>{request_id}</td>
-    </tr>
-    <tr>
-    <td>Status</td>
-    <td>{status}</td>
-    </tr>
-    <tr>
-    <td>Command</td>
-    <td>{command}</td>
-    </tr>
-    <tr>
-    <td>Created</td>
-    <td>{created_at}</td>
-    </tr>
-    <tr>
-    <td>Updated</td>
-    <td>{updated_at}</td>
-    </tr>
-    <tr>
-    <td>Started</td>
-    <td>{started_at}</td>
-    </tr>
-    <tr>
-    <td>Completed</td>
-    <td>{completed_at}</td>
-    </tr>
-    </tbody>
-    </table>
+  return (
+    <div className="container">
+      <table className="table">
+        <tbody>
+          <tr>
+            <td>Title</td>
+            <td>{title}</td>
+          </tr>
+          <tr>
+            <td>RequestID</td>
+            <td>{request_id}</td>
+          </tr>
+          <tr>
+            <td>Status</td>
+            <td>{status}</td>
+          </tr>
+          <tr>
+            <td>Command</td>
+            <td>{command}</td>
+          </tr>
+          <tr>
+            <td>Created</td>
+            <td>{created_at}</td>
+          </tr>
+          <tr>
+            <td>Updated</td>
+            <td>{updated_at}</td>
+          </tr>
+          <tr>
+            <td>Started</td>
+            <td>{started_at}</td>
+          </tr>
+          <tr>
+            <td>Completed</td>
+            <td>{completed_at}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+  );
 }

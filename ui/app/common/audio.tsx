@@ -1,4 +1,4 @@
-import Download from '../common/download'
+import Download from "../common/download";
 
 export default function Audio({
   url,
@@ -7,7 +7,7 @@ export default function Audio({
   return (
     <div className="card">
       <audio controls src={url} preload="none"></audio>
-      {Download({url: url, name: name})}
+      {Download({ url: url, name: name })}
     </div>
-  )
+  );
 }

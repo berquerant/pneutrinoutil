@@ -1,3 +1,3 @@
-export default function Download({url, name}) {
-  return <a href={url} download className="btn btn-primary">{name}</a>
+export default function Download({ url, name }) {
+  return <a href={url} download className="btn btn-primary">{name}</a>;
 }

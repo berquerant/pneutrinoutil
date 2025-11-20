@@ -5,11 +5,11 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-} from "react-router"
+} from "react-router";
 
-import type { Route } from "./+types/root"
-import Search from './search'
-import "./app.css"
+import type { Route } from "./+types/root";
+import Search from "./search";
+import "./app.css";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -20,21 +20,27 @@ export const links: Route.LinksFunction = () => [
   },
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+    href:
+      "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
 
 function Navbar() {
-  return <nav className="navbar navbar-expand-lg bg-body-tertiary">
-    <div className="container-fluid">
-    <a className="navbar-brand" href="/">Pneutrinoutil UI</a>
-    <div className="collapse navbar-collapse gap-3" id="navbarSupportedContent">
-    <Search />
-    <div className="vr"></div>
-    <a href="/create" className="btn btn-primary">Create</a>
-    </div>
-    </div>
+  return (
+    <nav className="navbar navbar-expand-lg bg-body-tertiary">
+      <div className="container-fluid">
+        <a className="navbar-brand" href="/">Pneutrinoutil UI</a>
+        <div
+          className="collapse navbar-collapse gap-3"
+          id="navbarSupportedContent"
+        >
+          <Search />
+          <div className="vr"></div>
+          <a href="/create" className="btn btn-primary">Create</a>
+        </div>
+      </div>
     </nav>
+  );
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -67,10 +73,9 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
   if (isRouteErrorResponse(error)) {
     message = error.status === 404 ? "404" : "Error";
-    details =
-      error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details;
+    details = error.status === 404
+      ? "The requested page could not be found."
+      : error.statusText || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;
     stack = error.stack;
