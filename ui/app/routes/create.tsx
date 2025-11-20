@@ -41,7 +41,7 @@ export default function Create({
         encType="multipart/form-data"
       >
         <div className="mb-3">
-          <label className="form-label" htmlFor="score" required>
+          <label className="form-label" htmlFor="score">
             Score
           </label>
           <input
@@ -50,6 +50,7 @@ export default function Create({
             name="score"
             type="file"
             accept=".musicxml,application/vnd.recordare.musicxml+xml"
+            required
           />
           <div className="form-text" id="score">musicxml</div>
         </div>
@@ -178,7 +179,9 @@ export default function Create({
             Infer by raising the score by the specified key
           </div>
         </div>
-        <button className="btn btn-primary" type="submit">Create new process</button>
+        <button className="btn btn-primary" type="submit">
+          Create new process
+        </button>
       </Form>
     </div>
   );
