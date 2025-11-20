@@ -57,11 +57,10 @@ export default function CodeModal({ name, code }) {
         type="button"
         className="btn btn-primary"
         onClick={openModal}
-        onRequestClose={closeModal}
       >
         {name}
       </button>
-      <Modal isOpen={modalOpen}>
+      <Modal isOpen={modalOpen} onRequestClose={closeModal}>
         <div className="row align-items-start">
           <div className="col d-flex gap-3">
             <button
