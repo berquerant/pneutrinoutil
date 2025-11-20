@@ -118,6 +118,8 @@ tasks:
       - task: start-ui
   stop:
     desc: Stop services
+    deps:
+      - stop-worker
     cmds:
       - ./bin/docker.sh down
   start-server:
