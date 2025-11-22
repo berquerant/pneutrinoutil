@@ -1,12 +1,12 @@
 import type { Route } from "./+types/info";
 import { defaultApi } from "../api/env";
 
-export async function loader({}: Route.LoaderArgs) {
+export async function loader() {
   const r = await defaultApi.versionGet();
   return r.data.data;
 }
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return [
     { title: "Pneutrinoutil UI Info" },
     { name: "description", content: "Show information" },

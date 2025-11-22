@@ -43,7 +43,7 @@ export default function CodeModal({ name, code }) {
       setTimeout(() => {
         setCopyState(CopyState.Init);
       }, 3000);
-    } catch (err) {
+    } catch (_) {
       setTimeout(() => {
         setCopyState(CopyState.Failed);
       }, 3000);

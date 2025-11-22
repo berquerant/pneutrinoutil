@@ -1,4 +1,3 @@
-import type { Route } from "./+types/root";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 
@@ -19,7 +18,7 @@ function toApiDatetime(x: string | null): string | null {
 
 export default function Search() {
   const navigate = useNavigate();
-  const [searchParams, _] = useSearchParams();
+  const [searchParams, _setSearchParams] = useSearchParams();
   const params = Object.fromEntries([
     "limit",
     "prefix",

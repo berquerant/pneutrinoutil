@@ -24,7 +24,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   return r.data.data;
 }
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return [
     { title: "Pneutrinoutil UI" },
     { name: "description", content: "Welcome to Pneutrinoutil UI!" },

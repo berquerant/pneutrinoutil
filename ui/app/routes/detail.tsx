@@ -19,7 +19,7 @@ export async function loader({ params }: Route.LoaderArgs) {
     ...d2,
   };
 
-  const result: Record<string, any> = {
+  const result: Record<string, unknown> = {
     detail: detailData,
   };
   const isNotFound = (err) => err.response && err.response.status == 404;

@@ -3,12 +3,8 @@ import type { Route } from "./+types/home";
 export function Row({
   request_id,
   status,
-  details_id,
-  started_at,
-  completed_at,
   created_at,
   updated_at,
-  command,
   title,
 }: Route.ComponentProp) {
   return (
