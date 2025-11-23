@@ -69,7 +69,7 @@ type SearchProcessResponseData []*SearchProcessResponseDataElement
 
 // Search processes.
 //
-// @sumary search processes
+// @summary search processes
 // @description search processes by status, created_at, title prefix, order by created_at desc
 // @param limit query int false "query limit; default: 5"
 // @param prefix query string false "title prefix"
