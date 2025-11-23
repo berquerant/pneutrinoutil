@@ -151,6 +151,11 @@ tasks:
     desc: Stop ui
     cmds:
       - ./bin/docker.sh stop ui
+  restart:
+    deps:
+      - restart-server
+      - restart-worker
+      - restart-ui
   restart-server:
     desc: Restart server
     deps:
