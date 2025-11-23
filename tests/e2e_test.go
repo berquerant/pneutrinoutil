@@ -81,9 +81,11 @@ func generateData(content string, basename ...string) (map[string]string, error)
 		return d, nil
 	}
 
+	serverURI := fmt.Sprintf("http://%s:%s/v1", serverHost, serverPort)
+
 	stdin := bytes.NewBufferString(strings.Join(basename, "\n"))
 	var stdout bytes.Buffer
-	cmd := exec.Command(gendata, "--content", content)
+	cmd := exec.Command(gendata, "--content", content, "--server", serverURI)
 	cmd.Stdin = stdin
 	cmd.Stdout = &stdout
 	cmd.Stderr = os.Stderr
