@@ -24,15 +24,17 @@ import (
 // @summary start a process
 // @description start a pneutrinoutil process with given arguments
 // @param score formData file true "musicxml"
-// @param enhanceBreathiness formData number false "[0, 100]%, default: 0"
-// @param formantShift formData number false "default: 1.0"
-// @param inference formData integer false "[2, 3, 4], default: 2"
+// @param enhanceBreathiness formData number false "[0, 100]%, default: 0 (before NEUTRINO v3)"
+// @param formantShift formData number false "default: 1.0 (before NEUTRINO v3)"
+// @param inference formData integer false "[2, 3, 4], default: 2 (before NEUTRINO v3)"
 // @param model formData string false "default: MERROW"
-// @param pitchShiftNsf formData number false "default: 0"
-// @param pitchShiftWorld formData number false "default: 0"
-// @param smoothFormant formData number false "[0, 100]%, default: 0"
-// @param smoothPitch formData number false "[0, 100]%, default: 0"
-// @param styleShift formData integer false "default: 0"
+// @param supportModel formData string false "(NEUTRINO v3)"
+// @param transpose formData integer false "default: 0 (NEUTRINO v3)"
+// @param pitchShiftNsf formData number false "default: 0 (before NEUTRINO v3)"
+// @param pitchShiftWorld formData number false "default: 0 (before NEUTRINO v3)"
+// @param smoothFormant formData number false "[0, 100]%, default: 0 (before NEUTRINO v3)"
+// @param smoothPitch formData number false "[0, 100]%, default: 0 (before NEUTRINO v3)"
+// @param styleShift formData integer false "default: 0" (before NEUTRINO v3)
 // @produce json
 // @success 202 {object} handler.SuccessResponse[string] "new process started"
 // @header 202 {string} string x-request-id "request id, or just id"
@@ -58,6 +60,8 @@ func (Start) GetFormArgs(c echo.Context) map[string]string {
 		"formantShift",
 		"inference",
 		"model",
+		"supportModel",
+		"transpose",
 		"pitchShiftNsf",
 		"pitchShiftWorld",
 		"smoothFormant",
