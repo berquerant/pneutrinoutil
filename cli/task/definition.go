@@ -98,7 +98,7 @@ mkdir -p "${ResultDestDir}"`,
 				g.dir.ModelDir(),
 				func() string {
 					if g.c.SupportModelDir != "" {
-						return `-S "%[5]s/${SupportModelDir}/"`
+						return `-S "` + g.dir.ModelDir() + `/${SupportModelDir}/"`
 					}
 					return ""
 				}(),
