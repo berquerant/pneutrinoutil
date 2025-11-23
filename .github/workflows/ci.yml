@@ -70,7 +70,7 @@ jobs:
         if: ${{ always() }}
         run: docker compose down
 
-  go-lint:
+  lint:
     timeout-minutes: 5
     permissions:
       contents: read
