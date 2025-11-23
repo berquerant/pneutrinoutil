@@ -1,15 +1,20 @@
-import type { Route } from "./+type/detail";
+import type { Route } from "./+types/detail";
 import { apiServerUri, defaultApi } from "../api/env";
+import type { InfoParams } from "../detail/info";
 import Detail from "../detail/detail";
 import Config from "../detail/config";
 import Log from "../detail/log";
 import MusicXML from "../detail/musicxml";
 import Wav from "../detail/wav";
 import WorldWav from "../detail/worldwav";
+import axios from "axios";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const detail = await defaultApi.procIdDetailGet(params.id);
   const d = detail.data.data;
+  if (d === undefined) {
+    throw Error("detail: defaultApi.procIdDetailGet returned undefined data!");
+  }
   const d2 = {
     request_id: d.rid,
     title: d.basename,
@@ -22,7 +27,12 @@ export async function loader({ params }: Route.LoaderArgs) {
   const result: Record<string, unknown> = {
     detail: detailData,
   };
-  const isNotFound = (err) => err.response && err.response.status == 404;
+  const isNotFound = (err: unknown) => {
+    if (axios.isAxiosError(err)) {
+      return err.response && err.response.status == 404;
+    }
+    return false;
+  };
   try {
     const x = await defaultApi.procIdConfigGet(params.id);
     result["config"] = x.data.data;
@@ -51,6 +61,17 @@ export function meta({ params }: Route.MetaArgs) {
   ];
 }
 
+export type ComponentLoaderData = {
+  detail: InfoParams;
+  config: unknown;
+  log: string;
+  apiServerUri: string;
+};
+
+export type ComponentProps = {
+  loaderData: ComponentLoaderData;
+};
+
 export default function Component({
   loaderData: {
     detail,
@@ -58,7 +79,7 @@ export default function Component({
     log,
     apiServerUri,
   },
-}: Route.ComponentProps) {
+}: ComponentProps) {
   return (
     <div className="container">
       {Detail(detail)}

@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 
-function fromApiDatetime(x: string | null): string | null {
-  if (x == null) {
-    return null;
+function fromApiDatetime(x: string): string {
+  if (x == "") {
+    return "";
   }
   const d = new Date(x);
   return d.toISOString().slice(0, 19);
 }
 
-function toApiDatetime(x: string | null): string | null {
-  if (x == null) {
-    return null;
+function toApiDatetime(x: string): string {
+  if (x == "") {
+    return "";
   }
   return x + "Z";
 }
@@ -28,23 +28,24 @@ export default function Search() {
   ].map((x) => [x, searchParams.get(x)]));
 
   const [formData, setFormData] = useState({
-    limit: params.limit,
-    status: params.status,
-    prefix: params.prefix,
-    start: params.start,
-    end: params.end,
+    limit: params.limit || "",
+    status: params.status || "",
+    prefix: params.prefix || "",
+    start: params.start || "",
+    end: params.end || "",
   });
-  const handleChange = (event) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const searchParams = Object.entries(formData)
-      .filter((x) => x[1] != null)
+      .filter((x) => x[0] == "prefix" || (x[1] != null && x[1] != ""))
       .map((x) => {
         switch (x[0]) {
-          case "start", "end":
+          case "start":
+          case "end":
             return [x[0], toApiDatetime(x[1])];
           default:
             return x;
@@ -72,10 +73,8 @@ export default function Search() {
       />
       <select
         className="form-control me-2"
-        type="text"
         id="status"
         name="status"
-        placeholder="Status"
         aria-label="Search status"
         defaultValue={formData.status}
         onChange={handleChange}

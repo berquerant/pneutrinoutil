@@ -30,7 +30,12 @@ function toCopyButtonClassName(s: CopyState): string {
   }
 }
 
-export default function CodeModal({ name, code }) {
+export type CodeModalParams = {
+  name: string;
+  code: string;
+};
+
+export default function CodeModal({ name, code }: CodeModalParams) {
   const [modalOpen, setModalOpen] = useState(false);
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);

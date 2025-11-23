@@ -35,5 +35,4 @@ tasks:
       - npm run eslint
   swag:
     cmds:
-      - rm -rf app/api/client/docs
-      - npm run swag
+      - ./bin/swag.sh

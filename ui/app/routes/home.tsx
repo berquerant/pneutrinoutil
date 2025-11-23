@@ -1,6 +1,7 @@
 import type { Route } from "./+types/home";
 import { defaultApi } from "../api/env";
-import Table from "../home/table";
+import { HandlerSearchProcessResponseDataElement } from "../api/client";
+import Table, { RowParams } from "../home/table";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -10,10 +11,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   const limit = limitParam && !isNaN(Number(limitParam))
     ? Math.max(10, Number(limitParam))
     : 10;
-  const prefix = searchParams.get("prefix");
-  const status = searchParams.get("status");
-  const start = searchParams.get("start");
-  const end = searchParams.get("end");
+  const prefix = searchParams.get("prefix") || "";
+  const status = searchParams.get("status") || undefined;
+  const start = searchParams.get("start") || undefined;
+  const end = searchParams.get("end") || undefined;
   const r = await defaultApi.procSearchGet(
     limit,
     prefix,
@@ -31,13 +32,32 @@ export function meta() {
   ];
 }
 
+export type HomeParams = {
+  loaderData: HandlerSearchProcessResponseDataElement[];
+};
+
 export default function Home({
   loaderData,
-}: Route.ComponentProps) {
+}: HomeParams) {
+  const rp: RowParams = {
+    request_id: "",
+    status: "",
+    created_at: "",
+    updated_at: "",
+    title: "",
+  };
+  const data: RowParams[] = loaderData.filter((d) => {
+    for (const key in rp) {
+      if (
+        d[key as keyof HandlerSearchProcessResponseDataElement] === undefined
+      ) return false;
+    }
+    return true;
+  }).map((d) => d as RowParams);
   return (
     <div className="container">
       {Table({
-        data: loaderData,
+        data: data,
       })}
     </div>
   );

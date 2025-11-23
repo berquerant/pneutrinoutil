@@ -1,4 +1,13 @@
-import type { Route } from "./+types/detail";
+export type InfoParams = {
+  request_id: string;
+  status: string;
+  started_at: string;
+  completed_at: string;
+  created_at: string;
+  updated_at: string;
+  command: string;
+  title: string;
+};
 
 export default function Info({
   request_id,
@@ -9,7 +18,7 @@ export default function Info({
   updated_at,
   command,
   title,
-}: Route.ComponentProps) {
+}: InfoParams) {
   return (
     <div className="container">
       <table className="table">

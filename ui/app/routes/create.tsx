@@ -1,4 +1,4 @@
-import type { Route } from "./+type/create";
+import type { Route } from "./+types/create";
 import { defaultApi } from "../api/env";
 import { Form } from "react-router";
 
@@ -7,18 +7,20 @@ export async function action({
 }: Route.ActionArgs) {
   const d = await request.formData();
   try {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     const r = await defaultApi.procPost(
-      d.get("score"),
-      d.get("enhanceBreathiness"),
-      d.get("formantShift"),
-      d.get("inference"),
-      d.get("model"),
-      d.get("pitchShiftNsf"),
-      d.get("pitchShiftWorld"),
-      d.get("smoothFormant"),
-      d.get("smoothPitch"),
-      d.get("styleShift"),
+      d.get("score") as File,
+      d.get("enhanceBreathiness") as any,
+      d.get("formantShift") as any,
+      d.get("inference") as any,
+      d.get("model") as any,
+      d.get("pitchShiftNsf") as any,
+      d.get("pitchShiftWorld") as any,
+      d.get("smoothFormant") as any,
+      d.get("smoothPitch") as any,
+      d.get("styleShift") as any,
     );
+    /* eslint-enable @typescript-eslint/no-explicit-any */
     return {
       ok: true,
       data: r.headers["x-request-id"],

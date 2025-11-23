@@ -1,10 +1,14 @@
-import type { Route } from "./+type/detail";
 import Download from "../common/download";
+
+export type MusicXMLParams = {
+  apiServerUri: string;
+  rid: string;
+};
 
 export default function MusicXML({
   apiServerUri,
   rid,
-}: Route.ComponentProps) {
+}: MusicXMLParams) {
   const url = `${apiServerUri}/proc/${rid}/musicxml`;
   return (
     <div>

@@ -1,4 +1,10 @@
-import type { Route } from "./+types/home";
+export type RowParams = {
+  request_id: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  title: string;
+};
 
 export function Row({
   request_id,
@@ -6,7 +12,7 @@ export function Row({
   created_at,
   updated_at,
   title,
-}: Route.ComponentProp) {
+}: RowParams) {
   return (
     <tr key={request_id}>
       <td>{title}</td>
@@ -20,7 +26,11 @@ export function Row({
   );
 }
 
-export default function Table({ data }: Route.ComponentProp) {
+export type TableParams = {
+  data: RowParams[];
+};
+
+export default function Table({ data }: TableParams) {
   return (
     <div className="container">
       <table className="table">

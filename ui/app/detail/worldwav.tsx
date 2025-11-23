@@ -1,10 +1,14 @@
-import type { Route } from "./+type/detail";
 import Audio from "../common/audio";
+
+export type WorldWavParams = {
+  apiServerUri: string;
+  rid: string;
+};
 
 export default function WorldWav({
   apiServerUri,
   rid,
-}: Route.ComponentProps) {
+}: WorldWavParams) {
   const url = `${apiServerUri}/proc/${rid}/world_wav`;
   return (
     <div>

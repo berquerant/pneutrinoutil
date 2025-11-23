@@ -1,5 +1,6 @@
 import type { Route } from "./+types/info";
 import { defaultApi } from "../api/env";
+import { HandlerVersionResponseData } from "../api/client";
 
 export async function loader() {
   const r = await defaultApi.versionGet();
@@ -13,20 +14,24 @@ export function meta() {
   ];
 }
 
+export type InfoParams = {
+  loaderData: HandlerVersionResponseData;
+};
+
 export default async function Info({
-  loaderData: { version, revision },
-}: Route.ComponentProps) {
+  loaderData,
+}: InfoParams) {
   return (
     <div className="container">
       <table className="table">
         <tbody>
           <tr>
             <td>Version</td>
-            <td>{version}</td>
+            <td>{loaderData.version}</td>
           </tr>
           <tr>
             <td>Revision</td>
-            <td>{revision}</td>
+            <td>{loaderData.revision}</td>
           </tr>
         </tbody>
       </table>

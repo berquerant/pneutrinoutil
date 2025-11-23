@@ -1,4 +1,8 @@
-export function CodeBlock({ code }) {
+export type CodeBlockParams = {
+  code: string;
+};
+
+export function CodeBlock({ code }: CodeBlockParams) {
   return (
     <pre>
       <code>
