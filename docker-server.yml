@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: server/Dockerfile
+      args:
+        - GO_VERSION
     container_name: server
     restart: unless-stopped
     ports:
