@@ -10,6 +10,11 @@ services:
       MINIO_ROOT_USER: "${MINIO_ROOT_USER}"
       MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
     command: server /data --console-address ":9001"
+    volumes:
+      - minio-store:/data
     networks:
       pneutrinoutil:
         ipv4_address: 172.20.0.10
+
+volumes:
+  minio-store:
