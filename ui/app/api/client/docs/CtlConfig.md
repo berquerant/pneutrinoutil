@@ -20,7 +20,10 @@ Name | Type | Description | Notes
 **smoothFormant** | **number** |  | [optional] [default to undefined]
 **smoothPitch** | **number** |  | [optional] [default to undefined]
 **styleShift** | **number** |  | [optional] [default to undefined]
+**supportModel** | **string** |  | [optional] [default to undefined]
+**supportModelData** | **object** |  | [optional] [default to undefined]
 **thread** | **number** |  | [optional] [default to undefined]
+**transpose** | **number** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -43,7 +46,10 @@ const instance: CtlConfig = {
     smoothFormant,
     smoothPitch,
     styleShift,
+    supportModel,
+    supportModelData,
     thread,
+    transpose,
 };
 ```
 
