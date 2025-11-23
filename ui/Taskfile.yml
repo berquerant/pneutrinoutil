@@ -24,11 +24,16 @@ tasks:
   start:
     cmds:
       - npm run start
-  lint:
-    desc: Run linters
+  run-lint:
     deps:
       - typecheck
       - eslint
+  lint:
+    desc: Run linters
+    deps:
+      - install
+    cmds:
+      - task: run-lint
   typecheck:
     cmds:
       - npm run typecheck
