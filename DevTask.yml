@@ -101,9 +101,6 @@ tasks:
   clean-tools:
     cmds:
       - rm -rf ./bin/tools
-  tidy:
-    cmds:
-      - go mod tidy -v
   swag:
     desc: Generate API
     cmds:
@@ -287,3 +284,8 @@ tasks:
       - ping-mysql
       - ping-redis
       - ping-s3
+  tidy:
+    desc: go mod tidy
+    cmds:
+      - go mod tidy
+      - go -C tools mod tidy
