@@ -52,7 +52,7 @@ main() {
     local -r count="${1}"
     local -r basename="${2:-mockdata_basename}"
     local -r content="${3:-mockdata_content}"
-    prepare_dummycli "$FAIL" "$DURATION"
+    prepare_dummycli "${FAIL:-}" "${DURATION:-}"
     task ping-infra
     task build-mockcli
     task build-gendata
