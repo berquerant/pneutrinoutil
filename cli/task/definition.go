@@ -102,6 +102,30 @@ mkdir -p "${ResultDestDir}"`,
 					}
 					return ""
 				}(),
+			))).
+		Add(execx.NewTask(
+			"cleanup",
+			fmt.Sprintf(
+				`cp %[1]s/${BASENAME}.* "%[2]s/${BASENAME}.musicxml" "${ResultDestDir}/"
+cat <<EOS > "${ResultDestDir}/config.yml"
+%[3]s
+EOS
+echo "%[4]s" > "${ResultDestDir}/PWD"
+
+if [ -n "$Hook" ] ; then
+  $Hook "${ResultDestDir}"
+fi
+if [ -n "$Play" ] ; then
+  result_wav="${ResultDestDir}/${BASENAME}.wav"
+  $Play "${result_wav}"
+fi`,
+				g.dir.OutputDir(),
+				g.dir.MusicXMLDir(),
+				func() []byte {
+					b, _ := yaml.Marshal(g.c)
+					return b
+				}(),
+				g.dir.PWD(),
 			)))
 
 	return execx.NewExecutableTasks(tasks, g.env())
