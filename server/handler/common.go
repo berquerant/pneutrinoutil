@@ -1,9 +1,12 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -127,4 +130,45 @@ func ReadFormFile(c echo.Context, name string, maxBytes int64) (*ReadFromFileRes
 		Blob: blob,
 		Name: fh.Filename,
 	}, nil
+}
+
+// - timestamp 1136189045
+// - RFC3339 2006-01-02T15:04:05Z07:00
+type CustomTime time.Time
+
+var _ echo.BindUnmarshaler = new(CustomTime)
+
+func (t *CustomTime) String() string {
+	return time.Time(*t).String()
+}
+
+func (t *CustomTime) Timestamp() int64 {
+	return time.Time(*t).Unix()
+}
+
+func (t *CustomTime) UnmarshalParam(param string) error {
+	v, err := t.parseRFC3339(param)
+	if err == nil {
+		*t = CustomTime(v)
+		return nil
+	}
+	tv, tErr := t.parseTimestamp(param)
+	if tErr == nil {
+		*t = CustomTime(tv)
+		return nil
+	}
+	return errors.Join(err, tErr)
+}
+
+func (*CustomTime) parseTimestamp(param string) (time.Time, error) {
+	var t time.Time
+	ts, err := strconv.ParseInt(param, 10, 64)
+	if err != nil {
+		return t, err
+	}
+	return time.Unix(ts, 0), nil
+}
+
+func (*CustomTime) parseRFC3339(param string) (time.Time, error) {
+	return time.Parse(time.RFC3339, param)
 }

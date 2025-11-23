@@ -50,35 +50,6 @@ const docTemplate = `{
             }
         },
         "/proc": {
-            "get": {
-                "description": "list results of processes",
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "list results",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "query limit; default: 5",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "process status; (pending|running|succeed|failed)",
-                        "name": "status",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handler.SuccessResponse-handler_ListResponseData"
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "start a pneutrinoutil process with given arguments",
                 "produces": [
@@ -177,6 +148,54 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/proc/search": {
+            "get": {
+                "description": "search processes by status, created_at, title prefix, order by created_at desc",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "query limit; default: 5",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "title prefix",
+                        "name": "prefix",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "process status; (pending|running|succeed|failed)",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "created_at",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "created_at",
+                        "name": "end",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.SuccessResponse-handler_SearchProcessResponseData"
                         }
                     }
                 }
@@ -403,6 +422,11 @@ const docTemplate = `{
                     "type": "string",
                     "default": "MERROW"
                 },
+                "modelData": {},
+                "neutrinoVersion": {
+                    "description": "Info",
+                    "type": "string"
+                },
                 "parallel": {
                     "type": "integer",
                     "default": 1
@@ -484,12 +508,9 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.ListResponseDataElement": {
+        "handler.SearchProcessResponseDataElement": {
             "type": "object",
             "properties": {
-                "basename": {
-                    "type": "string"
-                },
                 "command": {
                     "type": "string"
                 },
@@ -499,7 +520,7 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "rid": {
+                "request_id": {
                     "description": "request id, or just id",
                     "type": "string"
                 },
@@ -507,6 +528,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -547,13 +574,13 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.SuccessResponse-handler_ListResponseData": {
+        "handler.SuccessResponse-handler_SearchProcessResponseData": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/handler.ListResponseDataElement"
+                        "$ref": "#/definitions/handler.SearchProcessResponseDataElement"
                     }
                 },
                 "ok": {

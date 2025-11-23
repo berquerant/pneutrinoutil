@@ -24,5 +24,6 @@ wait_ping() {
 
 case "$1" in
     "wait") wait_ping ;;
+    "ping") ping ;;
     *) client "$@" ;;
 esac

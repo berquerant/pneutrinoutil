@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -252,6 +253,7 @@ func (g *Get) Config(c echo.Context) error {
 func (g *Get) MusicXML(c echo.Context) error {
 	return g.withResult(func(c echo.Context, r *result) error {
 		if objectID := r.resultObjectID; objectID != nil {
+			c.Response().Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s.musicxml"`, r.basename))
 			return g.withResultObjectFileBlob(*objectID, "application/vnd.recordare.musicxml+xml", r.basename+".musicxml")(c)
 		}
 		return Error(c, http.StatusNotFound, "not found")
@@ -269,6 +271,7 @@ func (g *Get) MusicXML(c echo.Context) error {
 func (g *Get) Wav(c echo.Context) error {
 	return g.withResult(func(c echo.Context, r *result) error {
 		if objectID := r.resultObjectID; objectID != nil {
+			c.Response().Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s.wav"`, r.basename))
 			return g.withResultObjectFileBlob(*objectID, "audio/wav", r.basename+".wav")(c)
 		}
 		return Error(c, http.StatusNotFound, "not found")
@@ -286,6 +289,7 @@ func (g *Get) Wav(c echo.Context) error {
 func (g *Get) WorldWav(c echo.Context) error {
 	return g.withResult(func(c echo.Context, r *result) error {
 		if objectID := r.resultObjectID; objectID != nil {
+			c.Response().Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s_world.wav"`, r.basename))
 			return g.withResultObjectFileBlob(*objectID, "audio/wav", r.basename+"_world.wav")(c)
 		}
 		return Error(c, http.StatusNotFound, "not found")

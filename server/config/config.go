@@ -26,7 +26,7 @@ type Config struct {
 	Port                        uint   `name:"port" short:"p" default:"9101" usage:"server port"`
 	ShutdownPeriodSeconds       int    `name:"shutdownPeriodSeconds" default:"10" usage:"duration the server needs to shut down gracefully"`
 	ProcessTimeoutSeconds       int    `name:"processTimeoutSeconds" default:"1200" usage:"duration pneutrinoutil timeout"`
-	AccessLogFile               string `name:"accessLogFile" default:"-" usage:"access log file; - means stderr"`
+	AccessLogFile               string `name:"accessLogFile" default:"stderr" usage:"access log file; stdout, stderr are available"`
 	AccessLogWriter             io.Writer
 	Debug                       bool   `name:"debug" usage:"enable debug logs"`
 	RedisDSN                    string `name:"redisDSN" usage:"format: redis://HOST:PORT/DB"`
@@ -125,20 +125,19 @@ func (c *Config) Init() error {
 	return nil
 }
 
-const (
-	AccessLogStderr = "-"
-)
-
 func (c Config) prepareAccessLogWriter() (io.Writer, error) {
-	if c.AccessLogFile == AccessLogStderr {
+	switch c.AccessLogFile {
+	case "stdout":
+		return os.Stdout, nil
+	case "stderr":
 		return os.Stderr, nil
+	default:
+		f, err := os.OpenFile(c.AccessLogFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			return nil, fmt.Errorf("%w: open access log file", err)
+		}
+		return f, nil
 	}
-
-	f, err := os.OpenFile(c.AccessLogFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return nil, fmt.Errorf("%w: open access log file", err)
-	}
-	return f, nil
 }
 
 func (c Config) Validate() error {

@@ -1,5 +1,10 @@
 version: '3'
 
+includes:
+  ui:
+    taskfile: ./ui/Taskfile.yml
+    dir: ./ui
+
 tasks:
   default:
     deps:
@@ -12,6 +17,8 @@ tasks:
       - build-cli
       - build-server
       - build-worker
+      - build-mockcli
+      - build-gendata
   build-cli:
     cmds:
       - ./bin/build.sh -o dist/pneutrinoutil cli/main.go
@@ -21,26 +28,45 @@ tasks:
   build-worker:
     cmds:
       - ./bin/build.sh -o dist/pneutrinoutil-worker worker/main.go
+  build-mockcli:
+    cmds:
+      - ./bin/build.sh -o dist/pneutrinoutil-mockcli mockcli/main.go
+  build-gendata:
+    cmds:
+      - ./bin/build.sh -o dist/pneutrinoutil-gendata gendata/main.go
   lint:
     desc: Run linters
     deps:
+      - shellcheck
       - vuln
       - vet
       - golangci-lint
       - go-arch-lint
+      - ui:lint
   test:
     desc: Run unit tests
     deps:
+      - task: stop-server
       - prepare-test-data
     cmds:
       - go test -cover -race $(go list ./... | grep -v tests) ${DEBUG+-v -count=1}
   e2e:
     desc: Run E2E tests
     deps:
+      - stop-server
+      - stop-worker
       - drop-test-data
+      - build-mockcli
+      - build-gendata
+      - build-worker
+      - build-server
     cmds:
       - task: prepare-test-data
       - go test -cover -race $(go list ./... | grep tests) -count=1 ${DEBUG+-v}
+  mockdata:
+    desc: Generate artifacts
+    cmds:
+      - ./bin/mockdata.sh {{.CLI_ARGS}}
   vuln:
     cmds:
       - ./tools/run.sh govulncheck ./...
@@ -79,15 +105,91 @@ tasks:
     cmds:
       - go mod tidy -v
   swag:
-    desc: Generate API document
+    desc: Generate API
     cmds:
       - ./tools/run.sh swag init -g ./server/main.go -o ./server/docs
+      - task: ui:swag
   start:
-    desc: Start servers
+    desc: Start services
     deps:
       - prepare-data
     cmds:
-      - ./tools/run.sh goreman -b $GOREMAN_BASE_PORT start
+      - task: start-server
+      - task: start-worker
+      - task: start-ui
+  stop:
+    desc: Stop services
+    deps:
+      - stop-worker
+    cmds:
+      - ./bin/docker.sh down
+  start-server:
+    desc: Start server
+    deps:
+      - infra
+    cmds:
+      - ./bin/docker.sh up -d server
+  start-worker:
+    desc: Start worker
+    deps:
+      - infra
+      - build-worker
+    cmds:
+      - ./bin/worker.sh start
+  start-ui:
+    desc: Start ui
+    deps:
+      - start-server
+    cmds:
+      - ./bin/docker.sh up -d ui
+  stop-server:
+    desc: Stop server
+    cmds:
+      - ./bin/docker.sh stop server
+  stop-worker:
+    desc: Stop worker
+    cmds:
+      - ./bin/worker.sh stop
+  stop-ui:
+    desc: Stop ui
+    cmds:
+      - ./bin/docker.sh stop ui
+  restart-server:
+    desc: Restart server
+    deps:
+      - stop-server
+    cmds:
+      - ./bin/docker.sh up -d server --build
+  restart-worker:
+    desc: Restart worker
+    deps:
+      - stop-worker
+    cmds:
+      - task: build-worker
+      - task: start-worker
+  restart-ui:
+    desc: Restart ui
+    deps:
+      - stop-ui
+    cmds:
+      - ./bin/docker.sh up -d ui --build
+  start-host-server:
+    desc: Start server on host
+    deps:
+      - infra
+    cmds:
+      - ./bin/server.sh start
+  stop-host-server:
+    desc: Stop server on host
+    cmds:
+      - ./bin/server.sh stop
+  restart-host-server:
+    desc: Restart server on host
+    deps:
+      - stop-host-server
+    cmds:
+      - task: build-server
+      - task: start-host-server
   prepare-test-data:
     desc: Prepare test data
     deps:
@@ -98,7 +200,7 @@ tasks:
   prepare-data:
     desc: Prepare data
     deps:
-      - services
+      - infra
     cmds:
       - task: mysql
       - task: storage
@@ -112,13 +214,13 @@ tasks:
     desc: Prepare storage
     cmds:
       - ./bin/ddl.sh storage
-  services:
-    desc: Start docker services
+  infra:
+    desc: Start docker infra
     cmds:
-      - ./bin/docker.sh up -d
-      - task: wait-services
-  wait-services:
-    desc: Wait docker services
+      - ./bin/docker.sh -f docker-infra.yml up -d
+      - task: wait-infra
+  wait-infra:
+    desc: Wait docker infra
     deps:
       - wait-mysql
       - wait-storage
@@ -126,19 +228,19 @@ tasks:
   wait-mysql:
     desc: Wait mysql
     cmds:
-      - ./bin/mysql.sh wait
+      - ./bin/mysql.sh wait >/dev/null 2>&1
   wait-storage:
     desc: Wait storage
     cmds:
-      - ./bin/s3.sh wait
+      - ./bin/s3.sh wait >/dev/null 2>&1
   wait-redis:
     desc: Wait redis
     cmds:
-      - ./bin/redis.sh wait
+      - ./bin/redis.sh wait >/dev/null 2>&1
   drop-test-data:
     desc: Drop test data
     deps:
-      - services
+      - infra
     cmds:
       - ./bin/retry.sh -- ./bin/ddl.sh drop db test
       - ./bin/ddl.sh drop storage test
@@ -146,7 +248,7 @@ tasks:
   drop-data:
     desc: Drop persistent data
     deps:
-      - services
+      - infra
     cmds::
       - task: drop-mysql
       - task: drop-storage
@@ -163,7 +265,25 @@ tasks:
     desc: Drop redis data
     cmds:
       - ./bin/ddl.sh drop kvs "${REDIS_DB}"
-  down-services:
-    desc: Down services
+  drop-infra:
+    desc: Down infra
     cmds:
-      - ./bin/docker.sh down
+      - ./bin/docker.sh -f docker-infra.yml down
+  ping-mysql:
+    desc: Ping mysql
+    cmds:
+      - ./bin/mysql.sh ping >/dev/null 2>&1
+  ping-redis:
+    desc: Ping redis
+    cmds:
+      - ./bin/redis.sh ping >/dev/null 2>&1
+  ping-s3:
+    desc: Ping s3
+    cmds:
+      - ./bin/s3.sh ping >/dev/null 2>&1
+  ping-infra:
+    desc: Check infra alive
+    deps:
+      - ping-mysql
+      - ping-redis
+      - ping-s3

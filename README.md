@@ -18,7 +18,7 @@ My [NEUTRIONO](https://studio-neutrino.com/) utilities.
 ./task start
 ```
 
-[Swagger is available](http://localhost:9101/v1/swagger/index.html).
+[UI](http://localhost:9201/) and [Swagger](http://localhost:9101/v1/swagger/index.html).
 
 # Requirements
 

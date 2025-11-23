@@ -5,3 +5,5 @@ services:
     restart: unless-stopped
     ports:
       - "${REDIS_PORT}:6379"
+    networks:
+      pneutrinoutil:
