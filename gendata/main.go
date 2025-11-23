@@ -146,7 +146,9 @@ func post(ctx context.Context, url, basename, content string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 	if status := resp.StatusCode; status != http.StatusAccepted {
 		return "", fmt.Errorf("status: want %d got %d", http.StatusAccepted, status)
 	}
