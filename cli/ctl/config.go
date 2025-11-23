@@ -25,28 +25,31 @@ func NewDefaultConfig() (*Config, error) {
 
 type Config struct {
 	Description string `json:"desc" yaml:"desc" name:"desc" usage:"description of config"`
-	NumParallel int    `json:"parallel" yaml:"parallel" name:"parallel" usage:"number of parallel" default:"1"`
+	NumParallel int    `json:"parallel" yaml:"parallel" name:"parallel" usage:"number of parallel (before NEUTRINO v3)" default:"1"`
 	// musicXML_to_label
 	// Suffix string `yaml:"suffix"`
 	// Project settings
 	Score         string `json:"score" yaml:"score" name:"score" usage:"score file, required"`
 	NumThreads    int    `json:"thread" yaml:"thread" name:"thread" usage:"number of parallel in session" default:"4"`
-	InferenceMode int    `json:"inference" yaml:"inference" name:"inference" usage:"quality, processing speed: 2 (elements), 3 (standard) or 4 (advanced)" default:"3"`
+	InferenceMode int    `json:"inference" yaml:"inference" name:"inference" usage:"quality, processing speed: 2 (elements), 3 (standard) or 4 (advanced) (before NEUTRINO v3)" default:"3"`
 	// NEUTRINO
-	ModelDir   string `json:"model" yaml:"model" name:"model" usage:"singer" default:"MERROW"`
-	StyleShift int    `json:"styleShift" yaml:"styleShift" name:"styleShift" usage:"change the key and estimate to change the style of singing"`
-	RandomSeed int    `json:"randomSeed" yaml:"randomSeed" name:"randomSeed" usage:"random seed" default:"1234"`
+	ModelDir        string `json:"model" yaml:"model" name:"model" usage:"singer" default:"MERROW"`
+	SupportModelDir string `json:"supportModel" yaml:"supportModel" name:"supportModel" usage:"support singer (NEUTRINO v3)"`
+	Transpose       int    `json:"transpose" yaml:"transpose" name:"transpose" usage:"change the key and estimate (NEUTRINO v3)" default:"0"`
+	StyleShift      int    `json:"styleShift" yaml:"styleShift" name:"styleShift" usage:"change the key and estimate to change the style of singing (before NEUTRINO v3)"`
+	RandomSeed      int    `json:"randomSeed" yaml:"randomSeed" name:"randomSeed" usage:"random seed (before NEUTRINO v3)" default:"1234"`
 	// NSF
-	PitchShiftNsf float32 `json:"pitchShiftNsf" yaml:"pitchShiftNsf" name:"pitchShiftNsf" usage:"change pitch via NSF"`
+	PitchShiftNsf float32 `json:"pitchShiftNsf" yaml:"pitchShiftNsf" name:"pitchShiftNsf" usage:"change pitch via NSF (before NEUTRINO v3)"`
 	// WORLD
-	PitchShiftWorld    float32 `json:"pitchShiftWorld" yaml:"pitchShiftWorld" name:"pitchShiftWorld" usage:"change pitch via WORLD"`
-	FormantShift       float32 `json:"formantShift" yaml:"formantShift" name:"formantShift" usage:"change voice quality" default:"1.0"`
-	SmoothPitch        float32 `json:"smoothPitch" yaml:"smoothPitch" name:"smoothPitch" usage:"[0, 100]%"`
-	SmoothFormant      float32 `json:"smoothFormant" yaml:"smoothFormant" name:"smoothFormant" usage:"[0, 100]%"`
-	EnhanceBreathiness float32 `json:"enhanceBreathiness" yaml:"enhanceBreathiness" name:"enhanceBreathiness" usage:"[0, 100]%"`
+	PitchShiftWorld    float32 `json:"pitchShiftWorld" yaml:"pitchShiftWorld" name:"pitchShiftWorld" usage:"change pitch via WORLD (before NEUTRINO v3)"`
+	FormantShift       float32 `json:"formantShift" yaml:"formantShift" name:"formantShift" usage:"change voice quality (before NEUTRINO v3)" default:"1.0"`
+	SmoothPitch        float32 `json:"smoothPitch" yaml:"smoothPitch" name:"smoothPitch" usage:"[0, 100]% (before NEUTRINO v3)"`
+	SmoothFormant      float32 `json:"smoothFormant" yaml:"smoothFormant" name:"smoothFormant" usage:"[0, 100]% (before NEUTRINO v3)"`
+	EnhanceBreathiness float32 `json:"enhanceBreathiness" yaml:"enhanceBreathiness" name:"enhanceBreathiness" usage:"[0, 100]% (before NEUTRINO v3)"`
 	// Info
-	NeutrinoVersion string `json:"neutrinoVersion" yaml:"neutrinoVersion"`
-	ModelData       any    `json:"modelData" yaml:"modelData"`
+	NeutrinoVersion  string `json:"neutrinoVersion" yaml:"neutrinoVersion"`
+	ModelData        any    `json:"modelData" yaml:"modelData"`
+	SupportModelData any    `json:"supportModelData" yaml:"supportModelData"`
 }
 
 func (c Config) Basename() string { return pathx.Basename(c.Score) }
@@ -80,6 +83,7 @@ func (c Config) envMap() map[string]any {
 		"NumThreads":         c.NumThreads,
 		"InferenceMode":      c.InferenceMode,
 		"ModelDir":           c.ModelDir,
+		"SupportModelDir":    c.SupportModelDir,
 		"StyleShift":         c.StyleShift,
 		"PitchShiftNsf":      c.PitchShiftNsf,
 		"PitchShiftWorld":    c.PitchShiftWorld,
@@ -92,6 +96,7 @@ func (c Config) envMap() map[string]any {
 		"BASENAME":           c.Basename(),
 		"RandomSeed":         c.RandomSeed,
 		"NumParallel":        c.NumParallel,
+		"Transpose":          c.Transpose,
 	}
 }
 
@@ -135,5 +140,13 @@ func (c *Config) SetInfo(ctx context.Context, neutrinoDir string) error {
 		return err
 	}
 	c.ModelData = model
+
+	if x := c.SupportModelDir; x != "" {
+		model, err := info.ReadModelInfo(filepath.Join(dir, "model", x))
+		if err != nil {
+			return err
+		}
+		c.SupportModelData = model
+	}
 	return nil
 }

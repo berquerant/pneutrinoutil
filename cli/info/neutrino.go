@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -18,6 +19,9 @@ func GetNeutrinoVersion(ctx context.Context, dir string) (string, error) {
 		return "", errors.Join(ErrNeutrinoVersion, err)
 	}
 	bin := filepath.Join(x, "bin", "NEUTRINO")
+	if _, err := os.Stat(bin); err != nil {
+		bin = filepath.Join(x, "bin", "neutrino")
+	}
 	dyld := filepath.Join(x, "bin")
 
 	cmd := exec.CommandContext(ctx, bin)
