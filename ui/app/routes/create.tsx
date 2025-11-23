@@ -14,6 +14,8 @@ export async function action({
       d.get("formantShift") as any,
       d.get("inference") as any,
       d.get("model") as any,
+      d.get("supportModel") as any,
+      d.get("transpose") as any,
       d.get("pitchShiftNsf") as any,
       d.get("pitchShiftWorld") as any,
       d.get("smoothFormant") as any,
@@ -86,7 +88,9 @@ export default function Create({
             inputMode="numeric"
             defaultValue="0"
           />
-          <div className="form-text" id="enhanceBreathiness">[0, 100]%</div>
+          <div className="form-text" id="enhanceBreathiness">
+            [0, 100]% (before NEUTRINO v3)
+          </div>
         </div>
         <div className="mb-3">
           <label className="form-label" htmlFor="formantShift">
@@ -102,7 +106,7 @@ export default function Create({
           />
           <div className="form-text" id="formantShift">
             Higher values result in a younger tone; lower values result in a
-            mature tone
+            mature tone (before NEUTRINO v3)
           </div>
         </div>
         <div className="mb-3">
@@ -117,7 +121,9 @@ export default function Create({
             <option value="3">Standard</option>
             <option value="4">Advanced</option>
           </select>
-          <div className="form-text" id="inference">Inference quality</div>
+          <div className="form-text" id="inference">
+            Inference quality (before NEUTRINO v3)
+          </div>
         </div>
         <div className="mb-3">
           <label className="form-label" htmlFor="model">Model</label>
@@ -129,6 +135,36 @@ export default function Create({
             defaultValue="KIRITAN"
           />
           <div className="form-text" id="model">Singer library</div>
+        </div>
+        <div className="mb-3">
+          <label className="form-label" htmlFor="supportModel">
+            SupportModel
+          </label>
+          <input
+            className="form-control"
+            id="supportModel"
+            name="supportModel"
+            type="text"
+            defaultValue=""
+          />
+          <div className="form-text" id="supportModel">
+            Support Singer library (NEUTRINO v3)
+          </div>
+        </div>
+        <div className="mb-3">
+          <label className="form-label" htmlFor="transpose">Transpose</label>
+          <input
+            className="form-control"
+            id="transpose"
+            name="transpose"
+            type="text"
+            inputMode="numeric"
+            pattern="\d*"
+            defaultValue="0"
+          />
+          <div className="form-text" id="transpose">
+            Infer by raising the score by the specified key (NEUTRINO v3)
+          </div>
         </div>
         <div>
           <label className="form-label" htmlFor="pitchShiftNsf">
@@ -142,6 +178,9 @@ export default function Create({
             inputMode="numeric"
             defaultValue="0"
           />
+          <div className="form-text" id="pitchShiftNsf">
+            (before NEUTRINO v3)
+          </div>
         </div>
         <div className="mb-3">
           <label className="form-label" htmlFor="pitchShiftWorld">
@@ -155,6 +194,9 @@ export default function Create({
             inputMode="numeric"
             defaultValue="0"
           />
+          <div className="form-text" id="pitchShiftWorld">
+            (before NEUTRINO v3)
+          </div>
         </div>
         <div className="mb-3">
           <label className="form-label" htmlFor="smoothFormant">
@@ -168,7 +210,9 @@ export default function Create({
             inputMode="numeric"
             defaultValue="0"
           />
-          <div className="form-text" id="smoothFormant">[0, 100]%</div>
+          <div className="form-text" id="smoothFormant">
+            [0, 100]% (before NEUTRINO v3)
+          </div>
         </div>
         <div className="mb-3">
           <label className="form-label" htmlFor="smoothPitch">
@@ -182,7 +226,9 @@ export default function Create({
             inputMode="numeric"
             defaultValue="0"
           />
-          <div className="form-text" id="smoothPitch">[0, 100]%</div>
+          <div className="form-text" id="smoothPitch">
+            [0, 100]% (before NEUTRINO v3)
+          </div>
         </div>
         <div className="mb-3">
           <label className="form-label" htmlFor="styleShift">StyleShift</label>
@@ -196,7 +242,7 @@ export default function Create({
             defaultValue="0"
           />
           <div className="form-text" id="styleShift">
-            Infer by raising the score by the specified key
+            Infer by raising the score by the specified key (before NEUTRINO v3)
           </div>
         </div>
         <button className="btn btn-primary" type="submit">

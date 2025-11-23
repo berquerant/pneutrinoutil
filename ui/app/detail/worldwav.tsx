@@ -12,7 +12,7 @@ export default function WorldWav({
   const url = `${apiServerUri}/proc/${rid}/world_wav`;
   return (
     <div>
-      {Audio({ url: url, name: "Download WorldWav" })}
+      {Audio({ url: url, name: "Download WorldWav (before NEUTRINO v3)" })}
     </div>
   );
 }
