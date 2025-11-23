@@ -9,5 +9,6 @@ services:
       - "${UI_PORT}:3000"
     environment:
       SERVER_URI: "$CONTAINER_SERVER_URI"
+      EXTERNAL_SERVER_URI: "$EXTERNAL_SERVER_URI"
     networks:
       pneutrinoutil:

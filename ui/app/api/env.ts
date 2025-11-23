@@ -5,6 +5,7 @@ import axios from "axios";
 const {
   API_CLIENT_TIMEOUT_MS,
   SERVER_URI,
+  EXTERNAL_SERVER_URI,
 } = process.env;
 
 const axiosInstance = enableAxiosLogger(axios.create({
@@ -17,6 +18,6 @@ const configuration = new Configuration({
 });
 const defaultApi = DefaultApiFactory(configuration, undefined, axiosInstance);
 
-const apiServerUri = SERVER_URI;
+const apiServerUri = EXTERNAL_SERVER_URI;
 
 export { apiServerUri, defaultApi };
