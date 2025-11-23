@@ -86,6 +86,10 @@ pneutrinoutil --neutrinoDir /path/to/NEUTRINO --workDir /path/to/install-result 
 			exclude, _ = cmd.Flags().GetStringSlice("exclude")
 		)
 
+		if err := c.SetInfo(cmd.Context(), dir.NeutrinoDir()); err != nil {
+			return err
+		}
+
 		tasks := task.NewGenerator(dir, c, play, hook).ExecutableTasks()
 		taskNames := make([]string, len(tasks.Tasks))
 		for i, t := range tasks.Tasks {

@@ -35,6 +35,10 @@ vendors:
     in: github.com/stretchr/testify
   swagger:
     in: github.com/swaggo/*
+  toml:
+    in: github.com/BurntSushi/toml
+  golangx:
+    in: golang.org/x/**
 
 components:
   #
@@ -67,6 +71,8 @@ components:
   #
   # cli
   #
+  cli-info:
+    in: cli/info
   cli-cmd:
     in: cli/cmd
   cli-ctl:
@@ -80,6 +86,8 @@ components:
   #
   mockcli:
     in: mockcli
+  gendata:
+    in: gendata
   #
   # server
   #
@@ -119,14 +127,20 @@ deps:
   cli:
     mayDependOn:
       - cli-cmd
+  cli-info:
+    canUse:
+      - toml
   cli-cmd:
     mayDependOn:
       - cli-ctl
       - cli-task
+      - cli-info
     canUse:
       - cobra
       - execx
   cli-ctl:
+    mayDependOn:
+      - cli-info
     canUse:
       - cobra
       - structconfig
@@ -141,6 +155,10 @@ deps:
       - cli-cmd
     canUse:
       - cobra
+  gendata:
+    canUse:
+      - cobra
+      - golangx
   echox:
     canUse:
       - echo

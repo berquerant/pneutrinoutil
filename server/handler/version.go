@@ -22,6 +22,6 @@ func Version(c echo.Context) error {
 }
 
 type VersionResponseData struct {
-	Version  string // server version
-	Revision string // commit hash
+	Version  string `json:"version"`  // server version
+	Revision string `json:"revision"` // commit hash
 }

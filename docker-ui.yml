@@ -1,0 +1,16 @@
+services:
+  ui:
+    build:
+      context: ui
+      dockerfile: Dockerfile
+      args:
+        - NODE_VERSION
+    container_name: ui
+    restart: unless-stopped
+    ports:
+      - "${UI_PORT}:3000"
+    environment:
+      SERVER_URI: "$CONTAINER_SERVER_URI"
+      EXTERNAL_SERVER_URI: "$EXTERNAL_SERVER_URI"
+    networks:
+      pneutrinoutil:

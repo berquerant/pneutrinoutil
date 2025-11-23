@@ -1,0 +1,33 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+      args:
+        - GO_VERSION
+    container_name: server
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT}:9101"
+    environment:
+      MYSQLDSN: "${MYSQL_USER}:${MYSQL_PASSWORD}@tcp(mysql:3306)/${MYSQL_DATABASE}?parseTime=true"
+      REDISDSN: "redis://redis:6379/${REDIS_DB}"
+      STORAGEBUCKET: "$STORAGE_BUCKET"
+      STORAGES3: "true"
+      DEBUG: "true"
+      AWS_ACCESS_KEY_ID: "${MINIO_ROOT_USER}"
+      AWS_SECRET_ACCESS_KEY: "${MINIO_ROOT_PASSWORD}"
+      AWS_DEFAULT_REGION: "${MINIO_SITE_REGION}"
+      AWS_ENDPOINT_URL: "http://172.20.0.10:9000"
+      AWS_USE_PATH_STYLE_ENDPOINT: "$AWS_USE_PATH_STYLE_ENDPOINT"
+      AWS_S3_DISABLE_HTTPS: "$AWS_S3_DISABLE_HTTPS"
+      # Containers delay access logs outputting to stdout/stderr,
+      # so they should be written to a file
+      #
+      # To tail the log:
+      #   docker compose exec -t server tail -f /var/log/access.log
+      ACCESSLOGFILE: "/var/log/access.log"
+    volumes:
+      - ./tmp/server.log:/var/log/access.log
+    networks:
+      pneutrinoutil:

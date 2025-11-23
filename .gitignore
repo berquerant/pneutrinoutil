@@ -1,3 +1,5 @@
+.DS_Store
 dist/
 bin/tools/
 tmp/
+.log/

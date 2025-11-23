@@ -1,4 +1,4 @@
 include:
-  - docker-database.yml
-  - docker-storage.yml
-  - docker-kvs.yml
+  - docker-infra.yml
+  - docker-server.yml
+  - docker-ui.yml

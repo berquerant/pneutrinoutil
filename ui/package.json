@@ -1,0 +1,40 @@
+{
+  "name": "ui",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "react-router build",
+    "dev": "react-router dev --port 9201",
+    "start": "react-router-serve ./build/server/index.js",
+    "typecheck": "react-router typegen && tsc",
+    "eslint": "eslint .",
+    "swag": "openapi-generator-cli generate -i ./swagger.yaml -g typescript-axios -o app/api/client"
+  },
+  "dependencies": {
+    "@react-router/node": "^7.9.2",
+    "@react-router/serve": "^7.9.2",
+    "@types/react-modal": "^3.16.3",
+    "axios": "^1.13.2",
+    "bootstrap": "^5.3.0",
+    "isbot": "^5.1.31",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-modal": "^3.16.3",
+    "react-router": "^7.9.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@openapitools/openapi-generator-cli": "^2.25.0",
+    "@react-router/dev": "^7.9.2",
+    "@types/node": "^22",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "env-cmd": "^11.0.0",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react": "^7.37.5",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.3",
+    "vite": "^7.1.7",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}

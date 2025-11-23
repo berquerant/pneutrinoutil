@@ -19,5 +19,8 @@ find_by_interpreter() {
     } | sort -u
 }
 
+ignore() {
+    grep -v 'ui/app/api/client'
+}
 
-find_by_interpreter bash sh | xargs -n 4 "${d}/../tools/run.sh" shellcheck -f gcc
+find_by_interpreter bash sh | ignore | xargs -n 4 "${d}/../tools/run.sh" shellcheck -f gcc
