@@ -16,6 +16,7 @@ tasks:
     cmds:
       - docker build -t pneutrinoutil-ui:dev .
   dev:
+    desc: Start dev server
     deps:
       - install
     cmds:
@@ -24,6 +25,7 @@ tasks:
     cmds:
       - npm run start
   lint:
+    desc: Run linters
     deps:
       - typecheck
       - eslint
@@ -34,5 +36,6 @@ tasks:
     cmds:
       - npm run eslint
   swag:
+    desc: Generate API
     cmds:
       - ./bin/swag.sh

@@ -104,7 +104,7 @@ tasks:
     cmds:
       - go mod tidy -v
   swag:
-    desc: Generate API document
+    desc: Generate API
     cmds:
       - ./tools/run.sh swag init -g ./server/main.go -o ./server/docs
       - task: ui:swag
