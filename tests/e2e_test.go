@@ -194,13 +194,16 @@ func TestE2E(t *testing.T) {
 	)
 
 	var newRid string
-	t.Run("new process", func(t *testing.T) {
+	if !t.Run("new process", func(t *testing.T) {
 		d, err := generateData(scoreContent, basename)
-		if !assert.Nil(t, err) {
+		if !assertNil(t, err) {
 			return
 		}
 		newRid = d[basename]
-	})
+		assert.NotEmpty(t, newRid)
+	}) {
+		return
+	}
 
 	t.Run("details", func(t *testing.T) {
 		got, ok := assertAndGet[handler.GetDetailResponseData](t, newUrl("/proc/"+newRid+"/detail"))
