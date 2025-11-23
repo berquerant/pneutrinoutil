@@ -1,0 +1,4 @@
+#!/bin/bash
+
+readonly d="$(cd "$(dirname "$0")" || exit 1; pwd)"
+"${d}/../task" "$@"
