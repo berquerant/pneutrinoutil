@@ -235,7 +235,6 @@ export default function Create({
             className="form-control"
             id="styleShift"
             name="styleShift"
-            type="text"
             type="number"
             step="1"
             defaultValue="0"
