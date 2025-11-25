@@ -157,9 +157,8 @@ export default function Create({
             className="form-control"
             id="transpose"
             name="transpose"
-            type="text"
-            inputMode="numeric"
-            pattern="\d*"
+            type="number"
+            step="1"
             defaultValue="0"
           />
           <div className="form-text" id="transpose">
@@ -174,8 +173,8 @@ export default function Create({
             className="form-control"
             id="pitchShiftNsf"
             name="pitchShiftNsf"
-            type="text"
-            inputMode="numeric"
+            type="number"
+            step="1"
             defaultValue="0"
           />
           <div className="form-text" id="pitchShiftNsf">
@@ -190,8 +189,8 @@ export default function Create({
             className="form-control"
             id="pitchShiftWorld"
             name="pitchShiftWorld"
-            type="text"
-            inputMode="numeric"
+            type="number"
+            step="1"
             defaultValue="0"
           />
           <div className="form-text" id="pitchShiftWorld">
@@ -237,8 +236,8 @@ export default function Create({
             id="styleShift"
             name="styleShift"
             type="text"
-            inputMode="numeric"
-            pattern="\d*"
+            type="number"
+            step="1"
             defaultValue="0"
           />
           <div className="form-text" id="styleShift">
