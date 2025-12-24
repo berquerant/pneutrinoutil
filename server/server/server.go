@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -78,35 +79,51 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 	// middlewares
 	//
 	const healthPath = "/health"
-	e.Use(middleware.RequestLoggerWithConfig(middleware.LoggerConfig{
-		Output: cfg.AccessLogWriter,
+	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		Skipper: func(c echo.Context) bool {
 			// skip /health access log
 			return strings.Contains(c.Request().RequestURI, healthPath)
 		},
-		Format: func() string {
-			entries := []string{
-				"time=${time_rfc3339_nano}",
-				"id=${id}",
-				"remote_ip=${remote_ip}",
-				"host=${host}",
-				"method=${method}",
-				"uri=${uri}",
-				"user_agent=${user_agent}",
-				"status=${status}",
-				"error=${error}",
-				"latency=${latency}",
-				"latency_human=${latency_human}",
+		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
+			type pair struct {
+				k string
+				v any
 			}
-			if cfg.Debug {
-				entries = append(entries,
-					"bytes_in=${bytes_in}",
-					"bytes_out=${bytes_out}",
-				)
+			xs := []pair{
+				{k: "time", v: v.StartTime.Format("2006-01-02T15:04:05.00000")},
+				{k: "id", v: v.RequestID},
+				{k: "remote_ip", v: v.RemoteIP},
+				{k: "host", v: v.Host},
+				{k: "method", v: v.Method},
+				{k: "uri", v: v.URI},
+				{k: "referer", v: v.Referer},
+				{k: "user_agent", v: v.UserAgent},
+				{k: "status", v: v.Status},
+				{k: "error", v: v.Error},
+				{k: "latency", v: v.Latency},
+				{k: "bytes_in", v: v.ContentLength},
+				{k: "bytes_out", v: v.ResponseSize},
 			}
-			return strings.Join(entries, "\t")
-		}(),
-		CustomTimeFormat: "2006-01-02 15:04:05.00000",
+			ys := make([]string, len(xs))
+			for i, x := range xs {
+				ys[i] = fmt.Sprintf("%s=%v", x.k, x.v)
+			}
+			fmt.Fprintln(cfg.AccessLogWriter, strings.Join(ys, "\t"))
+			return nil
+		},
+		LogLatency:       true,
+		LogProtocol:      true,
+		LogRemoteIP:      true,
+		LogHost:          true,
+		LogMethod:        true,
+		LogURI:           true,
+		LogRequestID:     true,
+		LogReferer:       true,
+		LogUserAgent:     true,
+		LogStatus:        true,
+		LogError:         true,
+		LogContentLength: true,
+		LogResponseSize:  true,
 	}))
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
