@@ -78,7 +78,7 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 	// middlewares
 	//
 	const healthPath = "/health"
-	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+	e.Use(middleware.RequestLoggerWithConfig(middleware.LoggerConfig{
 		Output: cfg.AccessLogWriter,
 		Skipper: func(c echo.Context) bool {
 			// skip /health access log
