@@ -108,8 +108,8 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 			for i, x := range xs {
 				ys[i] = fmt.Sprintf("%s=%v", x.k, x.v)
 			}
-			fmt.Fprintln(cfg.AccessLogWriter, strings.Join(ys, "\t"))
-			return nil
+			_, err := fmt.Fprintln(cfg.AccessLogWriter, strings.Join(ys, "\t"))
+			return err
 		},
 		LogLatency:       true,
 		LogProtocol:      true,
