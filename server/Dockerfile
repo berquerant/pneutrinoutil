@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1
+# check=error=true
 ARG GO_VERSION=1.25
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS build
 WORKDIR /src

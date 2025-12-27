@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+# check=error=true
 ARG NODE_VERSION=24
 FROM node:${NODE_VERSION}-alpine AS development-dependencies-env
 COPY . /app

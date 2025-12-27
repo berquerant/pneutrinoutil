@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+# check=error=true
 ARG MYSQL_VERSION=9.5.0
 
 FROM mysql:$MYSQL_VERSION
