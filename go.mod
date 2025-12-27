@@ -4,10 +4,10 @@ go 1.25.5
 
 require (
 	al.essio.dev/pkg/shellescape v1.6.0
-	github.com/BurntSushi/toml v1.5.0
+	github.com/BurntSushi/toml v1.6.0
 	github.com/aws/aws-sdk-go-v2 v1.41.0
 	github.com/aws/aws-sdk-go-v2/config v1.32.5
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.93.2
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.94.0
 	github.com/aws/smithy-go v1.24.0
 	github.com/berquerant/execx v0.13.0
 	github.com/berquerant/structconfig v0.7.0
