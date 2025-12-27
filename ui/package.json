@@ -11,8 +11,8 @@
     "swag": "openapi-generator-cli generate -i ./swagger.yaml -g typescript-axios -o app/api/client"
   },
   "dependencies": {
-    "@react-router/node": "^7.9.6",
-    "@react-router/serve": "^7.9.6",
+    "@react-router/node": "^7.11.0",
+    "@react-router/serve": "^7.11.0",
     "@types/react-modal": "^3.16.3",
     "axios": "^1.13.2",
     "bootstrap": "^5.3.8",
@@ -20,12 +20,12 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-modal": "^3.16.3",
-    "react-router": "^7.9.6"
+    "react-router": "^7.11.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@openapitools/openapi-generator-cli": "^2.25.2",
-    "@react-router/dev": "^7.9.6",
+    "@react-router/dev": "^7.11.0",
     "@types/node": "^24.10.4",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
