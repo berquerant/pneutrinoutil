@@ -28,15 +28,9 @@ My [NEUTRIONO](https://studio-neutrino.com/) utilities.
 - [direnv](https://github.com/direnv/direnv)
 - Docker
 - AWS CLI
+- [pnpm](https://github.com/pnpm/pnpm)
 
 # Installation
-
-Prepare libraries.
-
-``` shell
-uv sync --frozen
-go mod download
-```
 
 Download NEUTRINO and singer libraries, and build pneutrinoutil.
 
