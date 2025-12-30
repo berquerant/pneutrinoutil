@@ -1,26 +1,24 @@
 # syntax=docker/dockerfile:1
 # check=error=true
+
+# https://pnpm.io/docker
 ARG NODE_VERSION=24
-FROM node:${NODE_VERSION}-alpine AS development-dependencies-env
-COPY . /app
+FROM node:${NODE_VERSION} AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 WORKDIR /app
-RUN npm ci
 
-FROM node:${NODE_VERSION}-alpine AS production-dependencies-env
-COPY ./package.json package-lock.json /app/
-WORKDIR /app
-RUN npm ci --omit=dev
+FROM base AS build
+COPY ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml /app/
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+COPY . .
+RUN pnpm run build
+RUN pnpm deploy --filter ui --prod deploy/app
 
-ARG ENVIRONMENT=container-dev
-FROM node:${NODE_VERSION}-alpine AS build-env
-COPY . /app/
-COPY --from=development-dependencies-env /app/node_modules /app/node_modules
-WORKDIR /app
-RUN npm run build -- --mode "$ENVIRONMENT"
-
-FROM node:${NODE_VERSION}-alpine AS final
-COPY ./package.json package-lock.json /app/
-COPY --from=production-dependencies-env /app/node_modules /app/node_modules
-COPY --from=build-env /app/build /app/build
-WORKDIR /app
-CMD ["npm", "run", "start"]
+FROM base AS final
+COPY ./package.json .
+COPY --from=build /app/deploy/app/node_modules /app/node_modules
+COPY --from=build /app/deploy/app/public /app/public
+COPY --from=build /app/package.json /app/
+CMD ["pnpm", "run", "start"]

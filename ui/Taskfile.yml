@@ -6,12 +6,12 @@ tasks:
       - dev
   install:
     cmds:
-      - npm i
+      - pnpm i
   build:
     deps:
       - install
     cmds:
-      - npm run build
+      - pnpm run build
   build-image:
     cmds:
       - docker build -t pneutrinoutil-ui:dev .
@@ -20,10 +20,10 @@ tasks:
     deps:
       - install
     cmds:
-      - npm run dev
+      - pnpm run dev
   start:
     cmds:
-      - npm run start
+      - pnpm run start
   run-lint:
     deps:
       - typecheck
@@ -36,10 +36,10 @@ tasks:
       - task: run-lint
   typecheck:
     cmds:
-      - npm run typecheck
+      - pnpm run typecheck
   eslint:
     cmds:
-      - npm run eslint
+      - pnpm run eslint
   swag:
     desc: Generate API
     cmds:

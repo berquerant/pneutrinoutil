@@ -1,0 +1,4 @@
+packages:
+  - '.'
+# for pnpm deploy
+injectWorkspacePackages: true
