@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
-    "@openapitools/openapi-generator-cli": "^2.25.2",
+    "@openapitools/openapi-generator-cli": "^2.27.0",
     "@react-router/dev": "^7.11.0",
     "@types/node": "^24.10.4",
     "@types/react": "^19.2.7",
