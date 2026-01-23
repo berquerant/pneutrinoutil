@@ -2,7 +2,7 @@
 # check=error=true
 
 # https://pnpm.io/docker
-ARG NODE_VERSION=24
+ARG NODE_VERSION=24.13.0
 FROM node:${NODE_VERSION} AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
