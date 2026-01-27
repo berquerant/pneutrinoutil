@@ -17,8 +17,10 @@ RUN pnpm run build
 RUN pnpm deploy --filter ui --prod deploy/app
 
 FROM base AS final
+WORKDIR /app
 COPY ./package.json .
 COPY --from=build /app/deploy/app/node_modules /app/node_modules
+COPY --from=build /app/build /app/build
 COPY --from=build /app/deploy/app/public /app/public
 COPY --from=build /app/package.json /app/
 CMD ["pnpm", "run", "start"]
