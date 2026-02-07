@@ -24,6 +24,9 @@ package_name() {
     grep -F "$name" "$mod" | grep -v indirect | xargs
 }
 case "$name" in
+    golangci-lint)
+        "${d}/setup-golangci-lint.sh" "$GOLANGCI_LINT_VERSION" "$binary"
+        ;;
     go-arch-lint)
         "${d}/setup-go-arch-lint.sh" "$GO_ARCH_LINT_VERSION" "$binary"
         ;;
