@@ -51,6 +51,14 @@
       "depNameTemplate": "quay.io/minio/minio"
     },
     {
+      "description": "Manage golangci-lint version",
+      "customType": "regex",
+      "fileMatch": ["^.github/.env$"],
+      "matchStrings":["GOLANGCI_LINT_VERSION=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "golangci/golangci-lint"
+    },
+    {
       "description": "Manage go-arch-lint version",
       "customType": "regex",
       "fileMatch": ["^.github/.env$"],
