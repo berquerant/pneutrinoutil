@@ -1,0 +1,23 @@
+extends: default
+
+ignore: |
+  .venv
+  node_modules
+  pnpm-lock.yaml
+  swagger.yaml
+
+rules:
+  indentation:
+    indent-sequences: true
+  comments-indentation: disable
+  comments: disable
+  document-start: disable
+  line-length: disable
+  truthy:
+    allowed-values: ['true', 'false', 'on', 'off']
+  brackets:
+    ignore: |
+      playbook
+  braces:
+    ignore: |
+      playbook

@@ -86,6 +86,8 @@ jobs:
         uses: ./.github/actions/setup-go
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
+      - name: Setup Python
+        uses: ./.github/actions/setup-python
       - name: Lint
         run: ./task lint
 

@@ -7,7 +7,7 @@ allow:
 excludeFiles:
   - "^.*_test\\.go$"
   - "^.*\/test\/.*$"
-  - "\.venv/"
+  - "\\.venv/"
 
 vendors:
   shellescape:
