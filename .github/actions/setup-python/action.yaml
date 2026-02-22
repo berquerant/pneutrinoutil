@@ -8,6 +8,8 @@ runs:
       with:
         enable-cache: true
     - name: Set up Python
+      shell: bash
       run: uv python install
     - name: Sync
+      shell: bash
       run: uv sync --locked --all-extras --dev
