@@ -26,7 +26,6 @@ case "$__os" in
 esac
 
 __arch="$(arch | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/')"
-set -x
 readonly url="https://github.com/loeffel-io/ls-lint/releases/download/${version}/ls-lint-${__os}-${__arch}"
 
 curl -L -s -o "$binary" "$url"
