@@ -34,6 +34,9 @@ case "$name" in
         "${d}/shellcheck.sh" "$SHELLCHECK_VERSION" "$binary" "$@"
         exit
         ;;
+    ls-lint)
+        "${d}/setup-ls-lint.sh" "$LS_LINT_VERSION" "$binary"
+        ;;
     *)
         if [[ "$(package_name | wc -l | xargs)" != "1" ]] ; then
             log "name(${name}) is invalid"

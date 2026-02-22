@@ -73,6 +73,14 @@
       "matchStrings":["SHELLCHECK_VERSION=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "koalaman/shellcheck"
+    },
+    {
+      "description": "Manage ls-lint version",
+      "customType": "regex",
+      "fileMatch": ["^.github/.env$"],
+      "matchStrings":["LS_LINT_VERSION=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "loeffel-io/ls-lint"
     }
   ]
 }

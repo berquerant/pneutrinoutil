@@ -1,0 +1,36 @@
+ls:
+  .go: snake_case
+  .sh: kebab-case
+  .js: kebab-case
+  .ts: kebab-case
+  .tsx: kebab-case
+  .sql: kebab-case
+  .yml: kebab-case | PascalCase
+  .yaml: kebab-case | PascalCase
+  .dir: kebab-case | regex:\.github
+
+  .github/*:
+    .dir: kebab-case
+    .yaml: kebab-case
+    .yml: kebab-case
+  playbook:
+    .yml: snake_case
+    .dir: snake_case
+  inventory:
+    .yml: kebab-case
+    .dir: kebab-case
+
+ignore:
+  - .git
+  - "**/node_modules"
+  - "**/.react-router"
+  - dist
+  - .venv
+  - ui/build
+  - ui/app/api/client
+  - "**/*/*_generated.go"
+  - .log
+  - .mypy_cache
+  - .ropeproject
+  - tmp
+  - .DS_Store

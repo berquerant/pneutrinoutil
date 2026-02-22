@@ -37,6 +37,7 @@ tasks:
   lint:
     desc: Run linters
     deps:
+      - ls-lint
       - shellcheck
       - vuln
       - vet
@@ -85,6 +86,9 @@ tasks:
   shellcheck:
     cmds:
       - ./bin/shellcheck.sh
+  ls-lint:
+    cmds:
+      - ./tools/run.sh ls-lint
   generate:
     desc: Go generate
     # deps:
