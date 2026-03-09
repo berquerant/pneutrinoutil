@@ -9,7 +9,6 @@ import (
 
 	"github.com/berquerant/pneutrinoutil/pkg/domain"
 	"github.com/berquerant/pneutrinoutil/pkg/infra"
-	"github.com/berquerant/pneutrinoutil/pkg/ptr"
 )
 
 const (
@@ -140,13 +139,13 @@ func (*ProcessDetails) scan(f func(...any) error) (*domain.ProcessDetails, error
 		UpdatedAt:     updatedAt,
 	}
 	if command.Valid {
-		v.Command = ptr.To(command.String)
+		v.Command = new(command.String)
 	}
 	if logObjectId.Valid {
-		v.LogObjectID = ptr.To(int(logObjectId.Int64))
+		v.LogObjectID = new(int(logObjectId.Int64))
 	}
 	if resultObjectId.Valid {
-		v.ResultObjectID = ptr.To(int(resultObjectId.Int64))
+		v.ResultObjectID = new(int(resultObjectId.Int64))
 	}
 	return v, nil
 }

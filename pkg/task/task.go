@@ -117,7 +117,7 @@ func (p *PneutrinoutilProcessor) ProcessStart(ctx context.Context, t *asynq.Task
 	if _, err := p.ProcessUpdater.UpdateProcess(ctx, &repo.UpdateProcessRequest{
 		ID:        proc.ID,
 		Status:    ptr.To(domain.ProcessStatusRunning),
-		StartedAt: ptr.To(time.Now()),
+		StartedAt: new(time.Now()),
 	}); err != nil {
 		return withBaseErr(err, "failed to update process(%d)", proc.ID)
 	}
@@ -174,7 +174,7 @@ func (p *PneutrinoutilProcessor) ProcessStart(ctx context.Context, t *asynq.Task
 	alog.L().Info("start pneutrinoutil", attrs("args", args)...)
 	if _, err := p.ProcessDetailsUpdater.UpdateProcessDetails(ctx, &repo.UpdateProcessDetailsRequest{
 		ID:      details.ID,
-		Command: ptr.To(strings.Join(args, " ")),
+		Command: new(strings.Join(args, " ")),
 	}); err != nil {
 		_ = logFile.Close()
 		return withBaseErr(err, "failed to update process details(%d) command", details.ID)
@@ -356,7 +356,7 @@ func (p *PneutrinoutilProcessor) updateProcessStatus(ctx context.Context, proces
 	_, err := p.ProcessUpdater.UpdateProcess(ctx, &repo.UpdateProcessRequest{
 		ID:          processID,
 		Status:      status,
-		CompletedAt: ptr.To(now),
+		CompletedAt: new(now),
 	})
 	return err
 }

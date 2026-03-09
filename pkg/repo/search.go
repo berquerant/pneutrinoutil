@@ -9,7 +9,6 @@ import (
 
 	"github.com/berquerant/pneutrinoutil/pkg/domain"
 	"github.com/berquerant/pneutrinoutil/pkg/infra"
-	"github.com/berquerant/pneutrinoutil/pkg/ptr"
 )
 
 type SearchProcessRequest struct {
@@ -79,10 +78,10 @@ func (*Searcher) scanSearchProcessResultElement(f func(...any) error) (*SearchPr
 		UpdatedAt: processUpdatedAt,
 	}
 	if startedAt.Valid {
-		p.StartedAt = ptr.To(startedAt.Time)
+		p.StartedAt = new(startedAt.Time)
 	}
 	if completedAt.Valid {
-		p.CompletedAt = ptr.To(completedAt.Time)
+		p.CompletedAt = new(completedAt.Time)
 	}
 
 	d := &domain.ProcessDetails{
@@ -93,13 +92,13 @@ func (*Searcher) scanSearchProcessResultElement(f func(...any) error) (*SearchPr
 		UpdatedAt:     detailsUpdatedAt,
 	}
 	if command.Valid {
-		d.Command = ptr.To(command.String)
+		d.Command = new(command.String)
 	}
 	if logObjectId.Valid {
-		d.LogObjectID = ptr.To(int(logObjectId.Int64))
+		d.LogObjectID = new(int(logObjectId.Int64))
 	}
 	if resultObjectId.Valid {
-		d.ResultObjectID = ptr.To(int(resultObjectId.Int64))
+		d.ResultObjectID = new(int(resultObjectId.Int64))
 	}
 
 	return &SearchProcessResultElement{

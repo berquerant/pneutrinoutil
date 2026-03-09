@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/berquerant/pneutrinoutil/pkg/domain"
-	"github.com/berquerant/pneutrinoutil/pkg/ptr"
 	"github.com/berquerant/pneutrinoutil/pkg/repo"
 	"github.com/labstack/echo/v4"
 )
@@ -45,10 +44,10 @@ func (p SearchProcessParam) intoRequest() *repo.SearchProcessRequest {
 		start, end *time.Time
 	)
 	if x := p.Start; x != nil {
-		start = ptr.To(time.Time(*x))
+		start = new(time.Time(*x))
 	}
 	if x := p.End; x != nil {
-		end = ptr.To(time.Time(*x))
+		end = new(time.Time(*x))
 	}
 	r.CreatedAt = repo.NewRange(start, end)
 	return &r
@@ -57,8 +56,8 @@ func (p SearchProcessParam) intoRequest() *repo.SearchProcessRequest {
 type SearchProcessResponseDataElement struct {
 	RequestID   string    `json:"request_id"` // request id, or just id
 	Status      string    `json:"status"`
-	StartedAt   time.Time `json:"started_at,omitempty"`
-	CompletedAt time.Time `json:"completed_at,omitempty"`
+	StartedAt   time.Time `json:"started_at"`
+	CompletedAt time.Time `json:"completed_at"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 	Command     string    `json:"command,omitempty"`

@@ -11,7 +11,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/berquerant/pneutrinoutil/pkg/domain"
 	"github.com/berquerant/pneutrinoutil/pkg/pathx"
-	"github.com/berquerant/pneutrinoutil/pkg/ptr"
 )
 
 type Object interface {
@@ -67,8 +66,8 @@ func (s *S3) CreateObject(ctx context.Context, req *CreateObjectRequest) (*Creat
 	}
 
 	if _, err := s.client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket: ptr.To(req.Object.Bucket),
-		Key:    ptr.To(req.Object.Path),
+		Bucket: new(req.Object.Bucket),
+		Key:    new(req.Object.Path),
 		Body:   req.Object.Blob, // Body should be seekable (implement io.Seeker)
 	}); err != nil {
 		return nil, fmt.Errorf("%w: s3 create object bucket=%s, path=%s", err, req.Object.Bucket, req.Object.Path)
@@ -80,8 +79,8 @@ func (s *S3) CreateObject(ctx context.Context, req *CreateObjectRequest) (*Creat
 
 func (s *S3) GetObject(ctx context.Context, req *GetObjectRequest) (*domain.StorageObject, error) {
 	r, err := s.client.GetObject(ctx, &s3.GetObjectInput{
-		Bucket: ptr.To(req.Bucket),
-		Key:    ptr.To(req.Path),
+		Bucket: new(req.Bucket),
+		Key:    new(req.Path),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("%w: s3 get object bucket=%s, path=%s", err, req.Bucket, req.Path)

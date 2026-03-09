@@ -9,7 +9,6 @@ import (
 
 	"github.com/berquerant/pneutrinoutil/pkg/domain"
 	"github.com/berquerant/pneutrinoutil/pkg/infra"
-	"github.com/berquerant/pneutrinoutil/pkg/ptr"
 )
 
 const (
@@ -143,10 +142,10 @@ func (*Process) scan(f func(...any) error) (*domain.Process, error) {
 		UpdatedAt: updatedAt,
 	}
 	if startedAt.Valid {
-		v.StartedAt = ptr.To(startedAt.Time)
+		v.StartedAt = new(startedAt.Time)
 	}
 	if completedAt.Valid {
-		v.CompletedAt = ptr.To(completedAt.Time)
+		v.CompletedAt = new(completedAt.Time)
 	}
 	return v, nil
 }

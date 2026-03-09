@@ -281,9 +281,7 @@ func TestE2E(t *testing.T) {
 
 	t.Run("search complex", func(t *testing.T) {
 		joinMap := func(d1, d2 map[string]string) map[string]string {
-			for k, v := range d2 {
-				d1[k] = v
-			}
+			maps.Copy(d1, d2)
 			return d1
 		}
 
