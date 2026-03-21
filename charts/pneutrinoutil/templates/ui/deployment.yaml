@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pneutrinoutil.fullname" . }}-ui
+  labels:
+    app: ui
+    {{- include "pneutrinoutil.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui
+      {{- include "pneutrinoutil.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: ui
+        {{- include "pneutrinoutil.labels" . | nindent 8 }}
+    spec:
+      initContainers:
+        - name: wait-server
+          image: "{{ .Values.images.curl.repository }}:{{ .Values.images.curl.tag }}"
+          command:
+            - curl
+            - -s
+            - -I
+            - http://{{ include "pneutrinoutil.fullname" . }}-server:9101/v1/health
+      containers:
+        - name: ui
+          image: "{{ .Values.images.ui.repository }}:{{ .Values.images.ui.tag }}"
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+              name: ui-svc
+          env:
+            - name: SERVER_URI
+              value: http://{{ include "pneutrinoutil.fullname" . }}-server:9101/v1
+            - name: EXTERNAL_SERVER_URI
+              value: {{ .Values.ui.externalServer }}/v1
+          livenessProbe:
+            initialDelaySeconds: 5
+            httpGet:
+              path: /
+              port: 3000

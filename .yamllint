@@ -5,6 +5,7 @@ ignore: |
   node_modules
   pnpm-lock.yaml
   swagger.yaml
+  charts/
 
 rules:
   indentation:

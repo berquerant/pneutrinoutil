@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "pneutrinoutil.fullname" . }}-s3
+  labels:
+    app: s3
+    {{- include "pneutrinoutil.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        {{- if .Values.s3.storage.useHostPath }}
+        volumeName: {{ include "pneutrinoutil.fullname" . }}-s3
+        {{- end }}
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{ .Values.s3.storage.capacity  }}
+  selector:
+    matchLabels:
+      app: s3
+      {{- include "pneutrinoutil.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: s3
+        {{- include "pneutrinoutil.labels" . | nindent 8 }}
+      annotations:
+        checksum/s3-common: {{ include "pneutrinoutil.s3Common" . | sha256sum }}
+    spec:
+      containers:
+        - name: s3
+          image: "{{ .Values.images.s3.repository }}:{{ .Values.images.s3.tag }}"
+          command:
+            - weed
+            - mini
+            - -s3
+            - -s3.port=9000
+            - -s3.allowedOrigins=*
+            - -dir=/data
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          ports:
+            - name: s3-svc
+              containerPort: 9000
+              protocol: TCP
+            - name: s3-admin
+              containerPort: 23646
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 10
+            httpGet:
+              path: /status
+              port: 9000
+          envFrom:
+            - configMapRef:
+                name: {{ include "pneutrinoutil.fullname" . }}-s3-common

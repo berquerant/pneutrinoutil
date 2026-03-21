@@ -1,0 +1,18 @@
+{{- if .Values.mysql.storage.useHostPath }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "pneutrinoutil.fullname" . }}-mysql
+  labels:
+    app: mysql
+    {{- include "pneutrinoutil.labels" . | nindent 4 }}
+spec:
+  storageClassName: standard
+  capacity:
+    storage: {{ .Values.mysql.storage.capacity }}
+  volumeMode: Filesystem
+  accessModes: ["ReadWriteOnce"]
+  hostPath:
+    path: {{ .Values.mysql.storage.hostPath.path }}
+    type: DirectoryOrCreate
+{{- end}}

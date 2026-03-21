@@ -34,3 +34,4 @@ ignore:
   - .ropeproject
   - tmp
   - .DS_Store
+  - charts

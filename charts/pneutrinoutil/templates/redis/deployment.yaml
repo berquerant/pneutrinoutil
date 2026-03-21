@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pneutrinoutil.fullname" . }}-redis
+  labels:
+    app: redis
+    {{- include "pneutrinoutil.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+      {{- include "pneutrinoutil.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: redis
+        {{- include "pneutrinoutil.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: redis
+          image: "{{ .Values.images.redis.repository }}:{{ .Values.images.redis.tag }}"
+          ports:
+            - containerPort: 6379
+              protocol: TCP
+              name: redis-svc
+          livenessProbe:
+            initialDelaySeconds: 5
+            exec:
+              command:
+                - redis-cli
+                - ping
+          readinessProbe:
+            initialDelaySeconds: 5
+            exec:
+              command:
+                - redis-cli
+                - ping

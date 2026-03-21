@@ -20,7 +20,7 @@ find_by_interpreter() {
 }
 
 ignore() {
-    grep -v 'ui/app/api/client'
+    grep -v -E 'ui/app/api/client|charts'
 }
 
 find_by_interpreter bash sh | ignore | xargs -n 4 "${d}/../tools/run.sh" shellcheck -f gcc

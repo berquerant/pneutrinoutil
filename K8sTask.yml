@@ -1,0 +1,94 @@
+version: '3'
+
+tasks:
+  default:
+    cmds:
+      - task: reload-cluster
+      - task: reload-images
+      - task: deploy
+  purge-data:
+    cmds:
+      - rm -rf tmp/data/mysql tmp/data/s3
+  reload:
+    deps:
+      - stop
+    cmds:
+      - task: default
+  redeploy:
+    deps:
+      - uninstall
+    cmds:
+      - task: deploy
+  stop:
+    deps:
+      - stop-worker
+      - delete-cluster
+  delete-cluster:
+    cmds:
+      - kind delete cluster || true
+      - task: purge-data
+  create-cluster:
+    cmds:
+      - kind create cluster --config .cluster.yaml
+  reload-cluster:
+    deps:
+      - delete-cluster
+    cmds:
+      - task: create-cluster
+  deploy:
+    cmds:
+      - helm upgrade pneutrinoutil ./charts/pneutrinoutil --install
+      - task: reload-worker
+  uninstall:
+    cmds:
+      - helm uninstall pneutrinoutil
+  reload-images:
+    cmds:
+      - task: build-images
+      - task: load-images
+  build-images:
+    deps:
+      - build-server-image
+      - build-ui-image
+  load-images:
+    deps:
+      - load-server-image
+      - load-ui-image
+  build-server-image:
+    cmds:
+      - docker build -t pneutrinoutil/server:local -f server/Dockerfile .
+  load-server-image:
+    cmds:
+      - kind load docker-image pneutrinoutil/server:local
+  build-ui-image:
+    cmds:
+      - docker build -t pneutrinoutil/ui:local -f ui/Dockerfile ui
+  load-ui-image:
+    cmds:
+      - kind load docker-image pneutrinoutil/ui:local
+  restart-worker:
+    deps:
+      - stop-worker
+    cmds:
+      - task: start-worker
+  reload-worker:
+    deps:
+      - build-binaries
+    cmds:
+      - task: restart-worker
+  start-worker:
+    cmds:
+      - ./bin/k8s-worker.sh start
+  stop-worker:
+    cmds:
+      - ./bin/k8s-worker.sh stop || true
+  build-binaries:
+    deps:
+      - build-cli
+      - build-worker
+  build-cli:
+    cmds:
+      - ./bin/build.sh -o dist/pneutrinoutil cli/main.go
+  build-worker:
+    cmds:
+      - ./bin/build.sh -o dist/pneutrinoutil-worker worker/main.go

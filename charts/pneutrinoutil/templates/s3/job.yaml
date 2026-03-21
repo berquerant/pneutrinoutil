@@ -1,0 +1,57 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "pneutrinoutil.fullname" . }}-s3-setup
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+  labels:
+     {{- include "pneutrinoutil.labels" . | nindent 4 }}
+spec:
+  template:
+    metadata:
+      annotations:
+        checksum/s3-setup: {{ include "pneutrinoutil.s3.configSetup" . | sha256sum }}
+    spec:
+      restartPolicy: OnFailure
+      volumes:
+        - name: script
+          configMap:
+            name: {{ include "pneutrinoutil.fullname" . }}-s3-setup
+            defaultMode: 0755
+            items:
+              - key: setup.sh
+                path: setup.sh
+        - name: ddl
+          configMap:
+            name: {{ include "pneutrinoutil.fullname" . }}-s3-setup
+      initContainers:
+        - name: wait-s3
+          image: "{{ .Values.images.s3Setup.repository }}:{{ .Values.images.s3Setup.tag }}"
+          command:
+            - aws
+            - s3
+            - ls
+          envFrom:
+            - configMapRef:
+                name: {{ include "pneutrinoutil.fullname" . }}-server-common
+            - configMapRef:
+                name: {{ include "pneutrinoutil.fullname" . }}-s3-common
+      containers:
+        - name: main
+          image: "{{ .Values.images.s3Setup.repository }}:{{ .Values.images.s3Setup.tag }}"
+          command:
+            - /bin/bash
+            - /usr/local/bin/setup/setup.sh
+          volumeMounts:
+            - name: script
+              mountPath: /usr/local/bin/setup
+              readOnly: true
+            - name: ddl
+              mountPath: /ddl
+              readOnly: true
+          envFrom:
+            - configMapRef:
+                name: {{ include "pneutrinoutil.fullname" . }}-s3-common
+          env:
+            - name: BUCKET_TXT
+              value: /ddl/bucket.txt

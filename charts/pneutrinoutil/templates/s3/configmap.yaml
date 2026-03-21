@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pneutrinoutil.fullname" . }}-s3-setup
+  labels:
+    app: s3
+    {{- include "pneutrinoutil.labels" . | nindent 4 }}
+data:
+  {{ include "pneutrinoutil.s3.configSetup" . | nindent 2 }}

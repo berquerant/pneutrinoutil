@@ -6,3 +6,4 @@ includes:
     flatten: true
   ansible:
     taskfile: ./AnsibleTask.yml
+  k8s: ./K8sTask.yml
