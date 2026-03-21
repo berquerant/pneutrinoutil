@@ -78,10 +78,10 @@ tasks:
       - task: restart-worker
   start-worker:
     cmds:
-      - ./bin/k8s_worker.sh start
+      - ./bin/k8s-worker.sh start
   stop-worker:
     cmds:
-      - ./bin/k8s_worker.sh stop || true
+      - ./bin/k8s-worker.sh stop || true
   build-binaries:
     deps:
       - build-cli
