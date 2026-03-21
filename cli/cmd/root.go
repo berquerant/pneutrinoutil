@@ -90,7 +90,10 @@ pneutrinoutil --neutrinoDir /path/to/NEUTRINO --workDir /path/to/install-result 
 			return err
 		}
 
-		tasks := task.NewGenerator(dir, c, play, hook).ExecutableTasks()
+		tasks, err := task.NewGenerator(dir, c, play, hook).ExecutableTasks()
+		if err != nil {
+			return err
+		}
 		taskNames := make([]string, len(tasks.Tasks))
 		for i, t := range tasks.Tasks {
 			taskNames[i] = t.Name

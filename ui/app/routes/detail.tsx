@@ -6,7 +6,6 @@ import Config from "../detail/config";
 import Log from "../detail/log";
 import MusicXML from "../detail/musicxml";
 import Wav from "../detail/wav";
-import WorldWav from "../detail/worldwav";
 import axios from "axios";
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -90,7 +89,6 @@ export default function Component({
           {log != null && Log(log)}
           {MusicXML({ apiServerUri: apiServerUri, rid: detail.request_id })}
           {Wav({ apiServerUri: apiServerUri, rid: detail.request_id })}
-          {WorldWav({ apiServerUri: apiServerUri, rid: detail.request_id })}
         </div>
       </div>
     </div>

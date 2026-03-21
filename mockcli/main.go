@@ -117,12 +117,6 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 		_ = wav.Close()
-		worldWavPath := filepath.Join(resultDir, c.Basename()+"_world.wav")
-		worldWav, err := create("world_wav", worldWavPath)
-		if err != nil {
-			return err
-		}
-		_ = worldWav.Close()
 
 		return nil
 	},

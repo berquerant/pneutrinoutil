@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -33,6 +34,7 @@ type PneutrinoutilStartPayload struct {
 }
 
 func NewPneutrinoutilStart(p PneutrinoutilStartPayload) (*asynq.Task, error) {
+	alog.L().Debug("NewPneutrinoutilStart", slog.String("rid", p.RequestID), slog.Any("args", p.Args))
 	payload, err := json.Marshal(p)
 	if err != nil {
 		return nil, err
