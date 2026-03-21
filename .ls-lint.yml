@@ -22,7 +22,7 @@ ls:
 
 ignore:
   - .git
-  - "**/node_modules"
+  - ui/node_modules
   - "**/.react-router"
   - dist
   - .venv
