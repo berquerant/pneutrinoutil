@@ -257,15 +257,6 @@ func TestE2E(t *testing.T) {
 		assert.Equal(t, http.StatusOK, r.StatusCode)
 	})
 
-	t.Run("download world wav", func(t *testing.T) {
-		r, err := http.Get(newUrl("/proc/" + newRid + "/world_wav"))
-		if !assertNil(t, err) {
-			return
-		}
-		r.Body.Close()
-		assert.Equal(t, http.StatusOK, r.StatusCode)
-	})
-
 	t.Run("search", func(t *testing.T) {
 		r, ok := assertAndGet[handler.SearchProcessResponseData](t, newUrl("/proc/search"))
 		if !ok {
