@@ -15,9 +15,8 @@ func TestConfig(t *testing.T) {
 			return
 		}
 		want := &ctl.Config{
-			NumThreads:      4,
-			ModelDir:        "MERROW",
-			SupportModelDir: "KIRITAN",
+			NumThreads: 4,
+			ModelDir:   "MERROW",
 		}
 		assert.Equal(t, want, got)
 	})
