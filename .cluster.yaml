@@ -1,0 +1,30 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+containerdConfigPatches:
+  - |
+    [host."https://mirror.gcr.io"]
+      capabilities = ["pull", "resolve"]
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      # server
+      - containerPort: 31002
+        hostPort: 9101
+      # ui
+      - containerPort: 31001
+        hostPort: 3000
+      # mysql
+      - containerPort: 31011
+        hostPort: 3306
+      # redis
+      - containerPort: 31012
+        hostPort: 6379
+      # s3
+      - containerPort: 31013
+        hostPort: 9000
+      # s3 admin
+      - containerPort: 31014
+        hostPort: 23646
+    extraMounts:
+      - hostPath: tmp/data
+        containerPath: /mnt/local-data

@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "pneutrinoutil.fullname" . }}-mysql
+  labels:
+    app: mysql
+    {{- include "pneutrinoutil.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        {{- if .Values.mysql.storage.useHostPath }}
+        volumeName: {{ include "pneutrinoutil.fullname" . }}-mysql
+        {{- end }}
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{ .Values.mysql.storage.capacity  }}
+  selector:
+    matchLabels:
+      app: mysql
+      {{- include "pneutrinoutil.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: mysql
+        {{- include "pneutrinoutil.labels" . | nindent 8 }}
+      annotations:
+        checksum/config: {{ include "pneutrinoutil.mysql.config" . | sha256sum }}
+    spec:
+      volumes:
+        - name: cnf
+          configMap:
+            name: {{ include "pneutrinoutil.fullname" . }}-mysql
+      containers:
+        - name: mysql
+          image: "{{ .Values.images.mysql.repository }}:{{ .Values.images.mysql.tag }}"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+            - name: cnf
+              mountPath: /etc/my.cnf
+              subPath: my.cnf
+              readOnly: true
+          ports:
+            - name: mysql-svc
+              containerPort: 3306
+              protocol: TCP
+          startupProbe:
+            failureThreshold: 10
+            exec:
+              command:
+                - mysqladmin
+                - ping
+                - -u
+                - root
+                - -p$(MYSQL_ROOT_PASSWORD)
+          livenessProbe:
+            exec:
+              command:
+                - mysqladmin
+                - ping
+                - -u
+                - root
+                - -p$(MYSQL_ROOT_PASSWORD)
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pneutrinoutil.fullname" . }}-mysql
+                  key: rootPassword

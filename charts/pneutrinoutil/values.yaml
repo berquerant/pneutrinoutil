@@ -1,0 +1,85 @@
+nameOverride: ""
+fullnameOverride: ""
+
+images:
+  redis:
+    repository: redis
+    tag: 8.6.1
+  s3:
+    repository: chrislusf/seaweedfs
+    tag: 4.17
+  s3Setup:
+    repository: amazon/aws-cli
+    tag: 2.34.13
+  mysql:
+    repository: mysql
+    tag: 9.5.0
+  server:
+    repository: pneutrinoutil/server
+    tag: local
+  ui:
+    repository: pneutrinoutil/ui
+    tag: local
+  curl:
+    repository: curlimages/curl
+    tag: 8.18.0
+  worker:
+    repository: pneutrinoutil/worker
+    tag: local
+
+pneutrinoutil:
+  # expose services via NodePort
+  # see .cluster.yaml, nodes.extraPortMappings
+  useKind: true
+  kind:
+    ports:
+      server:
+        container: 31002
+      ui:
+        container: 31001
+      mysql:
+        container: 31011
+      redis:
+        container: 31012
+      s3:
+        container: 31013
+      s3Admin:
+        container: 31014
+
+redis:
+  db: 1
+
+s3:
+  user: admin
+  password: key
+  bucket: pneutrinoutil
+  debug: true
+  storage:
+    capacity: 1Gi
+    useHostPath: true
+    hostPath:
+      # see .cluster.yaml, nodes.extraMounts
+      path: /mnt/local-data/s3
+
+mysql:
+  database: pneutrinoutil
+  user: pneutrinoutil
+  password: userpass
+  rootPassword: rootpass
+  storage:
+    capacity: 1Gi
+    useHostPath: true
+    hostPath:
+      # see .cluster.yaml, nodes.extraMounts
+      path: /mnt/local-data/mysql
+
+server:
+  debug: true
+
+# worker:
+#   debug: true
+#   shell: /bin/bash
+
+ui:
+  # user downloads .wav from the server via the URI
+  externalServer: "http://127.0.0.1:9101"

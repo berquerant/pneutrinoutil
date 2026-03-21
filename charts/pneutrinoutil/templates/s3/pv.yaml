@@ -1,0 +1,18 @@
+{{- if .Values.s3.storage.useHostPath }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "pneutrinoutil.fullname" . }}-s3
+  labels:
+    app: s3
+    {{- include "pneutrinoutil.labels" . | nindent 4 }}
+spec:
+  storageClassName: standard
+  capacity:
+    storage: {{ .Values.s3.storage.capacity }}
+  volumeMode: Filesystem
+  accessModes: ["ReadWriteOnce"]
+  hostPath:
+    path: {{ .Values.s3.storage.hostPath.path }}
+    type: DirectoryOrCreate
+{{- end}}

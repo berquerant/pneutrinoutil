@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pneutrinoutil.fullname" . }}-mysql
+  labels:
+    app: mysql
+    {{- include "pneutrinoutil.labels" . | nindent 4 }}
+data:
+  {{ include "pneutrinoutil.mysql.config" . | nindent 2 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pneutrinoutil.fullname" . }}-mysql-setup
+  labels:
+    app: mysql
+    {{- include "pneutrinoutil.labels" . | nindent 4 }}
+data:
+  {{ include "pneutrinoutil.mysql.configSetup" . | nindent 2 }}
