@@ -3,6 +3,7 @@ package infra
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -19,6 +20,10 @@ type StorageParam struct {
 }
 
 func NewStorage(ctx context.Context, param *StorageParam) (Object, error) {
+	alog.L().Info("NewStorage",
+		slog.Bool("debug", param.Debug),
+		slog.String("root", param.RootDir),
+		slog.Bool("s3", param.UseS3))
 	if param.UseS3 {
 		c, err := config.LoadDefaultConfig(ctx)
 		if err != nil {
@@ -44,6 +49,8 @@ func NewStorage(ctx context.Context, param *StorageParam) (Object, error) {
 
 			if x := os.Getenv("AWS_ENDPOINT_URL"); x != "" {
 				opt.BaseEndpoint = aws.String(x)
+				// Using path-style access due to the difficulty of setting up virtual-host DNS locally.
+				opt.UsePathStyle = true
 				opt.EndpointOptions.DisableHTTPS = os.Getenv("AWS_S3_DISABLE_HTTPS") == "true"
 			}
 		})), nil

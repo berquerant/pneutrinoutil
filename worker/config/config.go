@@ -83,6 +83,7 @@ func (c Config) NewStorage(ctx context.Context) (infra.Object, error) {
 	return infra.NewStorage(ctx, &infra.StorageParam{
 		UseS3:   c.StorageS3,
 		RootDir: c.StorageDir,
+		Debug:   c.Debug,
 	})
 }
 
