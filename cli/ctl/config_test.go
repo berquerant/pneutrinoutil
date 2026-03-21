@@ -15,12 +15,9 @@ func TestConfig(t *testing.T) {
 			return
 		}
 		want := &ctl.Config{
-			NumParallel:   1,
-			NumThreads:    4,
-			InferenceMode: 3,
-			ModelDir:      "MERROW",
-			RandomSeed:    1234,
-			FormantShift:  1,
+			NumThreads:      4,
+			ModelDir:        "MERROW",
+			SupportModelDir: "KIRITAN",
 		}
 		assert.Equal(t, want, got)
 	})
