@@ -46,6 +46,7 @@ tasks:
     cmds:
       - task: build-images
       - task: load-images
+      - task: restart-deploys
   build-images:
     deps:
       - build-server-image
@@ -54,18 +55,37 @@ tasks:
     deps:
       - load-server-image
       - load-ui-image
+  restart-deploys:
+    deps:
+      - restart-server
+      - restart-ui
+  #
+  # server
+  #
+  restart-server:
+    cmds:
+      - kubectl rollout restart deploy pneutrinoutil-server || true
   build-server-image:
     cmds:
       - docker build -t pneutrinoutil/server:local -f server/Dockerfile .
   load-server-image:
     cmds:
       - kind load docker-image pneutrinoutil/server:local
+  #
+  # ui
+  #
+  restart-ui:
+    cmds:
+      - kubectl rollout restart deploy pneutrinoutil-ui || true
   build-ui-image:
     cmds:
       - docker build -t pneutrinoutil/ui:local -f ui/Dockerfile ui
   load-ui-image:
     cmds:
       - kind load docker-image pneutrinoutil/ui:local
+  #
+  # binaries
+  #
   restart-worker:
     deps:
       - stop-worker
