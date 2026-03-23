@@ -15,10 +15,12 @@ runs:
     - name: Install kind
       shell: bash
       run: |
-        curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/${{ inputs.version }}/kind-linux-amd64
+        curl -Lso ./kind "https://github.com/kubernetes-sigs/kind/releases/download/${VERSION}/kind-linux-amd64"
         chmod +x ./kind
         sudo mv ./kind /usr/local/bin/kind
         kind version
+      env:
+        VERSION: ${{ inputs.version }}
     - name: Create kind cluster
       shell: bash
       run: kind create cluster --image '${{ inputs.node_image }}'
