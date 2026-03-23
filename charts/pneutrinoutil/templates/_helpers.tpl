@@ -80,7 +80,7 @@ MYSQLDSN: {{ .Values.mysql.user }}:{{ .Values.mysql.password }}@tcp({{ include "
 {{- define "pneutrinoutil.retrySh" -}}
 #!/bin/bash
 
-limit=60
+limit=100
 interval=3
 
 while [[ $# -gt 0 ]] ; do
