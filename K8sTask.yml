@@ -52,7 +52,7 @@ tasks:
       - task: run:reload-k8s-worker
   test-deploy:
     cmds:
-      - helm upgrade pneutrinoutil ./charts/pneutrinoutil --install -f test-values.yaml
+      - helm upgrade pneutrinoutil ./charts/pneutrinoutil --install -f test-values.yaml --debug
       - task: run:reload-k8s-worker
   uninstall:
     cmds:
