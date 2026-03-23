@@ -1,0 +1,10 @@
+version: '3'
+
+tasks:
+  default:
+    deps:
+      - swag
+  swag:
+    desc: Generate API
+    cmds:
+      - ./bin/swag.sh

@@ -1,0 +1,51 @@
+version: '3'
+
+includes:
+  k8s:
+    taskfile: K8sTask.yml
+  build:
+    taskfile: BuildTask.yml
+  run:
+    taskfile: RunTask.yml
+
+vars:
+  TEST: "true"
+
+tasks:
+  default:
+    cmds:
+      - task: unit
+      - task: e2e
+  unit:
+    desc: Run unit tests
+    cmds:
+      - task: k8s:test
+        if: '[[ "$SKIP_DEPLOY" != "true" ]]'
+      - TEST=true ./bin/env.sh go test -cover -race $(go list ./... | grep -v tests) ${DEBUG+-v -count=1}
+  e2e:
+    desc: Run E2E tests
+    deps:
+      - build:mockcli
+    cmds:
+      - task: drop-data
+        ignore_error: true
+      - task: k8s:test
+        if: '[[ "$SKIP_DEPLOY" != "true" ]]'
+      # - task: run:reload-k8s-worker
+      - TEST=true ./bin/env.sh ./bin/k8s-worker.sh stop || true
+      - TEST=true ./bin/env.sh ./bin/k8s-worker.sh start
+      - ./bin/env.sh go test -cover -race $(go list ./... | grep tests) -count=1 ${DEBUG+-v}
+  drop-data:
+    deps:
+      - drop-redis
+      - drop-mysql
+      - drop-s3
+  drop-redis:
+    cmds:
+      - ./bin/env.sh ./bin/ddl.sh drop redis ${TEST_REDIS_DB}
+  drop-s3:
+    cmds:
+      - ./bin/env.sh ./bin/ddl.sh drop s3 ${TEST_STORAGE_BUCKET}
+  drop-mysql:
+    cmds:
+      - ./bin/env.sh ./bin/ddl.sh drop mysql ${TEST_MYSQL_DATABASE}

@@ -1,0 +1,21 @@
+version: '3'
+
+
+tasks:
+  default:
+    desc: Start dev server
+    deps:
+      - install
+    cmds:
+      - pnpm run dev
+  install:
+    cmds:
+      - pnpm i
+  build:
+    deps:
+      - install
+    cmds:
+      - pnpm run build
+  start:
+    cmds:
+      - pnpm run start

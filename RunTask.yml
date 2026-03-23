@@ -1,0 +1,24 @@
+version: '3'
+
+includes:
+  build:
+    taskfile: BuildTask.yml
+
+tasks:
+  restart-k8s-worker:
+    deps:
+      - stop-k8s-worker
+    cmds:
+      - task: start-k8s-worker
+  reload-k8s-worker:
+    deps:
+      - build:cli
+      - build:worker
+    cmds:
+      - task: restart-k8s-worker
+  start-k8s-worker:
+    cmds:
+      - ./bin/env.sh ./bin/k8s-worker.sh start
+  stop-k8s-worker:
+    cmds:
+      - ./bin/env.sh ./bin/k8s-worker.sh stop || true

@@ -1,12 +1,23 @@
 version: '3'
 
+includes:
+  build:
+    taskfile: BuildTask.yml
+  run:
+    taskfile: RunTask.yml
+
 tasks:
   default:
     cmds:
       - task: reload-cluster
       - task: reload-images
       - task: deploy
-  purge-data:
+  test:
+    cmds:
+      - task: reload-cluster
+      - task: reload-images
+      - task: test-deploy
+  purge:
     cmds:
       - rm -rf tmp/data/mysql tmp/data/s3
   reload:
@@ -21,16 +32,16 @@ tasks:
       - task: deploy
   stop:
     deps:
-      - stop-worker
+      - run:stop-k8s-worker
       - delete-cluster
   delete-cluster:
     cmds:
       - kind delete cluster || true
-      - task: purge-data
   create-cluster:
     cmds:
       - kind create cluster --config .cluster.yaml
   reload-cluster:
+    if: '[[ "$SKIP_RELOAD_CLUSTER" != "true" || "$CI" = "true" ]]'
     deps:
       - delete-cluster
     cmds:
@@ -38,23 +49,24 @@ tasks:
   deploy:
     cmds:
       - helm upgrade pneutrinoutil ./charts/pneutrinoutil --install
-      - task: reload-worker
+      - task: run:reload-k8s-worker
+  test-deploy:
+    cmds:
+      - helm upgrade pneutrinoutil ./charts/pneutrinoutil --install -f test-values.yaml
+      - task: run:reload-k8s-worker
   uninstall:
     cmds:
       - helm uninstall pneutrinoutil
   reload-images:
     cmds:
-      - task: build-images
+      - task: build:images
       - task: load-images
       - task: restart-deploys
-  build-images:
-    deps:
-      - build-server-image
-      - build-ui-image
   load-images:
     deps:
       - load-server-image
       - load-ui-image
+      - load-curl-image
   restart-deploys:
     deps:
       - restart-server
@@ -65,9 +77,6 @@ tasks:
   restart-server:
     cmds:
       - kubectl rollout restart deploy pneutrinoutil-server || true
-  build-server-image:
-    cmds:
-      - docker build -t pneutrinoutil/server:local -f server/Dockerfile .
   load-server-image:
     cmds:
       - kind load docker-image pneutrinoutil/server:local
@@ -77,38 +86,12 @@ tasks:
   restart-ui:
     cmds:
       - kubectl rollout restart deploy pneutrinoutil-ui || true
-  build-ui-image:
-    cmds:
-      - docker build -t pneutrinoutil/ui:local -f ui/Dockerfile ui
   load-ui-image:
     cmds:
       - kind load docker-image pneutrinoutil/ui:local
   #
-  # binaries
+  # etc
   #
-  restart-worker:
-    deps:
-      - stop-worker
+  load-curl-image:
     cmds:
-      - task: start-worker
-  reload-worker:
-    deps:
-      - build-binaries
-    cmds:
-      - task: restart-worker
-  start-worker:
-    cmds:
-      - ./bin/k8s-worker.sh start
-  stop-worker:
-    cmds:
-      - ./bin/k8s-worker.sh stop || true
-  build-binaries:
-    deps:
-      - build-cli
-      - build-worker
-  build-cli:
-    cmds:
-      - ./bin/build.sh -o dist/pneutrinoutil cli/main.go
-  build-worker:
-    cmds:
-      - ./bin/build.sh -o dist/pneutrinoutil-worker worker/main.go
+      - kind load docker-image pneutrinoutil/curl:local

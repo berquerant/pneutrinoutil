@@ -1,0 +1,13 @@
+version: '3'
+
+tasks:
+  default:
+    deps:
+      - typecheck
+      - eslint
+  typecheck:
+    cmds:
+      - pnpm run typecheck
+  eslint:
+    cmds:
+      - pnpm run eslint

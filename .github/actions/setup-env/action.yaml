@@ -3,15 +3,61 @@ description: Setup environment variables
 runs:
   using: "composite"
   steps:
-    - name: Load .env
-      shell: bash
-      run: cat .github/.env >> $GITHUB_ENV
-    - name: Set dependent variables
+    - name: Set variables
       shell: bash
       run: |
-        echo "MYSQL_DSN=${MYSQL_USER}:${MYSQL_PASSWORD}@tcp(${MYSQL_HOST}:${MYSQL_PORT})/${MYSQL_DATABASE}?parseTime=true" >> $GITHUB_ENV
-        echo "REDIS_DSN=redis://${REDIS_HOST}:${REDIS_PORT}" >> $GITHUB_ENV
-        echo "AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}" >> $GITHUB_ENV
-        echo "AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}" >> $GITHUB_ENV
-        echo "AWS_DEFAULT_REGION=${MINIO_SITE_REGION}" >> $GITHUB_ENV
-        echo "AWS_ENDPOINT_URL=http://${MINIO_HOST}:${MINIO_PORT}" >> $GITHUB_ENV
+        cat <<EOS >> $GITHUB_ENV
+        SERVER_HOST=127.0.0.1
+        SERVER_PORT=9101
+
+        UI_HOST=127.0.0.1
+        UI_PORT=3000
+
+        MYSQL_HOST=127.0.0.1
+        MYSQL_PORT=3306
+        MYSQL_DATABASE=pneutrinoutil
+        TEST_MYSQL_DATABASE=test
+        MYSQL_ROOT_PASSWORD=rootpass
+        MYSQL_USER=pneutrinoutil
+        TEST_MYSQL_USER=test
+        MYSQL_PASSWORD=userpass
+        TEST_MYSQL_PASSWORD=test
+
+        REDIS_HOST=127.0.0.1
+        REDIS_PORT=6379
+        REDIS_DB=1
+        TEST_REDIS_DB=10
+
+        # NOTE: default user and key of weed
+        # https://github.com/seaweedfs/seaweedfs?tab=readme-ov-file#quick-start-with-single-binary
+        AWS_ACCESS_KEY_ID=admin
+        AWS_SECRET_ACCESS_KEY=key
+        AWS_DEFAULT_REGION=us-east-1
+        AWS_USE_PATH_STYLE_ENDPOINT=true
+        AWS_S3_DISABLE_HTTPS=true
+        AWS_ENDPOINT_URL=http://127.0.0.1:9000
+        STORAGE_BUCKET=pneutrinoutil
+        TEST_STORAGE_BUCKET=test
+        STORAGES3=true
+
+        GOLANGCI_LINT_VERSION=v2.10.1
+        GO_ARCH_LINT_VERSION=v1.14.0
+        SHELLCHECK_VERSION=v0.11.0
+        LS_LINT_VERSION=v2.3.1
+        GO_VERSION=1.26
+        NODE_VERSION=24
+        KIND_NODE_IMAGE=kindest/node:v1.35.1
+        EOS
+    - name: Set variables
+      shell: bash
+      run: |
+        cat <<EOS >> $GITHUB_ENV
+        SERVER_URI=http://${SERVER_HOST}:${SERVER_PORT}/v1
+        EXTERNAL_SERVER_URI=http://${SERVER_HOST}:${SERVER_PORT}/v1
+
+        MYSQL_DSN=${MYSQL_USER}:${MYSQL_PASSWORD}@tcp(${MYSQL_HOST}:${MYSQL_PORT})/${MYSQL_DATABASE}?parseTime=true&loc=Asia%2FTokyo
+        TEST_MYSQL_DSN=${TEST_MYSQL_USER}:${TEST_MYSQL_PASSWORD}@tcp(${MYSQL_HOST}:${MYSQL_PORT})/${TEST_MYSQL_DATABASE}?parseTime=true&loc=Asia%2FTokyo
+
+        REDIS_DSN=redis://${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}
+        TEST_REDIS_DSN=redis://${REDIS_HOST}:${REDIS_PORT}/${TEST_REDIS_DB}
+        EOS

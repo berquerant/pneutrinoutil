@@ -113,14 +113,17 @@ readonly mysql_pass="$MYSQL_PASSWORD"
 readonly mysql_db="$MYSQL_DATABASE"
 readonly root="$ROOT_DIR"
 
+echo "USER=${mysql_user}"
+echo "DATABASE=${mysql_db}"
+
 client() {
   mysql -h "$mysql_host" -u"$mysql_user" -p"$mysql_pass" "$@"
 }
 
 run() {
   local -r sql="$1"
+  echo >&2 "Run $*"
   shift
-  echo >&2 "Run ${sql}"
   client "$@" < "$sql"
 }
 
@@ -129,6 +132,9 @@ set -o pipefail
 run "${root}/db.sql"
 run "${root}/users.sql"
 run "${root}/tables.sql" "$mysql_db"
+
+client <<< "SHOW DATABASES;"
+client -D "$mysql_db" <<< "SHOW TABLES;"
 {{- end }}
 
 {{- define "pneutrinoutil.mysql.config" -}}

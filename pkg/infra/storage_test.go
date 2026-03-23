@@ -19,10 +19,16 @@ func TestObject(t *testing.T) {
 	alog.Setup(os.Stdout, slog.LevelDebug)
 
 	dropBucket := func() error {
-		return exec.Command("../../bin/ddl.sh", "drop", "storage", bucket).Run()
+		x := exec.Command("../../bin/ddl.sh", "drop", "s3", bucket)
+		x.Stdout = os.Stdout
+		x.Stderr = os.Stderr
+		return x.Run()
 	}
 	createBucket := func() error {
-		return exec.Command("../../bin/ddl.sh", "storage", bucket).Run()
+		x := exec.Command("../../bin/ddl.sh", "s3", bucket)
+		x.Stdout = os.Stdout
+		x.Stderr = os.Stderr
+		return x.Run()
 	}
 	setUp := func(t *testing.T) bool {
 		t.Helper()
@@ -67,9 +73,12 @@ func TestObject(t *testing.T) {
 }
 
 const (
-	bucket  = "test"
 	path    = "dir1/obj.txt"
 	content = "some_context"
+)
+
+var (
+	bucket = os.Getenv("STORAGE_BUCKET")
 )
 
 func testObject(t *testing.T, ctx context.Context, s infra.Object) {

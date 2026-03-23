@@ -1,0 +1,48 @@
+version: '3'
+
+includes:
+  ui-build:
+    dir: ./ui
+    taskfile: ./ui/BuildTask.yml
+
+tasks:
+  default:
+    desc: Build binaries and images
+    deps:
+      - binaries
+      - images
+  images:
+    if: '[[ "$SKIP_BUILD_IMAGES" != "true" && "$SKIP_BUILD" != "true" ]]'
+    deps:
+      - server-image
+      - ui-build:image
+      - curl-image
+  server-image:
+    cmds:
+      - docker build -t pneutrinoutil/server:local -f server/Dockerfile .
+  curl-image:
+    cmds:
+      - docker build -t pneutrinoutil/curl:local -f docker/curl/Dockerfile .
+  binaries:
+    if: '[[ "$SKIP_BUILD_BINARIES" != "true" && "$SKIP_BUILD" != "true" ]]'
+    deps:
+      - cli
+      - server
+      - worker
+      - mockcli
+      - gendata
+  cli:
+    cmds:
+      - ./bin/build.sh -o dist/pneutrinoutil cli/main.go
+  server:
+    cmds:
+      - ./bin/build.sh -o dist/pneutrinoutil-server server/main.go
+  worker:
+    cmds:
+      - ./bin/build.sh -o dist/pneutrinoutil-worker worker/main.go
+  mockcli:
+    cmds:
+      - ./bin/build.sh -o dist/pneutrinoutil-mockcli mockcli/main.go
+  gendata:
+    cmds:
+      - ./bin/build.sh -o dist/pneutrinoutil-gendata gendata/main.go

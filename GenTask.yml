@@ -1,0 +1,36 @@
+version: '3'
+
+includes:
+  ui-gen:
+    dir: ./ui
+    taskfile: ./ui/GenTask.yml
+
+tasks:
+  default:
+    cmds:
+      - task: envrc
+      - task: go-generate
+      - task: swag
+  clean:
+    deps:
+      - clean-go-generated
+      - clean-tools
+  envrc:
+    desc: Generate .envrc.github from setup-env
+    cmds:
+      - yq '.runs.steps[].run' ./.github/actions/setup-env/action.yaml | awk -F= '/.+=.*/ {n=$1; v=substr($0, length(n) + 2); print "export "n"=\""v"\""}' > .envrc.github
+  go-generate:
+    desc: Go generate
+    cmds:
+      - go generate ./...
+  clean-go-generated:
+    cmds:
+      - find . -name "*_generated.go" -type f -delete
+  clean-tools:
+    cmds:
+      - rm -rf ./bin/tools
+  swag:
+    desc: Generate API
+    cmds:
+      - ./tools/run.sh swag init -g ./server/main.go -o ./server/docs
+      - task: ui-gen:swag

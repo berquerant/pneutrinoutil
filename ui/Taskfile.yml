@@ -1,46 +1,14 @@
 version: '3'
 
+includes:
+  build:
+    taskfile: BuildTask.yml
+  gen:
+    taskfile: GenTask.yml
+  dev:
+    taskfile: DevTask.yml
+
 tasks:
   default:
     deps:
       - dev
-  install:
-    cmds:
-      - pnpm i
-  build:
-    deps:
-      - install
-    cmds:
-      - pnpm run build
-  build-image:
-    cmds:
-      - docker build -t pneutrinoutil-ui:dev .
-  dev:
-    desc: Start dev server
-    deps:
-      - install
-    cmds:
-      - pnpm run dev
-  start:
-    cmds:
-      - pnpm run start
-  run-lint:
-    deps:
-      - typecheck
-      - eslint
-  lint:
-    desc: Run linters
-    deps:
-      - install
-    cmds:
-      - task: run-lint
-  typecheck:
-    cmds:
-      - pnpm run typecheck
-  eslint:
-    cmds:
-      - pnpm run eslint
-  swag:
-    desc: Generate API
-    cmds:
-      - ./bin/swag.sh

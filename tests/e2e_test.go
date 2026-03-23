@@ -13,7 +13,6 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
-	"syscall"
 	"testing"
 	"time"
 
@@ -23,14 +22,7 @@ import (
 )
 
 const (
-	mockcli = "../dist/pneutrinoutil-mockcli"
 	gendata = "../dist/pneutrinoutil-gendata"
-	worker  = "../dist/pneutrinoutil-worker"
-	server  = "../dist/pneutrinoutil-server"
-
-	serverHost    = "0.0.0.0"
-	serverPort    = "9101"
-	storageBucket = "test"
 
 	eventuallyWaitForMax = time.Second * 5
 	eventuallyTick       = time.Millisecond * 300
@@ -75,13 +67,14 @@ func eventually(t *testing.T, condition func(c *assert.CollectT), msgAndArgs ...
 	return assert.EventuallyWithT(t, condition, eventuallyWaitForMax, eventuallyTick, msgAndArgs...)
 }
 
-func generateData(content string, basename ...string) (map[string]string, error) { // basename to rid
+func generateData(content string, basename ...string) (map[string]string, error) {
+	// basename to rid
 	d := map[string]string{}
 	if len(basename) == 0 {
 		return d, nil
 	}
 
-	serverURI := fmt.Sprintf("http://%s:%s/v1", serverHost, serverPort)
+	serverURI := os.Getenv("SERVER_URI")
 
 	stdin := bytes.NewBufferString(strings.Join(basename, "\n"))
 	var stdout bytes.Buffer
@@ -108,58 +101,8 @@ func generateData(content string, basename ...string) (map[string]string, error)
 }
 
 func TestE2E(t *testing.T) {
-	var (
-		redisDB  = os.Getenv("REDIS_TEST_DB")
-		redisDSN = fmt.Sprintf("redis://%s:%s/%s",
-			os.Getenv("REDIS_HOST"),
-			os.Getenv("REDIS_PORT"),
-			redisDB,
-		)
-		mysqlDSN = fmt.Sprintf("test:test@tcp(%s:%s)/test?parseTime=true&loc=Asia%%2FTokyo",
-			os.Getenv("MYSQL_HOST"),
-			os.Getenv("MYSQL_PORT"),
-		)
-
-		workerWorkDir = filepath.Join(t.TempDir(), "worker_workspace")
-	)
-
-	t.Log("start worker")
-	workerProcess := exec.Command(
-		worker,
-		"--redisDSN", redisDSN,
-		"--mysqlDSN", mysqlDSN,
-		"--storageS3",
-		"--storageBucket", storageBucket,
-		"--pneutrinoutil", mockcli,
-		"--workDir", workerWorkDir,
-		"--debug",
-	)
-	workerProcess.Stdout = os.Stdout
-	workerProcess.Stderr = os.Stderr
-
-	if !assertNil(t, workerProcess.Start()) {
-		return
-	}
-
-	t.Log("start server")
-	serverProcess := exec.Command(
-		server,
-		"--redisDSN", redisDSN,
-		"--mysqlDSN", mysqlDSN,
-		"--storageS3",
-		"--storageBucket", storageBucket,
-		"--host", serverHost,
-		"--port", serverPort,
-		"--debug",
-	)
-	serverProcess.Stdout = os.Stdout
-	serverProcess.Stderr = os.Stderr
-	if !assertNil(t, serverProcess.Start()) {
-		return
-	}
-
 	newUrl := func(path string) string {
-		return fmt.Sprintf("http://%s:%s/v1%s", serverHost, serverPort, path)
+		return fmt.Sprintf("%s%s", os.Getenv("SERVER_URI"), path)
 	}
 
 	eventually(t, func(c *assert.CollectT) {
@@ -407,12 +350,4 @@ func TestE2E(t *testing.T) {
 			})
 		}
 	})
-
-	t.Log("cancel")
-	assertNil(t, workerProcess.Process.Signal(syscall.SIGTERM))
-	assertNil(t, serverProcess.Process.Signal(syscall.SIGTERM))
-
-	t.Log("close")
-	assertNil(t, workerProcess.Wait())
-	assertNil(t, serverProcess.Wait())
 }

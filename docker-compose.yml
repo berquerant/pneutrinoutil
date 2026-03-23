@@ -1,4 +1,0 @@
-include:
-  - docker-infra.yml
-  - docker-server.yml
-  - docker-ui.yml

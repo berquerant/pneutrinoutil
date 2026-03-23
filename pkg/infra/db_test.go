@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"os"
 	"testing"
 
@@ -22,13 +21,7 @@ const dropTestTableSql = `DROP TABLE IF EXISTS test;`
 
 func setUp(t *testing.T) *sql.DB {
 	t.Helper()
-	dsn := fmt.Sprintf(
-		"test:test@tcp(%s:%s)/test",
-		os.Getenv("MYSQL_HOST"),
-		os.Getenv("MYSQL_PORT"),
-	)
-	t.Logf("DSN=%s", dsn)
-	db, err := sql.Open("mysql", dsn)
+	db, err := sql.Open("mysql", os.Getenv("MYSQL_DSN"))
 	if err != nil {
 		t.Fatal(err)
 	}

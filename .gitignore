@@ -4,3 +4,4 @@ bin/tools/
 tmp/
 .log/
 .venv/
+.envrc.github

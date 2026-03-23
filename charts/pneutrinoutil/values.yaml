@@ -21,8 +21,8 @@ images:
     repository: pneutrinoutil/ui
     tag: local
   curl:
-    repository: curlimages/curl
-    tag: 8.18.0
+    repository: pneutrinoutil/curl
+    tag: local
   worker:
     repository: pneutrinoutil/worker
     tag: local

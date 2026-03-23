@@ -1,0 +1,10 @@
+redis:
+  db: 10
+
+s3:
+  bucket: test
+
+mysql:
+  database: test
+  user: test
+  password: test

@@ -16,15 +16,31 @@ spec:
       labels:
         app: ui
         {{- include "pneutrinoutil.labels" . | nindent 8 }}
+      annotations:
+        checksum/util: {{ include "pneutrinoutil.util" . | sha256sum }}
     spec:
+      volumes:
+        - name: script
+          configMap:
+            name: {{ include "pneutrinoutil.fullname" . }}-util
+            defaultMode: 0755
+            items:
+              - key: retry.sh
+                path: retry.sh
       initContainers:
         - name: wait-server
           image: "{{ .Values.images.curl.repository }}:{{ .Values.images.curl.tag }}"
           command:
+            - /usr/local/bin/util/retry.sh
+            - --
             - curl
             - -s
             - -I
             - http://{{ include "pneutrinoutil.fullname" . }}-server:9101/v1/health
+          volumeMounts:
+            - name: script
+              mountPath: /usr/local/bin/util
+              readOnly: true
       containers:
         - name: ui
           image: "{{ .Values.images.ui.repository }}:{{ .Values.images.ui.tag }}"

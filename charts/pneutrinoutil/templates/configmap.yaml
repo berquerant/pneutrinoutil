@@ -13,7 +13,17 @@ kind: ConfigMap
 metadata:
   name: {{ include "pneutrinoutil.fullname" . }}-server-common
   labels:
-    app: s3
+    app: server
     {{- include "pneutrinoutil.labels" . | nindent 4 }}
 data:
   {{ include "pneutrinoutil.serverCommon" . | nindent 2}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pneutrinoutil.fullname" . }}-util
+  labels:
+    app: util
+    {{- include "pneutrinoutil.labels" . | nindent 4 }}
+data:
+  {{ include "pneutrinoutil.util" . | nindent 2}}
