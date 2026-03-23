@@ -3,6 +3,10 @@ description: Setup environment variables
 runs:
   using: "composite"
   steps:
+    # NOTE: default user and key of weed
+    # - AWS_ACCESS_KEY_ID
+    # - AWS_SECRET_ACCESS_KEY
+    # https://github.com/seaweedfs/seaweedfs?tab=readme-ov-file#quick-start-with-single-binary
     - name: Set variables
       shell: bash
       run: |
@@ -28,8 +32,6 @@ runs:
         REDIS_DB=1
         TEST_REDIS_DB=10
 
-        # NOTE: default user and key of weed
-        # https://github.com/seaweedfs/seaweedfs?tab=readme-ov-file#quick-start-with-single-binary
         AWS_ACCESS_KEY_ID=admin
         AWS_SECRET_ACCESS_KEY=key
         AWS_DEFAULT_REGION=us-east-1
