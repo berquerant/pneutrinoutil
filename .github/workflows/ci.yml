@@ -38,8 +38,8 @@ jobs:
           persist-credentials: false
       - name: Set env vars
         uses: ./.github/actions/setup-env
-      - name: Set up Docker
-        uses: ./.github/actions/setup-docker
+      # - name: Set up Docker
+      #   uses: ./.github/actions/setup-docker
       - name: Setup Go
         uses: ./.github/actions/setup-go
       - name: Create kind cluster
@@ -61,8 +61,8 @@ jobs:
           persist-credentials: false
       - name: Set env vars
         uses: ./.github/actions/setup-env
-      - name: Set up Docker
-        uses: ./.github/actions/setup-docker
+      # - name: Set up Docker
+      #   uses: ./.github/actions/setup-docker
       - name: Setup Go
         uses: ./.github/actions/setup-go
       - name: Create kind cluster
