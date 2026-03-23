@@ -4,6 +4,9 @@ includes:
   ui-lint:
     dir: ./ui
     taskfile: ./ui/LintTask.yml
+  ui-dev:
+    dir: ./ui
+    taskfile: ./ui/DevTask.yml
 
 tasks:
   default:
@@ -17,7 +20,9 @@ tasks:
       - fix
       - golangci-lint
       - go-arch-lint
-      - ui-lint
+    cmds:
+      - task: ui-dev:build
+      - task: ui-lint
   vuln:
     cmds:
       - ./tools/run.sh govulncheck ./...
