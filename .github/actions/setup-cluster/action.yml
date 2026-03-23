@@ -7,12 +7,18 @@ inputs:
     required: true
   config:
     default: .cluster.yaml
+  version:
+    required: true
 runs:
   using: "composite"
   steps:
+    - name: Install kind
+      shell: bash
+      run: |
+        curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/${{ inputs.version }}/kind-linux-amd64
+        chmod +x ./kind
+        sudo mv ./kind /usr/local/bin/kind
+        kind version
     - name: Create kind cluster
-      uses: helm/kind-action@ef37e7f390d99f746eb8b610417061a60e82a6cc # v1.14.0
-      with:
-        node_image: '${{ inputs.node_image }}'
-        cluster_name: '${{ inputs.cluster_name }}'
-        config: '${{ inputs.config }}'
+      shell: bash
+      run: kind create cluster --image '${{ inputs.node_image }}'

@@ -48,6 +48,7 @@ runs:
         LS_LINT_VERSION=v2.3.1
         GO_VERSION=1.26
         NODE_VERSION=24
+        KIND_VERSION=v0.31.0
         KIND_NODE_IMAGE=kindest/node:v1.35.1
         EOS
     - name: Set variables
