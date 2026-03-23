@@ -6,4 +6,4 @@ tasks:
       - image
   image:
     cmds:
-      - docker build -t pneutrinoutil-ui:local .
+      - docker build -t pneutrinoutil/ui:local .
