@@ -20,7 +20,7 @@ runs:
         sudo mv ./kind /usr/local/bin/kind
         kind version
       env:
-        VERSION: ${{ inputs.version }}
+        VERSION: '${{ inputs.version }}'
     - name: Create kind cluster
       shell: bash
       run: kind create cluster --image '${{ inputs.node_image }}'

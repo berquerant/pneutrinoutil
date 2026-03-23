@@ -46,6 +46,7 @@ jobs:
         uses: ./.github/actions/setup-cluster
         with:
           node_image: '${{ env.KIND_NODE_IMAGE }}'
+          version: '${{ env.KIND_VERSION }}'
       - name: Test
         run: ./task test:unit
 
@@ -69,6 +70,7 @@ jobs:
         uses: ./.github/actions/setup-cluster
         with:
           node_image: '${{ env.KIND_NODE_IMAGE }}'
+          version: '${{ env.KIND_VERSION }}'
       - name: E2E
         run: ./task test:e2e
 
