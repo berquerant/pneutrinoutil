@@ -1,12 +1,8 @@
 name: Cluster Setup
 description: Setup cluster
 inputs:
-  cluster_name:
-    default: 'kind'
   node_image:
     required: true
-  config:
-    default: .cluster.yaml
   version:
     required: true
 runs:
@@ -21,6 +17,3 @@ runs:
         kind version
       env:
         VERSION: '${{ inputs.version }}'
-    - name: Create kind cluster
-      shell: bash
-      run: kind create cluster --image '${{ inputs.node_image }}'
