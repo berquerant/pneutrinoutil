@@ -94,4 +94,4 @@ tasks:
   #
   load-curl-image:
     cmds:
-      -  ./tools/run.sh kind load docker-image pneutrinoutil/curl:local
+      - ./tools/run.sh kind load docker-image pneutrinoutil/curl:local
