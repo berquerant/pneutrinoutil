@@ -56,6 +56,9 @@ tasks:
         ./tools/run.sh kubectl get pod -o wide --watch &
         WATCH_PID=$!
         trap "kill ${WATCH_PID}" EXIT
+        ./tools/run.sh stern pneutrinoutil &
+        STERN_PID=$!
+        trap "kill ${STERN_PID}" EXIT
         ./tools/run.sh helm upgrade pneutrinoutil ./charts/pneutrinoutil --install -f test-values.yaml --debug
       - task: run:reload-k8s-worker
   uninstall:

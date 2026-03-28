@@ -52,6 +52,7 @@ runs:
         KIND_NODE_IMAGE=kindest/node:v1.35.1
         KUBECTL_VERSION=v1.35.0
         HELM_VERSION=v4.1.3
+        STERN_VERSION=1.33.1
         EOS
     - name: Set variables
       shell: bash

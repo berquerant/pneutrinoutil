@@ -46,6 +46,9 @@ case "$name" in
     kubectl)
         "${d}/setup-kubectl.sh" "$KUBECTL_VERSION" "$binary"
         ;;
+    stern)
+        "${d}/setup-stern.sh" "$STERN_VERSION" "$binary"
+        ;;
     *)
         if [[ "$(package_name | wc -l | xargs)" != "1" ]] ; then
             log "name(${name}) is invalid"
