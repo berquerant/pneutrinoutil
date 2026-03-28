@@ -48,11 +48,11 @@ tasks:
       - task: create-cluster
   deploy:
     cmds:
-      - ./tools/run.sh helm upgrade pneutrinoutil ./charts/pneutrinoutil --install --debug --wait
+      - ./tools/run.sh helm upgrade pneutrinoutil ./charts/pneutrinoutil --install --debug
       - task: run:reload-k8s-worker
   test-deploy:
     cmds:
-      - ./tools/run.sh helm upgrade pneutrinoutil ./charts/pneutrinoutil --install -f test-values.yaml --debug --wait
+      - ./tools/run.sh helm upgrade pneutrinoutil ./charts/pneutrinoutil --install -f test-values.yaml --debug
       - task: run:reload-k8s-worker
   uninstall:
     cmds:
