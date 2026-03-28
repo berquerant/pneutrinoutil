@@ -29,9 +29,6 @@ My [NEUTRIONO](https://studio-neutrino.com/) utilities.
 - Docker
 - AWS CLI
 - [pnpm](https://github.com/pnpm/pnpm)
-- [kind](https://github.com/kubernetes-sigs/kind)
-- [kubectl](https://github.com/kubernetes/kubectl)
-- [helm](https://github.com/helm/helm)
 
 # Installation
 

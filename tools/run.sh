@@ -37,6 +37,15 @@ case "$name" in
     ls-lint)
         "${d}/setup-ls-lint.sh" "$LS_LINT_VERSION" "$binary"
         ;;
+    kind)
+        "${d}/setup-kind.sh" "$KIND_VERSION" "$binary"
+        ;;
+    helm)
+        "${d}/setup-helm.sh" "$HELM_VERSION" "$binary"
+        ;;
+    kubectl)
+        "${d}/setup-kubectl.sh" "$KUBECTL_VERSION" "$binary"
+        ;;
     *)
         if [[ "$(package_name | wc -l | xargs)" != "1" ]] ; then
             log "name(${name}) is invalid"

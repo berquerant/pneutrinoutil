@@ -1,7 +1,9 @@
 #!/bin/bash
 
+readonly d="$(cd "$(dirname "$0")/.." || exit 1; pwd)"
+
 client() {
-    kubectl exec -it sts/pneutrinoutil-mysql -- mysql "$@"
+    "${d}/tools/run.sh" kubectl exec -it sts/pneutrinoutil-mysql -- mysql "$@"
 }
 
 root() {

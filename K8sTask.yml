@@ -36,10 +36,10 @@ tasks:
       - delete-cluster
   delete-cluster:
     cmds:
-      - kind delete cluster || true
+      - ./tools.run.sh kind delete cluster || true
   create-cluster:
     cmds:
-      - kind create cluster --config .cluster.yaml
+      - ./tools.run.sh kind create cluster --config .cluster.yaml --image "$KIND_NODE_IMAGE"
   reload-cluster:
     if: '[[ "$SKIP_RELOAD_CLUSTER" != "true" || "$CI" = "true" ]]'
     deps:
@@ -48,15 +48,15 @@ tasks:
       - task: create-cluster
   deploy:
     cmds:
-      - helm upgrade pneutrinoutil ./charts/pneutrinoutil --install
+      - ./tools.run.sh helm upgrade pneutrinoutil ./charts/pneutrinoutil --install --debug --wait
       - task: run:reload-k8s-worker
   test-deploy:
     cmds:
-      - helm upgrade pneutrinoutil ./charts/pneutrinoutil --install -f test-values.yaml --debug
+      - ./tools.run.sh helm upgrade pneutrinoutil ./charts/pneutrinoutil --install -f test-values.yaml --debug --wait
       - task: run:reload-k8s-worker
   uninstall:
     cmds:
-      - helm uninstall pneutrinoutil
+      - ./tools.run.sh helm uninstall pneutrinoutil
   reload-images:
     cmds:
       - task: build:images
@@ -76,22 +76,22 @@ tasks:
   #
   restart-server:
     cmds:
-      - kubectl rollout restart deploy pneutrinoutil-server || true
+      - ./tools.run.sh kubectl rollout restart deploy pneutrinoutil-server || true
   load-server-image:
     cmds:
-      - kind load docker-image pneutrinoutil/server:local
+      - ./tools.run.sh kind load docker-image pneutrinoutil/server:local
   #
   # ui
   #
   restart-ui:
     cmds:
-      - kubectl rollout restart deploy pneutrinoutil-ui || true
+      - ./tools.run.sh kubectl rollout restart deploy pneutrinoutil-ui || true
   load-ui-image:
     cmds:
-      - kind load docker-image pneutrinoutil/ui:local
+      - ./tools.run.sh kind load docker-image pneutrinoutil/ui:local
   #
   # etc
   #
   load-curl-image:
     cmds:
-      - kind load docker-image pneutrinoutil/curl:local
+      -  ./tools.run.shkind load docker-image pneutrinoutil/curl:local
