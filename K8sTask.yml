@@ -52,7 +52,11 @@ tasks:
       - task: run:reload-k8s-worker
   test-deploy:
     cmds:
-      - ./tools/run.sh helm upgrade pneutrinoutil ./charts/pneutrinoutil --install -f test-values.yaml --debug
+      - |
+        ./tools/run.sh kubectl get pod -o wide --watch &
+        WATCH_PID=$!
+        trap "kill ${WATCH_PID}" EXIT
+        ./tools/run.sh helm upgrade pneutrinoutil ./charts/pneutrinoutil --install -f test-values.yaml --debug
       - task: run:reload-k8s-worker
   uninstall:
     cmds:
