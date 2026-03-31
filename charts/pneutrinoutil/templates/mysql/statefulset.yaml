@@ -1,5 +1,9 @@
 apiVersion: apps/v1
+{{- if .Values.mysql.asDeployment }}
+kind: Deployment
+{{- else }}
 kind: StatefulSet
+{{- end }}
 metadata:
   name: {{ include "pneutrinoutil.fullname" . }}-mysql
   labels:
@@ -7,6 +11,7 @@ metadata:
     {{- include "pneutrinoutil.labels" . | nindent 4 }}
 spec:
   replicas: 1
+  {{- if not .Values.mysql.asDeployment }}
   volumeClaimTemplates:
     - metadata:
         name: data
@@ -18,6 +23,7 @@ spec:
         resources:
           requests:
             storage: {{ .Values.mysql.storage.capacity  }}
+  {{- end }}
   selector:
     matchLabels:
       app: mysql
@@ -30,12 +36,21 @@ spec:
       annotations:
         checksum/config: {{ include "pneutrinoutil.mysql.config" . | sha256sum }}
     spec:
+      securityContext:
+        fsGroup: 999 # mysql
       volumes:
         - name: cnf
           configMap:
             name: {{ include "pneutrinoutil.fullname" . }}-mysql
+        {{- if .Values.mysql.asDeployment }}
+        - name: data
+          emptyDir: {}
+        {{- end }}
       containers:
         - name: mysql
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 999 # mysql
           image: "{{ .Values.images.mysql.repository }}:{{ .Values.images.mysql.tag }}"
           volumeMounts:
             - name: data

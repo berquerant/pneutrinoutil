@@ -3,8 +3,10 @@ redis:
 
 s3:
   bucket: test
+  asDeployment: true
 
 mysql:
   database: test
   user: test
   password: test
+  asDeployment: true

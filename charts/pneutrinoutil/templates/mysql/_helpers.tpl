@@ -6,7 +6,7 @@ skip-name-resolve
 datadir=/var/lib/mysql
 socket=/var/run/mysqld/mysqld.sock
 secure-file-priv=/var/lib/mysql-files
-# user=mysql
+user=mysql
 character-set-server=utf8mb4
 collation-server=utf8mb4_unicode_ci
 default-time-zone=Asia/Tokyo

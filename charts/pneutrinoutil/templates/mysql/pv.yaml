@@ -1,4 +1,4 @@
-{{- if .Values.mysql.storage.useHostPath }}
+{{- if and .Values.mysql.storage.useHostPath (not .Values.mysql.asDeployment) }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:

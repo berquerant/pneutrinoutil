@@ -1,4 +1,4 @@
-{{- if .Values.s3.storage.useHostPath }}
+{{- if and .Values.s3.storage.useHostPath (not .Values.s3.asDeployment) }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:

@@ -1,5 +1,9 @@
 apiVersion: apps/v1
+{{- if .Values.s3.asDeployment }}
+kind: Deployment
+{{- else }}
 kind: StatefulSet
+{{- end }}
 metadata:
   name: {{ include "pneutrinoutil.fullname" . }}-s3
   labels:
@@ -7,6 +11,7 @@ metadata:
     {{- include "pneutrinoutil.labels" . | nindent 4 }}
 spec:
   replicas: 1
+  {{- if not .Values.s3.asDeployment }}
   volumeClaimTemplates:
     - metadata:
         name: data
@@ -18,6 +23,7 @@ spec:
         resources:
           requests:
             storage: {{ .Values.s3.storage.capacity  }}
+  {{- end }}
   selector:
     matchLabels:
       app: s3
@@ -40,9 +46,11 @@ spec:
             - -s3.port=9000
             - -s3.allowedOrigins=*
             - -dir=/data
+          {{- if not .Values.s3.asDeployment }}
           volumeMounts:
             - name: data
               mountPath: /data
+          {{- end }}
           ports:
             - name: s3-svc
               containerPort: 9000
