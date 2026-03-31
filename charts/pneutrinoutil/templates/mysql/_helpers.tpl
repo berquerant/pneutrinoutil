@@ -4,6 +4,7 @@ innodb_redo_log_capacity=512M
 host-cache-size=0
 skip-name-resolve
 datadir=/var/lib/mysql
+lc-messages-dir=/usr/share/mysql-9.6
 socket=/var/run/mysqld/mysqld.sock
 secure-file-priv=/var/lib/mysql-files
 user=mysql
