@@ -48,6 +48,7 @@ spec:
         {{- end }}
       containers:
         - name: mysql
+          imagePullPolicy: Always
           securityContext:
             runAsNonRoot: true
             runAsUser: 999 # mysql
