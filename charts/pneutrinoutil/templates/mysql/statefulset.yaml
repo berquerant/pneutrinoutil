@@ -73,7 +73,7 @@ spec:
               subPath: my.cnf
               readOnly: true
             - name: messages
-              mountPath: /mnt/messages
+              mountPath: /usr/share/mysql-9.6
           ports:
             - name: mysql-svc
               containerPort: 3306
