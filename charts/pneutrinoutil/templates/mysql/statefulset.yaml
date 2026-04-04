@@ -48,10 +48,9 @@ spec:
         {{- end }}
       containers:
         - name: mysql
-          imagePullPolicy: Always
           securityContext:
-            runAsNonRoot: true
-            runAsUser: 999 # mysql
+            # runAsNonRoot: true
+            runAsUser: 0 # mysql
           image: "{{ .Values.images.mysql.repository }}:{{ .Values.images.mysql.tag }}"
           volumeMounts:
             - name: data
