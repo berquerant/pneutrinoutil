@@ -47,6 +47,12 @@ jobs:
       #   with:
       #     node_image: '${{ env.KIND_NODE_IMAGE }}'
       #     version: '${{ env.KIND_VERSION }}'
+      - name: Debug
+        run: |
+          docker run --rm mysql:9.6 ls -al /usr/share
+          docker run --rm mysql:9.6 ls -al /usr/share/mysql-9.6
+          docker run --rm mysql:9.6 ls -al /usr/share/mysql-9.6/english
+          docker run --rm mysql:9.6 ls -al /usr/share/mysql-9.6/english/errmsg.sys
       - name: Test
         run: ./task test:unit
 
