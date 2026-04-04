@@ -49,10 +49,8 @@ spec:
       containers:
         - name: mysql
           securityContext:
-            privileged: true
-            runAsUser: 0
-            # runAsNonRoot: true
-            # runAsUser: 999 # mysql
+            runAsNonRoot: true
+            runAsUser: 999 # mysql
           image: "{{ .Values.images.mysql.repository }}:{{ .Values.images.mysql.tag }}"
           volumeMounts:
             - name: data
