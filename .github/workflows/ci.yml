@@ -26,6 +26,26 @@ jobs:
       - name: Build
         run: ./task build:binaries
 
+  build-images:
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Setup Go
+        uses: ./.github/actions/setup-go
+      - name: Setup Buildx
+        run: |
+          docker buildx version
+          docker buildx create --name mybuilder --use
+          docker buildx inspect --bootstrap
+      - name: Build
+        run: ./task build:images
+
   # NOTE: Abandoned MySQL 9.6 startup fix on 2026-04
   # Issue: Internal MySQL error claiming errmsg.sys is missing in /usr/share/mysql-9.6/, works locally, but fails on GHA.
   #   [ERROR] [MY-010338] [Server] Can't find error-message file '/usr/share/mysql-9.6/english/errmsg.sys'. Check error-message file location and 'lc-messages-dir' configuration directive.

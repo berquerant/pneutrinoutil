@@ -1,10 +1,5 @@
 version: '3'
 
-includes:
-  ui-build:
-    dir: ./ui
-    taskfile: ./ui/BuildTask.yml
-
 tasks:
   default:
     desc: Build binaries and images
@@ -13,16 +8,11 @@ tasks:
       - images
   images:
     if: '[[ "$SKIP_BUILD_IMAGES" != "true" && "$SKIP_BUILD" != "true" ]]'
-    deps:
-      - server-image
-      - ui-build:image
-      - curl-image
-  server-image:
     cmds:
-      - docker build -t pneutrinoutil/server:local -f server/Dockerfile .
-  curl-image:
-    cmds:
-      - docker build -t pneutrinoutil/curl:local -f docker/curl/Dockerfile .
+      - cmd: docker buildx bake
+        if: '[[ "$CI" = "" ]]'
+      - cmd: docker buildx bake --set "*.cache-from=type=gha" --set "*.cache-to=type=gha,mode=max"
+        if: '[[ "$CI" != "" ]]'
   binaries:
     if: '[[ "$SKIP_BUILD_BINARIES" != "true" && "$SKIP_BUILD" != "true" ]]'
     deps:
