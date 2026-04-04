@@ -11,6 +11,7 @@ character-set-server=utf8mb4
 collation-server=utf8mb4_unicode_ci
 default-time-zone=Asia/Tokyo
 pid-file=/var/run/mysqld/mysqld.pid
+lc-messages-dir=/mnt/messages
 [client]
 socket=/var/run/mysqld/mysqld.sock
 {{- end}}
