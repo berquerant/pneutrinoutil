@@ -44,6 +44,7 @@ set -ex
 source "\${HOME}/.bashrc"
 cd pneutrinoutil
 ./task init
+direnv allow
 direnv exec . $@
 EOS
     chmod +x "$__script"
