@@ -46,6 +46,25 @@ jobs:
       - name: Build
         run: ./task build:images
 
+  test-unit:
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Setup Lima
+        uses: ./.github/actions/setup-lima
+      - name: Start VM
+        run: ./bin/lima.sh start
+        env:
+          TARGET_REF: "${{ github.sha }}"
+      - name: Run Test
+        run: ./bin/lima.sh run ./task test:unit
+
   # NOTE: Abandoned MySQL 9.6 startup fix on 2026-04
   # Issue: Internal MySQL error claiming errmsg.sys is missing in /usr/share/mysql-9.6/, works locally, but fails on GHA.
   #   [ERROR] [MY-010338] [Server] Can't find error-message file '/usr/share/mysql-9.6/english/errmsg.sys'. Check error-message file location and 'lc-messages-dir' configuration directive.

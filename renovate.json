@@ -105,6 +105,14 @@
       "matchStrings":["pnpm_version=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "pnpm/pnpm"
+    },
+    {
+      "description": "Manage lima version",
+      "customType": "regex",
+      "fileMatch": ["^.github/actions/setup-lima/action.yaml$"],
+      "matchStrings":["default: (?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "lima-vm/lima"
     }
   ]
 }

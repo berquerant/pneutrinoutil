@@ -6,6 +6,8 @@ readonly name="pneutrinoutil"
 readonly uv_version="0.11.3"
 readonly pnpm_version="10.33.0"
 
+readonly target_ref="${TARGET_REF}"
+
 go_version() {
     grep -E "^go \d+\.\d+\.\d+" "${d}/../go.mod" | awk '{print $2}'
 }
@@ -23,8 +25,7 @@ start() {
             --disk=50 \
             template:docker
     limactl copy "${d}/lima-setup.sh" "${name}:/tmp/"
-    limactl shell "$name" /tmp/lima-setup.sh "${__go_version}" "${uv_version}" "${pnpm_version}"
-    ssh
+    limactl shell "$name" /tmp/lima-setup.sh "${__go_version}" "${uv_version}" "${pnpm_version}" "${target_ref}"
 }
 
 stop() {
@@ -41,6 +42,22 @@ ssh() {
     exec limactl shell "$name"
 }
 
+run() {
+    local __script
+    __script="$(mktemp)"
+    cat <<EOS > "$__script"
+#!/bin/bash
+set -ex
+cd pneutrinoutil
+./task init
+direnv allow
+$*
+EOS
+    chmod +x "$__script"
+    limactl copy "$__script" "${name}:/tmp/run.sh"
+    exec limactl shell "$name" /tmp/run.sh
+}
+
 set -ex
 readonly cmd="$1"
 case "$cmd" in
@@ -48,8 +65,25 @@ case "$cmd" in
     "start") start ;;
     "stop") stop ;;
     "reload") reload ;;
+    "run")
+        shift
+        run "$@"
+        ;;
     *)
-        echo>&2 "Please select start, stop or reload"
+        set +x
+        cat <<EOS
+Usage:
+$0 start
+  start VM
+$0 stop
+  stop VM
+$0 reload
+  delete and start new VM
+$0 ssh
+  ssh to VM
+$0 run ARG...
+  run command in VM
+EOS
         exit 1
         ;;
 esac

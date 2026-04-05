@@ -54,10 +54,7 @@ Download NEUTRINO and singer libraries, and build pneutrinoutil.
 
 ``` shell
 ./bin/lima.sh start
-cd pneutrinoutil
-./task init
-direnv allow
 # e.g.
-./task test:unit
+./bin/lima.sh run ./task test:unit
 ```
 

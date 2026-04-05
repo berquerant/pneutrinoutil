@@ -1,0 +1,18 @@
+# https://github.com/lima-vm/lima-actions
+name: Lima Setup
+description: Install Lima
+inputs:
+  # https://github.com/lima-vm/lima/releases
+  version:
+    default: v2.1.0
+runs:
+  using: "composite"
+  steps:
+    - uses: lima-vm/lima-actions/setup@55627e31b78637bf254a8b2a14da8ea7d12564e5 # v1.1.0
+      id: lima-actions-setup
+      with:
+        version: '${{ inputs.version }}'
+    - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      with:
+        path: ~/.cache/lima
+        key: lima-${{ steps.lima-actions-setup.outputs.version }}

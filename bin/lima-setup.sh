@@ -5,6 +5,7 @@ set -eux -o pipefail
 readonly go_version="$1"
 readonly uv_version="$2"
 readonly pnpm_version="$3"
+readonly target_ref="$4"
 
 if [[ -z "$go_version" ]] ; then
     echo >&2 "go_version(arg0) is required"
@@ -21,6 +22,9 @@ fi
 
 clone() {
     git clone https://github.com/berquerant/pneutrinoutil
+    if [[ -n "$target_ref" ]] ; then
+        git checkout "$target_ref"
+    fi
 }
 
 install_go() {
