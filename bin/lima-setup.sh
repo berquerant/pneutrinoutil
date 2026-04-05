@@ -18,7 +18,9 @@ fi
 clone() {
     git clone https://github.com/berquerant/pneutrinoutil
     if [[ -n "$target_ref" ]] ; then
+        pushd pneutrinoutil > /dev/null
         git checkout "$target_ref"
+        popd > /dev/null
     fi
 }
 
