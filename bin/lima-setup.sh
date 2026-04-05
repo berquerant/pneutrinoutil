@@ -2,21 +2,16 @@
 
 set -eux -o pipefail
 
-readonly go_version="$1"
-readonly uv_version="$2"
-readonly pnpm_version="$3"
-readonly target_ref="$4"
+readonly uv_version="$1"
+readonly pnpm_version="$2"
+readonly target_ref="$3"
 
-if [[ -z "$go_version" ]] ; then
-    echo >&2 "go_version(arg0) is required"
-    exit 1
-fi
 if [[ -z "$uv_version" ]] ; then
-    echo >&2 "uv_version(arg1) is required"
+    echo >&2 "uv_version(arg0) is required"
     exit 1
 fi
 if [[ -z "$pnpm_version" ]] ; then
-    echo >&2 "pnpm_version(arg2) is required"
+    echo >&2 "pnpm_version(arg1) is required"
     exit 1
 fi
 
@@ -27,10 +22,14 @@ clone() {
     fi
 }
 
+go_version() {
+    grep -E "^go [0-9]+\.[0-9]+\.[0-9]+" pneutrinoutil/go.mod | awk '{print $2}'
+}
+
 install_go() {
     # https://go.dev/doc/install#install
     sudo rm -rf /usr/local/go
-    local -r __dest="go${go_version}.linux-$(arch | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/').tar.gz"
+    local -r __dest="go$(go_version).linux-$(arch | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/').tar.gz"
     local -r __url="https://go.dev/dl/${__dest}"
     curl -L -s -o "$__dest" "$__url"
     sudo tar -C /usr/local -xzf "$__dest"

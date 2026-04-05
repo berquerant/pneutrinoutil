@@ -8,14 +8,7 @@ readonly pnpm_version="10.33.0"
 
 readonly target_ref="${TARGET_REF}"
 
-go_version() {
-    grep -E "^go \d+\.\d+\.\d+" "${d}/../go.mod" | awk '{print $2}'
-}
-
 start() {
-    local __go_version
-    __go_version="$(go_version)"
-
     limactl start \
             --name "$name" \
             --yes \
@@ -25,7 +18,7 @@ start() {
             --disk=50 \
             template:docker
     limactl copy "${d}/lima-setup.sh" "${name}:/tmp/"
-    limactl shell "$name" /tmp/lima-setup.sh "${__go_version}" "${uv_version}" "${pnpm_version}" "${target_ref}"
+    limactl shell "$name" /tmp/lima-setup.sh "${uv_version}" "${pnpm_version}" "${target_ref}"
 }
 
 stop() {
