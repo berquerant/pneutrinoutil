@@ -27,6 +27,7 @@ tasks:
     desc: Run E2E tests
     deps:
       - build:mockcli
+      - build:gendata
     cmds:
       - task: drop-data
         ignore_error: true
