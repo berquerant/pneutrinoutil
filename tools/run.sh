@@ -49,6 +49,10 @@ case "$name" in
     stern)
         "${d}/setup-stern.sh" "$STERN_VERSION" "$binary"
         ;;
+    yq)
+        readonly yq_version=4.52.5
+        "${d}/setup-yq.sh" "$yq_version" "$binary"
+        ;;
     *)
         if [[ "$(package_name | wc -l | xargs)" != "1" ]] ; then
             log "name(${name}) is invalid"

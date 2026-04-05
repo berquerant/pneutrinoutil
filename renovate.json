@@ -81,6 +81,14 @@
       "matchStrings":["LS_LINT_VERSION=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "loeffel-io/ls-lint"
+    },
+    {
+      "description": "Manage yq version",
+      "customType": "regex",
+      "fileMatch": ["^tools/run.sh$"],
+      "matchStrings":["yq_version=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "mikefarah/yq"
     }
   ]
 }

@@ -18,7 +18,7 @@ tasks:
   envrc:
     desc: Generate .envrc.github from setup-env
     cmds:
-      - yq '.runs.steps[].run' ./.github/actions/setup-env/action.yaml | awk -F= '/.+=.*/ {n=$1; v=substr($0, length(n) + 2); print "export "n"=\""v"\""}' > .envrc.github
+      - ./tools/run.sh yq '.runs.steps[].run' ./.github/actions/setup-env/action.yaml | awk -F= '/.+=.*/ {n=$1; v=substr($0, length(n) + 2); print "export "n"=\""v"\""}' > .envrc.github
   go-generate:
     desc: Go generate
     cmds:
