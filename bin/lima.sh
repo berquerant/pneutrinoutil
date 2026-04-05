@@ -32,7 +32,7 @@ reload() {
 }
 
 ssh() {
-    exec limactl shell "$name"
+    exec limactl shell "$name" "$@"
 }
 
 run() {
@@ -41,10 +41,10 @@ run() {
     cat <<EOS > "$__script"
 #!/bin/bash
 set -ex
+source "\${HOME}/.bashrc"
 cd pneutrinoutil
 ./task init
-direnv allow
-$*
+direnv exec . $@
 EOS
     chmod +x "$__script"
     limactl copy "$__script" "${name}:/tmp/run.sh"
@@ -54,7 +54,10 @@ EOS
 set -ex
 readonly cmd="$1"
 case "$cmd" in
-    "ssh") ssh ;;
+    "ssh")
+        shift
+        ssh "$@"
+        ;;
     "start") start ;;
     "stop") stop ;;
     "reload") reload ;;
@@ -72,7 +75,7 @@ $0 stop
   stop VM
 $0 reload
   delete and start new VM
-$0 ssh
+$0 ssh [COMMAND...]
   ssh to VM
 $0 run ARG...
   run command in VM

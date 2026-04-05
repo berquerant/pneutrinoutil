@@ -35,7 +35,7 @@ install_go() {
     local -r __url="https://go.dev/dl/${__dest}"
     curl -L -s -o "$__dest" "$__url"
     sudo tar -C /usr/local -xzf "$__dest"
-    echo 'export PATH=$PATH:/usr/local/go/bin' >> "${HOME}/.bashrc"
+    echo 'export PATH=$PATH:/usr/local/go/bin' >> "${HOME}/.profile"
 }
 
 install_uv() {
@@ -52,7 +52,7 @@ install_direnv() {
     # https://direnv.net/docs/installation.html
     sudo apt update
     sudo apt install -y direnv
-    echo 'eval "$(direnv hook bash)"' >> "${HOME}/.bashrc"
+    echo 'eval "$(direnv hook bash)"' >> "${HOME}/.profile"
 }
 
 install_awscli() {
