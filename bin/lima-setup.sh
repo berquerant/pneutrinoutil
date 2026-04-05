@@ -1,0 +1,102 @@
+#!/bin/bash
+
+set -eux -o pipefail
+
+readonly go_version="$1"
+readonly uv_version="$2"
+readonly pnpm_version="$3"
+
+if [[ -z "$go_version" ]] ; then
+    echo >&2 "go_version(arg0) is required"
+    exit 1
+fi
+if [[ -z "$uv_version" ]] ; then
+    echo >&2 "uv_version(arg1) is required"
+    exit 1
+fi
+if [[ -z "$pnpm_version" ]] ; then
+    echo >&2 "pnpm_version(arg2) is required"
+    exit 1
+fi
+
+clone() {
+    git clone https://github.com/berquerant/pneutrinoutil
+}
+
+install_go() {
+    # https://go.dev/doc/install#install
+    sudo rm -rf /usr/local/go
+    local -r __dest="go${go_version}.linux-$(arch | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/').tar.gz"
+    local -r __url="https://go.dev/dl/${__dest}"
+    curl -L -s -o "$__dest" "$__url"
+    sudo tar -C /usr/local -xzf "$__dest"
+    echo 'export PATH=$PATH:/usr/local/go/bin' >> "${HOME}/.bashrc"
+}
+
+install_uv() {
+    # https://github.com/astral-sh/uv
+    curl -LsSf "https://astral.sh/uv/${uv_version}/install.sh" | sh
+}
+
+install_pnpm() {
+    # https://pnpm.io/installation
+    curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION="$pnpm_version" sh -
+}
+
+install_direnv() {
+    # https://direnv.net/docs/installation.html
+    sudo apt update
+    sudo apt install -y direnv
+    echo 'eval "$(direnv hook bash)"' >> "${HOME}/.bashrc"
+}
+
+install_awscli() {
+    # https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+    sudo apt update
+    sudo apt install -y unzip
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-$(arch).zip" -o "awscliv2.zip"
+    local -r __public_key="awscli.public-key"
+    cat <<EOS > "$__public_key"
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mQINBF2Cr7UBEADJZHcgusOJl7ENSyumXh85z0TRV0xJorM2B/JL0kHOyigQluUG
+ZMLhENaG0bYatdrKP+3H91lvK050pXwnO/R7fB/FSTouki4ciIx5OuLlnJZIxSzx
+PqGl0mkxImLNbGWoi6Lto0LYxqHN2iQtzlwTVmq9733zd3XfcXrZ3+LblHAgEt5G
+TfNxEKJ8soPLyWmwDH6HWCnjZ/aIQRBTIQ05uVeEoYxSh6wOai7ss/KveoSNBbYz
+gbdzoqI2Y8cgH2nbfgp3DSasaLZEdCSsIsK1u05CinE7k2qZ7KgKAUIcT/cR/grk
+C6VwsnDU0OUCideXcQ8WeHutqvgZH1JgKDbznoIzeQHJD238GEu+eKhRHcz8/jeG
+94zkcgJOz3KbZGYMiTh277Fvj9zzvZsbMBCedV1BTg3TqgvdX4bdkhf5cH+7NtWO
+lrFj6UwAsGukBTAOxC0l/dnSmZhJ7Z1KmEWilro/gOrjtOxqRQutlIqG22TaqoPG
+fYVN+en3Zwbt97kcgZDwqbuykNt64oZWc4XKCa3mprEGC3IbJTBFqglXmZ7l9ywG
+EEUJYOlb2XrSuPWml39beWdKM8kzr1OjnlOm6+lpTRCBfo0wa9F8YZRhHPAkwKkX
+XDeOGpWRj4ohOx0d2GWkyV5xyN14p2tQOCdOODmz80yUTgRpPVQUtOEhXQARAQAB
+tCFBV1MgQ0xJIFRlYW0gPGF3cy1jbGlAYW1hem9uLmNvbT6JAlQEEwEIAD4CGwMF
+CwkIBwIGFQoJCAsCBBYCAwECHgECF4AWIQT7Xbd/1cEYuAURraimMQrMRnJHXAUC
+aGveYQUJDMpiLAAKCRCmMQrMRnJHXKBYD/9Ab0qQdGiO5hObchG8xh8Rpb4Mjyf6
+0JrVo6m8GNjNj6BHkSc8fuTQJ/FaEhaQxj3pjZ3GXPrXjIIVChmICLlFuRXYzrXc
+Pw0lniybypsZEVai5kO0tCNBCCFuMN9RsmmRG8mf7lC4FSTbUDmxG/QlYK+0IV/l
+uJkzxWa+rySkdpm0JdqumjegNRgObdXHAQDWlubWQHWyZyIQ2B4U7AxqSpcdJp6I
+S4Zds4wVLd1WE5pquYQ8vS2cNlDm4QNg8wTj58e3lKN47hXHMIb6CHxRnb947oJa
+pg189LLPR5koh+EorNkA1wu5mAJtJvy5YMsppy2y/kIjp3lyY6AmPT1posgGk70Z
+CmToEZ5rbd7ARExtlh76A0cabMDFlEHDIK8RNUOSRr7L64+KxOUegKBfQHb9dADY
+qqiKqpCbKgvtWlds909Ms74JBgr2KwZCSY1HaOxnIr4CY43QRqAq5YHOay/mU+6w
+hhmdF18vpyK0vfkvvGresWtSXbag7Hkt3XjaEw76BzxQH21EBDqU8WJVjHgU6ru+
+DJTs+SxgJbaT3hb/vyjlw0lK+hFfhWKRwgOXH8vqducF95NRSUxtS4fpqxWVaw3Q
+V2OWSjbne99A5EPEySzryFTKbMGwaTlAwMCwYevt4YT6eb7NmFhTx0Fis4TalUs+
+j+c7Kg92pDx2uQ==
+=OBAt
+-----END PGP PUBLIC KEY BLOCK-----
+EOS
+    gpg --import "$__public_key"
+    curl -o awscliv2.sig "https://awscli.amazonaws.com/awscli-exe-linux-$(arch).zip.sig"
+    gpg --verify awscliv2.sig awscliv2.zip
+    unzip awscliv2.zip
+    sudo ./aws/install
+}
+
+clone
+install_go
+install_uv
+install_pnpm
+install_direnv
+install_awscli

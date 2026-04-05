@@ -89,6 +89,22 @@
       "matchStrings":["yq_version=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "mikefarah/yq"
+    },
+    {
+      "description": "Manage uv version",
+      "customType": "regex",
+      "fileMatch": ["^bin/lima.sh$"],
+      "matchStrings":["uv_version=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "astral-sh/uv"
+    },
+    {
+      "description": "Manage pnpm version",
+      "customType": "regex",
+      "fileMatch": ["^bin/lima.sh$"],
+      "matchStrings":["pnpm_version=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "pnpm/pnpm"
     }
   ]
 }

@@ -30,6 +30,10 @@ My [NEUTRIONO](https://studio-neutrino.com/) utilities.
 - AWS CLI
 - [pnpm](https://github.com/pnpm/pnpm)
 
+or
+
+- [lima](https://github.com/lima-vm/lima/tree/master)
+
 # Initialization
 
 ``` shell
@@ -43,3 +47,17 @@ Download NEUTRINO and singer libraries, and build pneutrinoutil.
 ``` shell
 ./task ansible
 ```
+
+# Development
+
+## With lima
+
+``` shell
+./bin/lima.sh start
+cd pneutrinoutil
+./task init
+direnv allow
+# e.g.
+./task test:unit
+```
+
