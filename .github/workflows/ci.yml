@@ -64,6 +64,8 @@ jobs:
           TARGET_REF: "${{ github.sha }}"
       - name: Run Unit Test
         run: ./bin/lima.sh run ./task test:unit
+      - name: Set SKIP_BUILD=true
+        run: ./bin/lima.sh run 'echo "export SKIP_BUILD=true" >> .envrc'
       - name: Run E2E Test
         run: ./bin/lima.sh run ./task test:e2e
 
