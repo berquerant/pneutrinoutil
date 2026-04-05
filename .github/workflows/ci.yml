@@ -46,7 +46,7 @@ jobs:
       - name: Build
         run: ./task build:images
 
-  test-unit:
+  test:
     timeout-minutes: 20
     permissions:
       contents: read
@@ -62,8 +62,10 @@ jobs:
         run: ./bin/lima.sh start
         env:
           TARGET_REF: "${{ github.sha }}"
-      - name: Run Test
+      - name: Run Unit Test
         run: ./bin/lima.sh run ./task test:unit
+      - name: Run E2E Test
+        run: ./bin/lima.sh run ./task test:e2e
 
   # NOTE: Abandoned MySQL 9.6 startup fix on 2026-04
   # Issue: Internal MySQL error claiming errmsg.sys is missing in /usr/share/mysql-9.6/, works locally, but fails on GHA.

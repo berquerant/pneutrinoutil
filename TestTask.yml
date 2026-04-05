@@ -35,7 +35,8 @@ tasks:
       # - task: run:reload-k8s-worker
       - TEST=true ./bin/env.sh ./bin/k8s-worker.sh stop || true
       - TEST=true ./bin/env.sh ./bin/k8s-worker.sh start
-      - ./bin/env.sh go test -cover -race $(go list ./... | grep tests) -count=1 ${DEBUG+-v}
+      # -race requires CGO_ENABLED=1
+      - ./bin/env.sh go test -cover $(go list ./... | grep tests) -count=1 ${DEBUG+-v}
   drop-data:
     deps:
       - drop-redis
