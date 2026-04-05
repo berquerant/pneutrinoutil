@@ -30,6 +30,12 @@ My [NEUTRIONO](https://studio-neutrino.com/) utilities.
 - AWS CLI
 - [pnpm](https://github.com/pnpm/pnpm)
 
+# Initialization
+
+``` shell
+./task init
+```
+
 # Installation
 
 Download NEUTRINO and singer libraries, and build pneutrinoutil.
