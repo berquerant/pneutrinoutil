@@ -3,8 +3,8 @@
 readonly d="$(cd "$(dirname "$0")" || exit 1; pwd)"
 readonly name="pneutrinoutil"
 
-readonly uv_version="0.11.3"
-readonly pnpm_version="10.33.0"
+readonly uv_version=0.11.3
+readonly pnpm_version=10.33.0
 
 readonly vm_repo_dir="pneutrinoutil"
 
