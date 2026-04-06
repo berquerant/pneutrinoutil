@@ -56,6 +56,20 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+      - name: Cache Go modules and build folders
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            ./tmp/lima/go
+          key: ${{ runner.os }}-lima-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-lima-go-
+      - name: Cache Images
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            ./tmp/lima/docker
+          key: ${{ runner.os }}-lima-docker
       - name: Setup Lima
         uses: ./.github/actions/setup-lima
       - name: Start VM

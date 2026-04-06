@@ -9,10 +9,10 @@ tasks:
   images:
     if: '[[ "$SKIP_BUILD_IMAGES" != "true" && "$SKIP_BUILD" != "true" ]]'
     cmds:
+      - cmd: docker buildx bake --set "*.cache-from=type=local,src=$DOCKERCACHE" --set "*.cache-to=type=local,mode=max,dest=$DOCKERCACHE"
+        if: '[[ "$DOCKERCACHE" != "" ]]'
       - cmd: docker buildx bake
-        if: '[[ "$CI" = "" ]]'
-      - cmd: docker buildx bake --set "*.cache-from=type=gha" --set "*.cache-to=type=gha,mode=max"
-        if: '[[ "$CI" != "" ]]'
+        if: '[[ -z "$DOCKERCACHE" ]]'
   binaries:
     if: '[[ "$SKIP_BUILD_BINARIES" != "true" && "$SKIP_BUILD" != "true" ]]'
     deps:

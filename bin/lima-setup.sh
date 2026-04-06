@@ -2,30 +2,45 @@
 
 set -eux -o pipefail
 
-readonly uv_version="$1"
-readonly pnpm_version="$2"
-readonly target_ref="$3"
+readonly vm_repo_dir="$1"
+readonly uv_version="$2"
+readonly pnpm_version="$3"
+readonly target_ref="$4"
 
+if [[ -z "$vm_repo_dir" ]] ; then
+    echo >&2 "vm_repo_dir(arg0) is required"
+    exit 1
+fi
 if [[ -z "$uv_version" ]] ; then
-    echo >&2 "uv_version(arg0) is required"
+    echo >&2 "uv_version(arg1) is required"
     exit 1
 fi
 if [[ -z "$pnpm_version" ]] ; then
-    echo >&2 "pnpm_version(arg1) is required"
+    echo >&2 "pnpm_version(arg2) is required"
     exit 1
 fi
 
+cwd="$PWD"
+readonly repo_dir="${cwd}/${vm_repo_dir}"
+
+tmpd="$(mktemp -d)"
+with_tmpd() {
+    pushd "$tmpd" > /dev/null
+    "$@"
+    popd > /dev/null
+}
+
 clone() {
-    git clone https://github.com/berquerant/pneutrinoutil
+    git clone https://github.com/berquerant/pneutrinoutil "$repo_dir"
     if [[ -n "$target_ref" ]] ; then
-        pushd pneutrinoutil > /dev/null
+        pushd "$repo_dir" > /dev/null
         git checkout "$target_ref"
         popd > /dev/null
     fi
 }
 
 go_version() {
-    grep -E "^go [0-9]+\.[0-9]+\.[0-9]+" pneutrinoutil/go.mod | awk '{print $2}'
+    grep -E "^go [0-9]+\.[0-9]+\.[0-9]+" "${repo_dir}/go.mod" | awk '{print $2}'
 }
 
 install_go() {
@@ -100,8 +115,8 @@ EOS
 }
 
 clone
-install_go
-install_uv
-install_pnpm
-install_direnv
-install_awscli
+with_tmpd install_go
+with_tmpd install_uv
+with_tmpd install_pnpm
+with_tmpd install_direnv
+with_tmpd install_awscli
