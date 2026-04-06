@@ -75,7 +75,7 @@ jobs:
       - name: Start VM
         run: ./bin/lima.sh start
         env:
-          TARGET_REF: "${{ github.ref }}"
+          TARGET_REF: ${{ github.event_name == 'push' && github.ref_name || github.head_ref }}
       - name: Run Unit Test
         run: ./bin/lima.sh run ./task test:unit
       - name: Set SKIP_BUILD=true
