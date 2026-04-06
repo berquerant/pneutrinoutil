@@ -9,7 +9,7 @@ tasks:
   images:
     if: '[[ "$SKIP_BUILD_IMAGES" != "true" && "$SKIP_BUILD" != "true" ]]'
     cmds:
-      - cmd: docker buildx bake --set "*.cache-from=type=local,src=$DOCKERCACHE" --set "*.cache-to=type=local,mode=max,dest=$DOCKERCACHE"
+      - cmd: docker buildx bake --set "*.cache-from=type=local,src=$DOCKERCACHE" --set "*.cache-to=type=local,mode=max,dest=$DOCKERCACHE" --allow=fs=$DOCKERCACHE
         if: '[[ "$DOCKERCACHE" != "" ]]'
       - cmd: docker buildx bake
         if: '[[ -z "$DOCKERCACHE" ]]'
