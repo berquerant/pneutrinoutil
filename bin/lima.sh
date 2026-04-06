@@ -67,6 +67,7 @@ run() {
 #!/bin/bash
 set -ex
 cd "$vm_repo_dir"
+export CACHEDIR="${vm_cache_dir}"
 export GOCACHE="${go_cache_dir}"
 export GOMODCACHE="${gomod_cache_dir}"
 export DOCKERCACHE="${docker_cache_dir}"
