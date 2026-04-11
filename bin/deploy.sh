@@ -15,5 +15,5 @@ cleanup() {
 trap cleanup EXIT
 
 echo "START deploy"
-timeout 180s "${d}/tools/run.sh" helm upgrade pneutrinoutil ./charts/pneutrinoutil --install --debug --wait-for-jobs "$@"
+timeout 180s "${d}/tools/run.sh" helm upgrade pneutrinoutil ./charts/pneutrinoutil --install --wait-for-jobs "$@"
 echo "END deploy"
