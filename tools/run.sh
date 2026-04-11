@@ -24,6 +24,10 @@ package_name() {
     grep -F "$name" "$mod" | grep -v indirect | xargs
 }
 case "$name" in
+    task)
+        readonly task_version=3.49.1
+        "${d}/setup-task.sh" "$task_version" "$binary"
+        ;;
     golangci-lint)
         "${d}/setup-golangci-lint.sh" "$GOLANGCI_LINT_VERSION" "$binary"
         ;;
