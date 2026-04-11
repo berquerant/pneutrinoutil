@@ -1,126 +1,188 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "baseBranches": ["main"],
+  "baseBranches": [
+    "main"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "mysql",
+      "description": "Manage mysql version",
+      "fileMatch": [
+        "^.github/.env$"
+      ],
+      "matchStrings": [
+        "MYSQL_VERSION=(?<currentValue>\\d+\\.\\d+\\.\\d+)"
+      ]
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "redis",
+      "description": "Manage redis version",
+      "fileMatch": [
+        "^.github/.env$"
+      ],
+      "matchStrings": [
+        "REDIS_VERSION=(?<currentValue>\\d+\\.\\d+\\.\\d+)"
+      ]
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "quay.io/minio/minio",
+      "description": "Manage minio version",
+      "fileMatch": [
+        "^.github/.env$"
+      ],
+      "matchStrings": [
+        "MINIO_VERSION=(?<currentValue>RELEASE\\..+Z)"
+      ]
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "golangci/golangci-lint",
+      "description": "Manage golangci-lint version",
+      "fileMatch": [
+        "^.github/.env$"
+      ],
+      "matchStrings": [
+        "GOLANGCI_LINT_VERSION=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"
+      ]
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "fe3dback/go-arch-lint",
+      "description": "Manage go-arch-lint version",
+      "fileMatch": [
+        "^.github/.env$"
+      ],
+      "matchStrings": [
+        "GO_ARCH_LINT_VERSION=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"
+      ]
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "koalaman/shellcheck",
+      "description": "Manage shellcheck version",
+      "fileMatch": [
+        "^.github/.env$"
+      ],
+      "matchStrings": [
+        "SHELLCHECK_VERSION=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"
+      ]
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "loeffel-io/ls-lint",
+      "description": "Manage ls-lint version",
+      "fileMatch": [
+        "^.github/.env$"
+      ],
+      "matchStrings": [
+        "LS_LINT_VERSION=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"
+      ]
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "mikefarah/yq",
+      "description": "Manage yq version",
+      "fileMatch": [
+        "^tools/run.sh$"
+      ],
+      "matchStrings": [
+        "yq_version=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"
+      ]
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "go-task/task",
+      "description": "Manage task version",
+      "fileMatch": [
+        "^tools/run.sh$"
+      ],
+      "matchStrings": [
+        "task_version=(?<currentValue>\\d+\\.\\d+\\.\\d+)"
+      ]
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "astral-sh/uv",
+      "description": "Manage uv version",
+      "fileMatch": [
+        "^bin/lima.sh$"
+      ],
+      "matchStrings": [
+        "uv_version=(?<currentValue>\\d+\\.\\d+\\.\\d+)"
+      ]
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "pnpm/pnpm",
+      "description": "Manage pnpm version",
+      "fileMatch": [
+        "^bin/lima.sh$",
+        "^ui/Dockerfile$"
+      ],
+      "matchStrings": [
+        "pnpm_version=(?<currentValue>\\d+\\.\\d+\\.\\d+)",
+        "PNPM_VERSION=(?<currentValue>\\d+\\.\\d+\\.\\d+)"
+      ]
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "lima-vm/lima",
+      "description": "Manage lima version",
+      "fileMatch": [
+        "^.github/actions/setup-lima/action.yaml$"
+      ],
+      "matchStrings": [
+        "default: (?<currentValue>v\\d+\\.\\d+\\.\\d+)"
+      ]
+    }
+  ],
   "extends": [
     "github>berquerant/renovate-config"
   ],
-  "postUpdateOptions": ["gomodTidy"],
-  "lockFileMaintenance": {
-    "enabled": true
-  },
   "github-actions": {
     "enabled": false
   },
+  "lockFileMaintenance": {
+    "enabled": true
+  },
   "packageRules": [
     {
+      "addLabels": [
+        "docker"
+      ],
       "description": "Group docker dependencies",
       "groupName": "docker({{updateType}}): {{depName}}",
-      "addLabels": ["docker"],
-      "matchDatasources": ["docker"]
+      "matchDatasources": [
+        "docker"
+      ]
     },
     {
+      "addLabels": [
+        "go"
+      ],
       "description": "Group go dependencies",
       "groupName": "go({{updateType}}) in {{#if packageFileDir}}{{packageFileDir}}{{else}}root{{/if}}",
-      "addLabels": ["go"],
-      "matchDatasources": ["go"]
+      "matchDatasources": [
+        "go"
+      ]
     }
   ],
-  "customManagers":[
-    {
-      "description": "Manage mysql version",
-      "customType": "regex",
-      "fileMatch": ["^.github/.env$"],
-      "matchStrings": ["MYSQL_VERSION=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
-      "datasourceTemplate": "docker",
-      "depNameTemplate": "mysql"
-    },
-    {
-      "description": "Manage redis version",
-      "customType": "regex",
-      "fileMatch": ["^.github/.env$"],
-      "matchStrings": ["REDIS_VERSION=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
-      "datasourceTemplate": "docker",
-      "depNameTemplate": "redis"
-    },
-    {
-      "description": "Manage minio version",
-      "customType": "regex",
-      "fileMatch": ["^.github/.env$"],
-      "matchStrings": ["MINIO_VERSION=(?<currentValue>RELEASE\\..+Z)"],
-      "datasourceTemplate": "docker",
-      "depNameTemplate": "quay.io/minio/minio"
-    },
-    {
-      "description": "Manage golangci-lint version",
-      "customType": "regex",
-      "fileMatch": ["^.github/.env$"],
-      "matchStrings":["GOLANGCI_LINT_VERSION=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "golangci/golangci-lint"
-    },
-    {
-      "description": "Manage go-arch-lint version",
-      "customType": "regex",
-      "fileMatch": ["^.github/.env$"],
-      "matchStrings":["GO_ARCH_LINT_VERSION=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "fe3dback/go-arch-lint"
-    },
-    {
-      "description": "Manage shellcheck version",
-      "customType": "regex",
-      "fileMatch": ["^.github/.env$"],
-      "matchStrings":["SHELLCHECK_VERSION=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "koalaman/shellcheck"
-    },
-    {
-      "description": "Manage ls-lint version",
-      "customType": "regex",
-      "fileMatch": ["^.github/.env$"],
-      "matchStrings":["LS_LINT_VERSION=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "loeffel-io/ls-lint"
-    },
-    {
-      "description": "Manage yq version",
-      "customType": "regex",
-      "fileMatch": ["^tools/run.sh$"],
-      "matchStrings":["yq_version=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "mikefarah/yq"
-    },
-    {
-      "description": "Manage task version",
-      "customType": "regex",
-      "fileMatch": ["^tools/run.sh$"],
-      "matchStrings":["task_version=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "go-task/task"
-    },
-    {
-      "description": "Manage uv version",
-      "customType": "regex",
-      "fileMatch": ["^bin/lima.sh$"],
-      "matchStrings":["uv_version=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "astral-sh/uv"
-    },
-    {
-      "description": "Manage pnpm version",
-      "customType": "regex",
-      "fileMatch": ["^bin/lima.sh$"],
-      "matchStrings":["pnpm_version=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "pnpm/pnpm"
-    },
-    {
-      "description": "Manage lima version",
-      "customType": "regex",
-      "fileMatch": ["^.github/actions/setup-lima/action.yaml$"],
-      "matchStrings":["default: (?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "lima-vm/lima"
-    }
+  "postUpdateOptions": [
+    "gomodTidy"
   ]
 }

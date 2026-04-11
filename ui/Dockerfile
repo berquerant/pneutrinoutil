@@ -4,9 +4,10 @@
 # https://pnpm.io/docker
 ARG NODE_VERSION=24.14.1
 FROM node:${NODE_VERSION} AS base
+ARG PNPM_VERSION=10.33.0
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+RUN npm i -g pnpm@$PNPM_VERSION
 WORKDIR /app
 
 FROM base AS build
