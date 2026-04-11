@@ -91,6 +91,14 @@
       "depNameTemplate": "mikefarah/yq"
     },
     {
+      "description": "Manage task version",
+      "customType": "regex",
+      "fileMatch": ["^tools/run.sh$"],
+      "matchStrings":["task_version=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "go-task/task"
+    },
+    {
       "description": "Manage uv version",
       "customType": "regex",
       "fileMatch": ["^bin/lima.sh$"],
