@@ -15,6 +15,9 @@ tasks:
   test:
     cmds:
       - task: reload-cluster
+        if: '[[ "$SKIP_RELOAD_CLUSTER" != "true" ]]'
+      - task: uninstall
+        if: '[[ "$SKIP_RELOAD_CLUSTER" = "true" ]]'
       - task: reload-images
       - task: test-deploy
   purge:
