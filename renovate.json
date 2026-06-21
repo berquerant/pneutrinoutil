@@ -154,9 +154,6 @@
   "extends": [
     "github>berquerant/renovate-config"
   ],
-  "github-actions": {
-    "enabled": false
-  },
   "lockFileMaintenance": {
     "enabled": true
   },
