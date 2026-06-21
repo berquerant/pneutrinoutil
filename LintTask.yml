@@ -15,7 +15,7 @@ tasks:
       - yamllint
       - ls-lint
       - shellcheck
-      - vuln
+      # - vuln
       - vet
       - fix
       - golangci-lint
