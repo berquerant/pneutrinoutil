@@ -15,7 +15,6 @@ tasks:
       - yamllint
       - ls-lint
       - shellcheck
-      # - vuln
       - vet
       - fix
       - golangci-lint
@@ -23,9 +22,6 @@ tasks:
     cmds:
       - task: ui-dev:build
       - task: ui-lint
-  vuln:
-    cmds:
-      - ./tools/run.sh govulncheck ./...
   vet:
     cmds:
       - go vet ./...
