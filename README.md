@@ -1,5 +1,3 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/berquerant/pneutrinoutil)](https://goreportcard.com/report/github.com/berquerant/pneutrinoutil)
-
 # pneutrionoutil
 
 My [NEUTRIONO](https://studio-neutrino.com/) utilities.
