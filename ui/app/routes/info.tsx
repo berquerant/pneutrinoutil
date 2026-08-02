@@ -1,4 +1,3 @@
-import type { Route } from "./+types/info";
 import { defaultApi } from "../api/env";
 import { HandlerVersionResponseData } from "../api/client";
 

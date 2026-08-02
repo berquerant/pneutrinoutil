@@ -17,6 +17,11 @@ export default defineConfig(
   reactPlugin.configs.flat.recommended,
   reactPlugin.configs.flat["jsx-runtime"],
   {
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
     rules: {
       "react/prop-types": "off",
       "@typescript-eslint/no-unused-vars": [

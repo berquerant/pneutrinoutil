@@ -35,3 +35,4 @@ ignore:
   - tmp
   - .DS_Store
   - charts
+  - .pnpm-store

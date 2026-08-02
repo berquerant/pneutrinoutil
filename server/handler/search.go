@@ -6,7 +6,7 @@ import (
 
 	"github.com/berquerant/pneutrinoutil/pkg/domain"
 	"github.com/berquerant/pneutrinoutil/pkg/repo"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 )
 
 type Search struct {
@@ -78,7 +78,7 @@ type SearchProcessResponseData []*SearchProcessResponseDataElement
 // @produce json
 // @success 200 {object} handler.SuccessResponse[SearchProcessResponseData]
 // @router /proc/search [get]
-func (s *Search) SearchProcess(c echo.Context) error {
+func (s *Search) SearchProcess(c *echo.Context) error {
 	var p SearchProcessParam
 	if err := c.Bind(&p); err != nil {
 		return err

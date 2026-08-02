@@ -16,7 +16,7 @@ import (
 	"github.com/berquerant/pneutrinoutil/pkg/repo"
 	"github.com/berquerant/pneutrinoutil/pkg/task"
 	"github.com/hibiken/asynq"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 )
 
 // Start a process.
@@ -34,7 +34,7 @@ import (
 // @failure 413 {object} handler.ErrorResponse "too big score"
 // @failure 500 {object} handler.ErrorResponse
 // @router /proc [post]
-func (s *Start) Handler(c echo.Context) error {
+func (s *Start) Handler(c *echo.Context) error {
 	err := s.NewProcess(c)
 	if err != nil {
 		rid := echox.RequestID(c)
@@ -46,7 +46,7 @@ func (s *Start) Handler(c echo.Context) error {
 }
 
 // GetFormArgs extracts arguments for pneutrinoutil from the form values.
-func (Start) GetFormArgs(c echo.Context) map[string]string {
+func (Start) GetFormArgs(c *echo.Context) map[string]string {
 	keys := []string{
 		"model",
 		"supportModel",
@@ -63,7 +63,7 @@ func (Start) GetFormArgs(c echo.Context) map[string]string {
 
 // GetFormFile reads a musicxml file from the form file `score`.
 // Returns the file content.
-func (s Start) GetFormFile(c echo.Context) (*ReadFromFileResult, *StatusError) {
+func (s Start) GetFormFile(c *echo.Context) (*ReadFromFileResult, *StatusError) {
 	r, err := ReadFormFile(c, "score", uploadMaxSizeBytes)
 	if err != nil {
 		return nil, err.AppendMessageToErr("failed to read score file from form")
@@ -101,7 +101,7 @@ type Start struct {
 	path           string
 }
 
-func (s *Start) NewProcess(c echo.Context) *StatusError {
+func (s *Start) NewProcess(c *echo.Context) *StatusError {
 	rid := echox.RequestID(c)
 	score, fErr := s.GetFormFile(c)
 	if fErr != nil {

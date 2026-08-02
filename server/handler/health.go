@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 )
 
 // Health returns OK.
@@ -13,6 +13,6 @@ import (
 // @produce json
 // @success 200 {object} handler.SuccessResponse[string]
 // @router /health [get]
-func Health(c echo.Context) error {
+func Health(c *echo.Context) error {
 	return Success(c, http.StatusOK, "OK")
 }
