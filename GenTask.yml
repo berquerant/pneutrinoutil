@@ -32,5 +32,5 @@ tasks:
   swag:
     desc: Generate API
     cmds:
-      - ./tools/run.sh swag init -g ./server/main.go -o ./server/docs
+      - ./tools/run.sh swag init -g ./server/main.go -o ./server/docs --exclude tmp
       - task: ui-gen:swag

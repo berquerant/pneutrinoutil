@@ -16,11 +16,10 @@ import (
 	"github.com/berquerant/pneutrinoutil/server/config"
 	"github.com/berquerant/pneutrinoutil/server/handler"
 	"github.com/hibiken/asynq"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	"github.com/labstack/gommon/log"
+	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v5/middleware"
 
-	echoSwagger "github.com/swaggo/echo-swagger"
+	echoSwagger "github.com/swaggo/echo-swagger/v2"
 )
 
 type Server struct {
@@ -68,23 +67,15 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 	)
 
 	//
-	// logger
-	//
-	l, ok := e.Logger.(*log.Logger)
-	if !ok {
-		panic("echo.Logger must be log.Logger")
-	}
-	l.SetLevel(cfg.EchoLogLevel())
-	//
 	// middlewares
 	//
 	const healthPath = "/health"
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
-		Skipper: func(c echo.Context) bool {
+		Skipper: func(c *echo.Context) bool {
 			// skip /health access log
 			return strings.Contains(c.Request().RequestURI, healthPath)
 		},
-		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
+		LogValuesFunc: func(c *echo.Context, v middleware.RequestLoggerValues) error {
 			type pair struct {
 				k string
 				v any
@@ -121,7 +112,6 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 		LogReferer:       true,
 		LogUserAgent:     true,
 		LogStatus:        true,
-		LogError:         true,
 		LogContentLength: true,
 		LogResponseSize:  true,
 	}))
@@ -131,24 +121,29 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 	// handlers
 	//
 	v1 := e.Group("/v1")
-	v1.GET(healthPath, handler.Health).Name = "health"
-	v1.GET("/version", handler.Version).Name = "version"
-	v1.GET("/debug", handler.Debug).Name = "debug"
+	r1 := v1.GET(healthPath, handler.Health)
+	r1.Name = "health"
+	r2 := v1.GET("/version", handler.Version)
+	r2.Name = "version"
+	r3 := v1.GET("/debug", handler.Debug)
+	r3.Name = "debug"
 	v1.GET("/swagger/*", echoSwagger.WrapHandler)
-	v1.POST("/proc", handler.NewStart(client, cfg.ProcessTimeout(), cfg.StorageBucket, cfg.StoragePath, objectAdmin, details, processes).Handler).Name = "createProcess"
-	v1.GET("/proc/search", handler.NewSearch(searcher).SearchProcess).Name = "searchProcess"
+	r4 := v1.POST("/proc", handler.NewStart(client, cfg.ProcessTimeout(), cfg.StorageBucket, cfg.StoragePath, objectAdmin, details, processes).Handler)
+	r4.Name = "createProcess"
+	r5 := v1.GET("/proc/search", handler.NewSearch(searcher).SearchProcess)
+	r5.Name = "searchProcess"
 	getGroup := v1.Group("/proc/:id")
 	getHandler := handler.NewGet(processes, details, objectAdmin, objects)
-	getGroup.GET("/detail", getHandler.Detail).Name = "getDetail"
-	getGroup.GET("/config", getHandler.Config).Name = "getConfig"
-	getGroup.GET("/musicxml", getHandler.MusicXML).Name = "getMusicXML"
-	getGroup.GET("/wav", getHandler.Wav).Name = "getWav"
-	getGroup.GET("/log", getHandler.Log).Name = "getLog"
-	//
-	// echo
-	//
-	e.HideBanner = true
-	e.HidePort = true
+	r6 := getGroup.GET("/detail", getHandler.Detail)
+	r6.Name = "getDetail"
+	r7 := getGroup.GET("/config", getHandler.Config)
+	r7.Name = "getConfig"
+	r8 := getGroup.GET("/musicxml", getHandler.MusicXML)
+	r8.Name = "getMusicXML"
+	r9 := getGroup.GET("/wav", getHandler.Wav)
+	r9.Name = "getWav"
+	r10 := getGroup.GET("/log", getHandler.Log)
+	r10.Name = "getLog"
 
 	return &Server{
 		e:      e,
@@ -164,9 +159,13 @@ func (s *Server) Start(ctx context.Context) {
 			alog.L().Error("close server", logx.Err(err))
 		}
 	}()
+	srv := &http.Server{
+		Addr:    s.c.Addr(),
+		Handler: s.e,
+	}
 	go func() {
 		alog.L().Info("start server")
-		if err := s.e.Start(s.c.Addr()); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			panic("shutting down the server")
 		}
 	}()
@@ -178,7 +177,7 @@ func (s *Server) Start(ctx context.Context) {
 	defer cancel()
 
 	alog.L().Info("start shutting down")
-	if err := s.e.Shutdown(iCtx); err != nil {
+	if err := srv.Shutdown(iCtx); err != nil {
 		panic(err)
 	}
 }

@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 )
 
 // Debug info.
@@ -13,9 +13,9 @@ import (
 // @produce json
 // @success 200 {object} handler.SuccessResponse[DebugResponseData]
 // @router /debug [get]
-func Debug(c echo.Context) error {
+func Debug(c *echo.Context) error {
 	return Success(c, http.StatusOK, DebugResponseData{
-		Routes: c.Echo().Routes(),
+		Routes: c.Echo().Router().Routes(),
 	})
 }
 

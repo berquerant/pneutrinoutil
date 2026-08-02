@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 )
 
 const (
@@ -40,14 +40,14 @@ func NewSuccessResponse[T any](data T) *SuccessResponse[T] {
 }
 
 // Error sends a JSON error response with status and message.
-func Error(c echo.Context, status int, msg string) error {
+func Error(c *echo.Context, status int, msg string) error {
 	return c.JSON(status, NewErrorResponse(
 		msg,
 	))
 }
 
 // Success sends a JSON successful response with status and data.
-func Success[T any](c echo.Context, status int, data T) error {
+func Success[T any](c *echo.Context, status int, data T) error {
 	return c.JSON(status, NewSuccessResponse(
 		data,
 	))
@@ -81,7 +81,7 @@ func NewStatusError(status int, err error, msg string) *StatusError {
 }
 
 // Respond sends a JSON error response.
-func (e StatusError) Respond(c echo.Context) error {
+func (e StatusError) Respond(c *echo.Context) error {
 	return Error(c, e.Status, e.Msg)
 }
 
@@ -91,7 +91,7 @@ type ReadFromFileResult struct {
 }
 
 // ReadFormFile reads a form file and writes content to uploadDir.
-func ReadFormFile(c echo.Context, name string, maxBytes int64) (*ReadFromFileResult, *StatusError) {
+func ReadFormFile(c *echo.Context, name string, maxBytes int64) (*ReadFromFileResult, *StatusError) {
 	fh, err := c.FormFile(name)
 	if err != nil {
 		return nil, NewStatusError(

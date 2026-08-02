@@ -15,7 +15,7 @@ import (
 	"github.com/berquerant/pneutrinoutil/pkg/logx"
 	"github.com/berquerant/pneutrinoutil/pkg/repo"
 	"github.com/goccy/go-yaml"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 )
 
 func NewGet(
@@ -43,7 +43,7 @@ type Get struct {
 	objectGetter  repo.ObjectGetter
 }
 
-func (*Get) bind(c echo.Context) (*GetParam, *StatusError) {
+func (*Get) bind(c *echo.Context) (*GetParam, *StatusError) {
 	var p GetParam
 	if err := c.Bind(&p); err != nil {
 		return nil, NewStatusError(http.StatusBadRequest, err, "bad request")
@@ -65,9 +65,9 @@ type result struct {
 }
 
 func (g *Get) withResult(
-	f func(echo.Context, *result) error,
-) func(echo.Context) error {
-	return func(c echo.Context) error {
+	f func(*echo.Context, *result) error,
+) func(*echo.Context) error {
+	return func(c *echo.Context) error {
 		p, bErr := g.bind(c)
 		if bErr != nil {
 			return bErr.Respond(c)
@@ -100,8 +100,8 @@ func (g *Get) withResult(
 	}
 }
 
-func (g *Get) withStorageObject(objectID int, f func(echo.Context, repo.ReadObjectResponse) error) func(echo.Context) error {
-	return func(c echo.Context) error {
+func (g *Get) withStorageObject(objectID int, f func(*echo.Context, repo.ReadObjectResponse) error) func(*echo.Context) error {
+	return func(c *echo.Context) error {
 		r, err := g.objectReader.ReadObject(c.Request().Context(), objectID)
 		if err != nil {
 			alog.L().Error("missing object", slog.String("id", echox.RequestID(c)), slog.Int("objectID", objectID), logx.Err(err))
@@ -111,8 +111,8 @@ func (g *Get) withStorageObject(objectID int, f func(echo.Context, repo.ReadObje
 	}
 }
 
-func (g *Get) withStorageObjectFile(objectID int, f func(echo.Context, repo.ReadObjectResponse) error) func(echo.Context) error {
-	return g.withStorageObject(objectID, func(c echo.Context, r repo.ReadObjectResponse) error {
+func (g *Get) withStorageObjectFile(objectID int, f func(*echo.Context, repo.ReadObjectResponse) error) func(*echo.Context) error {
+	return g.withStorageObject(objectID, func(c *echo.Context, r repo.ReadObjectResponse) error {
 		if _, ok := r.Storage(); !ok {
 			return Error(c, http.StatusNotFound, "not found")
 		}
@@ -120,8 +120,8 @@ func (g *Get) withStorageObjectFile(objectID int, f func(echo.Context, repo.Read
 	})
 }
 
-func (g *Get) withStorageObjectFileBlob(objectID int, contentType string) func(echo.Context) error {
-	return g.withStorageObjectFile(objectID, func(c echo.Context, r repo.ReadObjectResponse) error {
+func (g *Get) withStorageObjectFileBlob(objectID int, contentType string) func(*echo.Context) error {
+	return g.withStorageObjectFile(objectID, func(c *echo.Context, r repo.ReadObjectResponse) error {
 		storage, _ := r.Storage()
 		blob, err := io.ReadAll(storage.Blob)
 		if err != nil {
@@ -131,8 +131,8 @@ func (g *Get) withStorageObjectFileBlob(objectID int, contentType string) func(e
 		return c.Blob(http.StatusOK, contentType, blob)
 	})
 }
-func (g *Get) withResultObjectFile(objectID int, contentType, path string, f func(int, string) func(echo.Context) error) func(echo.Context) error {
-	return g.withStorageObject(objectID, func(c echo.Context, r repo.ReadObjectResponse) error {
+func (g *Get) withResultObjectFile(objectID int, contentType, path string, f func(int, string) func(*echo.Context) error) func(*echo.Context) error {
+	return g.withStorageObject(objectID, func(c *echo.Context, r repo.ReadObjectResponse) error {
 		if _, ok := r.Storage(); ok {
 			alog.L().Error("result object should be a directory", slog.String("id", echox.RequestID(c)), slog.Int("objectID", objectID))
 			return Error(c, http.StatusNotFound, "not found")
@@ -148,7 +148,7 @@ func (g *Get) withResultObjectFile(objectID int, contentType, path string, f fun
 	})
 }
 
-func (g *Get) withResultObjectFileBlob(objectID int, contentType, path string) func(echo.Context) error {
+func (g *Get) withResultObjectFileBlob(objectID int, contentType, path string) func(*echo.Context) error {
 	return g.withResultObjectFile(objectID, contentType, path, g.withStorageObjectFileBlob)
 }
 
@@ -171,8 +171,8 @@ type GetDetailResponseData struct {
 // @success 200 {object} handler.SuccessResponse[GetDetailResponseData]
 // @failure 404 {object} handler.ErrorResponse
 // @router /proc/{id}/detail [get]
-func (g *Get) Detail(c echo.Context) error {
-	return g.withResult(func(c echo.Context, r *result) error {
+func (g *Get) Detail(c *echo.Context) error {
+	return g.withResult(func(c *echo.Context, r *result) error {
 		v := GetDetailResponseData{
 			RequestID: r.requestID,
 			Basename:  r.basename,
@@ -200,8 +200,8 @@ func (g *Get) Detail(c echo.Context) error {
 // @success 200 {string} file
 // @failure 404 {object} handler.ErrorResponse
 // @router /proc/{id}/log [get]
-func (g *Get) Log(c echo.Context) error {
-	return g.withResult(func(c echo.Context, r *result) error {
+func (g *Get) Log(c *echo.Context) error {
+	return g.withResult(func(c *echo.Context, r *result) error {
 		if objectID := r.logObjectID; objectID != nil {
 			return g.withStorageObjectFileBlob(*objectID, "text/plain")(c)
 		}
@@ -218,11 +218,11 @@ func (g *Get) Log(c echo.Context) error {
 // @success 200 {object} handler.SuccessResponse[ctl.Config]
 // @failure 404 {object} handler.ErrorResponse
 // @router /proc/{id}/config [get]
-func (g *Get) Config(c echo.Context) error {
-	return g.withResult(func(c echo.Context, r *result) error {
+func (g *Get) Config(c *echo.Context) error {
+	return g.withResult(func(c *echo.Context, r *result) error {
 		if objectID := r.resultObjectID; objectID != nil {
-			return g.withResultObjectFile(*objectID, "application/json", "config.yml", func(id int, _ string) func(echo.Context) error {
-				return g.withStorageObjectFile(id, func(c echo.Context, r repo.ReadObjectResponse) error {
+			return g.withResultObjectFile(*objectID, "application/json", "config.yml", func(id int, _ string) func(*echo.Context) error {
+				return g.withStorageObjectFile(id, func(c *echo.Context, r repo.ReadObjectResponse) error {
 					stor, _ := r.Storage()
 					buf, err := io.ReadAll(stor.Blob)
 					if err != nil {
@@ -250,8 +250,8 @@ func (g *Get) Config(c echo.Context) error {
 // @success 200 {string} file
 // @failure 404 {object} handler.ErrorResponse
 // @router /proc/{id}/musicxml [get]
-func (g *Get) MusicXML(c echo.Context) error {
-	return g.withResult(func(c echo.Context, r *result) error {
+func (g *Get) MusicXML(c *echo.Context) error {
+	return g.withResult(func(c *echo.Context, r *result) error {
 		if objectID := r.resultObjectID; objectID != nil {
 			c.Response().Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s.musicxml"`, r.basename))
 			return g.withResultObjectFileBlob(*objectID, "application/vnd.recordare.musicxml+xml", r.basename+".musicxml")(c)
@@ -268,8 +268,8 @@ func (g *Get) MusicXML(c echo.Context) error {
 // @success 200 {string} file
 // @failure 404 {object} handler.ErrorResponse
 // @router /proc/{id}/wav [get]
-func (g *Get) Wav(c echo.Context) error {
-	return g.withResult(func(c echo.Context, r *result) error {
+func (g *Get) Wav(c *echo.Context) error {
+	return g.withResult(func(c *echo.Context, r *result) error {
 		if objectID := r.resultObjectID; objectID != nil {
 			c.Response().Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s.wav"`, r.basename))
 			return g.withResultObjectFileBlob(*objectID, "audio/wav", r.basename+".wav")(c)
