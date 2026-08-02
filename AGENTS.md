@@ -38,6 +38,7 @@ Use the `./task` runner for running standardized commands based on the scenario:
 | **Updating Go Module Dependencies** | `./task tidy` | Runs `go mod tidy` for both root and `tools/` modules. |
 | **Initial Project Setup / Environment Config** | `./task init` | Generates `.envrc.github` and initializes local environment variables. |
 | **Deploying Local Kubernetes (Kind)** | `./task k8s` | Reloads Kind cluster, loads Docker images, and deploys via Helm. |
+| **Stopping Local Kubernetes & Worker** | `./task k8s:stop` | Tears down local Kind cluster and stops background worker processes. |
 | **Reloading K8s Worker Process** | `./task run:reload-k8s-worker` | Rebuilds CLI/Worker and restarts background K8s worker process. |
 | **Provisioning NEUTRINO Engine & Singers** | `./task ansible` | Downloads and installs NEUTRINO binaries and singer voice models via Ansible. |
 | **Cleaning Generated Files / Tools** | `./task gen:clean` | Removes generated Go files (`*_generated.go`) and binary tool caches. |
