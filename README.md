@@ -54,7 +54,7 @@ Deploy local Kind Kubernetes cluster with Server, UI, Worker, MySQL, Redis, and 
 ```
 
 Once running, access:
-- **Web UI:** [http://localhost:9201/](http://localhost:9201/)
+- **Web UI (Kind):** [http://localhost:3000/](http://localhost:3000/)
 - **Swagger API Docs:** [http://localhost:9101/v1/swagger/index.html](http://localhost:9101/v1/swagger/index.html)
 
 #### Stop Services
