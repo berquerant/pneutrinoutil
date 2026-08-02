@@ -34,5 +34,5 @@ Flags:
       --smoothPitch float32          [0, 100]%
       --styleShift int               change the key and estimate to change the style of singing
       --thread int                   number of parallel in session (default 4)
-  -w, --workDir string               working directory; $HOME/.pneutrinoutil or .pneutrinoutil if no $HOME (default "/Users/sin/.pneutrinoutil")
+  -w, --workDir string               working directory; $HOME/.pneutrinoutil or .pneutrinoutil if no $HOME
 ```
