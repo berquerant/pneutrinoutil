@@ -46,6 +46,21 @@ jobs:
       - name: Build
         run: ./task build:images
 
+  unit-test:
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+      - name: Setup Go
+        uses: ./.github/actions/setup-go
+      - name: Run Unit Test
+        run: SKIP_DEPLOY=true ./task test:unit
+
   test:
     timeout-minutes: 30
     permissions:
@@ -76,12 +91,6 @@ jobs:
         run: ./bin/lima.sh start
         env:
           TARGET_REF: ${{ github.event_name == 'push' && github.ref_name || github.head_ref }}
-      - name: Run Unit Test
-        run: ./bin/lima.sh run ./task test:unit
-      - name: Set SKIP_BUILD=true
-        run: ./bin/lima.sh run 'echo "export SKIP_BUILD=true" >> .envrc'
-      - name: Set SKIP_RELOAD_CLUSTER=true
-        run: ./bin/lima.sh run 'echo "export SKIP_RELOAD_CLUSTER=true" >> .envrc'
       - name: Run E2E Test
         run: ./bin/lima.sh run ./task test:e2e
 
@@ -178,7 +187,7 @@ jobs:
   create-tag:
     name: Create Git Tag from VERSION
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [build-binaries, test, lint, govulncheck]
+    needs: [build-binaries, unit-test, test, lint, govulncheck]
     runs-on: ubuntu-latest
     permissions:
       contents: write
