@@ -30,7 +30,8 @@ ignore:
   - ui/app/api/client
   - "**/*/*_generated.go"
   - .log
-  - .mypy_cache
+  - .ruff_cache
+  - "**/__pycache__"
   - .ropeproject
   - tmp
   - .DS_Store

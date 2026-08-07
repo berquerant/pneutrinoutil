@@ -15,6 +15,7 @@ import (
 	"github.com/berquerant/pneutrinoutil/cli/task"
 	"github.com/berquerant/pneutrinoutil/pkg/logx"
 	"github.com/berquerant/pneutrinoutil/pkg/pathx"
+	"github.com/berquerant/pneutrinoutil/pkg/version"
 	"github.com/spf13/cobra"
 )
 
@@ -29,6 +30,7 @@ var (
 )
 
 func InitFlags(cmd *cobra.Command) {
+	cmd.Flags().Bool("version", false, "print version")
 	cmd.PersistentFlags().Bool("debug", false, "enable debug")
 	cmd.PersistentFlags().StringP(
 		"workDir", "w",
@@ -64,6 +66,10 @@ var rootCmd = &cobra.Command{
 e.g.
 pneutrinoutil --neutrinoDir /path/to/NEUTRINO --workDir /path/to/install-result --score /path/to/some.musicxml`,
 	PersistentPreRun: func(cmd *cobra.Command, _ []string) {
+		if v, _ := cmd.Flags().GetBool("version"); v {
+			version.Write(os.Stdout)
+			os.Exit(0)
+		}
 		debugEnabled, _ := cmd.Flags().GetBool("debug")
 		logLevel := slog.LevelInfo
 		if debugEnabled {
