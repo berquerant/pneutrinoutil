@@ -1,0 +1,39 @@
+name: Bump Version PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Target version number to bump (e.g., 0.10.0 or v0.10.0)'
+        required: true
+        type: string
+
+permissions: {}
+
+jobs:
+  bump-version:
+    name: Bump Version & Create PR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Set env vars
+        uses: ./.github/actions/setup-env
+      - name: Setup Go environment
+        uses: ./.github/actions/setup-go
+      - name: Setup Python
+        uses: ./.github/actions/setup-python
+      - name: Regenerate Swagger & API docs
+        run: |
+          ./task gen:swag
+      - name: Run version bump script and create PR
+        run: |
+          uv run python3 ./bin/bump-version.py "$VERSION" --create-pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ inputs.version }}

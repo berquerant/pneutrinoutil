@@ -17,11 +17,13 @@ import (
 	"time"
 
 	"github.com/berquerant/pneutrinoutil/pkg/logx"
+	"github.com/berquerant/pneutrinoutil/pkg/version"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 )
 
 func init() {
+	rootCmd.Flags().Bool("version", false, "print version")
 	rootCmd.Flags().String("server", os.Getenv("SERVER_URI"), "pneutrinoutil-server URI")
 	rootCmd.Flags().StringP("content", "c", "dummy musicxml by gendata", "musicxml content; @filename is available")
 }
@@ -30,6 +32,12 @@ var rootCmd = &cobra.Command{
 	Use:   "gendata",
 	Short: "generate artifacts",
 	Long:  `generate artifacts. read basenames from stdin`,
+	PersistentPreRun: func(cmd *cobra.Command, _ []string) {
+		if v, _ := cmd.Flags().GetBool("version"); v {
+			version.Write(os.Stdout)
+			os.Exit(0)
+		}
+	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx, stop := signal.NotifyContext(cmd.Context(), os.Interrupt)
 		defer stop()

@@ -193,3 +193,33 @@ jobs:
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
+
+  create-tag:
+    name: Create Git Tag from VERSION
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [build-binaries, test, lint, govulncheck]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Create and Push Tag
+        run: |
+          VERSION=$(cat VERSION | tr -d ' \n\r')
+          TAG_NAME="v${VERSION}"
+          echo "Checking tag ${TAG_NAME}..."
+          git fetch --tags || true
+          if git rev-parse "${TAG_NAME}" >/dev/null 2>&1 || git ls-remote --tags origin "refs/tags/${TAG_NAME}" | grep -q "${TAG_NAME}"; then
+            echo "Tag ${TAG_NAME} already exists. Skipping tag creation."
+          else
+            echo "Creating and pushing tag ${TAG_NAME}..."
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git tag -a "${TAG_NAME}" -m "Release ${TAG_NAME}"
+            git push origin "${TAG_NAME}"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
