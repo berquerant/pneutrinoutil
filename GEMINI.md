@@ -31,13 +31,12 @@ The infrastructure is managed using Docker and Docker Compose. It consists of th
 The project uses a `Taskfile.yml` to define common development tasks. The following are some of the most important commands:
 
 *   **`./task build`**: Build all the project's binaries.
-*   **`./task start`**: Start all the services (server, UI, and worker).
-*   **`./task stop`**: Stop all the services.
-*   **`./task test`**: Run the unit tests.
-*   **`./task e2e`**: Run the end-to-end tests.
+*   **`./task k8s`**: Deploy local Kubernetes (Kind) with all services.
+*   **`./task k8s:stop`**: Stop and remove local Kubernetes (Kind) cluster.
+*   **`./task test`**: Run tests.
 *   **`./task lint`**: Run the linters.
 
-The web UI is available at `http://localhost:9201/` and the Swagger API documentation is at `http://localhost:9101/v1/swagger/index.html`.
+The web UI is available at `http://localhost:3000/` (or `http://localhost:9201/` when running `pnpm dev`) and the Swagger API documentation is at `http://localhost:9101/v1/swagger/index.html`.
 
 ## Development Conventions
 

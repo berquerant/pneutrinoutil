@@ -8,6 +8,8 @@ excludeFiles:
   - "^.*_test\\.go$"
   - "^.*\/test\/.*$"
   - "\\.venv/"
+  - ".*/ui/node_modules/.*"
+  - ".*/\\.pnpm-store/.*"
 
 vendors:
   shellescape:
@@ -35,7 +37,7 @@ vendors:
   testify:
     in: github.com/stretchr/testify
   swagger:
-    in: github.com/swaggo/*
+    in: github.com/swaggo/**
   toml:
     in: github.com/BurntSushi/toml
   golangx:

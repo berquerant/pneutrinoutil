@@ -45,7 +45,7 @@ Flags:
       --supportModel string          support singer (NEUTRINO v3)
       --thread int                   number of parallel in session (default 4)
       --transpose int                change the key and estimate (NEUTRINO v3)
-  -w, --workDir string               working directory; $HOME/.pneutrinoutil or .pneutrinoutil if no $HOME (default "/Users/sin/.pneutrinoutil")
+  -w, --workDir string               working directory; $HOME/.pneutrinoutil or .pneutrinoutil if no $HOME
 
 Use "pneutrinoutil [command] --help" for more information about a command.
 ```

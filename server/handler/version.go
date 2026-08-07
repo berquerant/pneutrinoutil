@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/berquerant/pneutrinoutil/pkg/version"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 )
 
 // Get server version.
@@ -14,7 +14,7 @@ import (
 // @produce json
 // @success 200 {object} handler.SuccessResponse[VersionResponseData]
 // @router /version [get]
-func Version(c echo.Context) error {
+func Version(c *echo.Context) error {
 	return Success(c, http.StatusOK, VersionResponseData{
 		Version:  version.Version,
 		Revision: version.Revision,
