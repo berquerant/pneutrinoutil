@@ -18,7 +18,7 @@ import (
 )
 
 // @title pneutrinoutil API
-// @version 1.0
+// @version 0.10.0
 // @description pneutrinoutil http server
 // @host localhost:9101
 // @basePath /v1
