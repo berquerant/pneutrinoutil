@@ -53,6 +53,18 @@
       "matchStrings": [
         "\"aqua:fe3dback/go-arch-lint\" = \"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
       ]
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "kindest/node",
+      "description": "Manage KIND_NODE_IMAGE version in mise.toml",
+      "fileMatch": [
+        "^mise.toml$"
+      ],
+      "matchStrings": [
+        "KIND_NODE_IMAGE = \"kindest/node:(?<currentValue>v\\d+\\.\\d+\\.\\d+)\""
+      ]
     }
   ],
   "extends": [
