@@ -71,9 +71,13 @@ export CACHEDIR="${vm_cache_dir}"
 export GOCACHE="${go_cache_dir}"
 export GOMODCACHE="${gomod_cache_dir}"
 export DOCKERCACHE="${docker_cache_dir}"
-./task init
-direnv allow
-direnv exec . $@
+if command -v mise >/dev/null 2>&1; then
+    eval "\$(mise hook-env)"
+elif command -v direnv >/dev/null 2>&1; then
+    direnv allow
+    direnv exec . $@
+fi
+$@
 EOS
     chmod +x "$__script"
     limactl copy "$__script" "${name}:/tmp/run.sh"
