@@ -10,7 +10,7 @@ tasks:
       - pnpm run dev
   install:
     cmds:
-      - pnpm i
+      - pnpm i --ignore-scripts --no-frozen-lockfile
   build:
     deps:
       - install
