@@ -25,7 +25,7 @@ package_name() {
 }
 case "$name" in
     task)
-        readonly task_version=3.49.1
+        readonly task_version=3.52.0
         "${d}/setup-task.sh" "$task_version" "$binary"
         ;;
     golangci-lint)
