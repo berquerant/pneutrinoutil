@@ -78,12 +78,11 @@ jobs:
           TARGET_REF: ${{ github.event_name == 'push' && github.ref_name || github.head_ref }}
       - name: Run Unit Test
         run: ./bin/lima.sh run ./task test:unit
-      - name: Set SKIP_BUILD=true
-        run: ./bin/lima.sh run 'echo "export SKIP_BUILD=true" >> .envrc'
-      - name: Set SKIP_RELOAD_CLUSTER=true
-        run: ./bin/lima.sh run 'echo "export SKIP_RELOAD_CLUSTER=true" >> .envrc'
       - name: Run E2E Test
         run: ./bin/lima.sh run ./task test:e2e
+        env:
+          SKIP_BUILD: "true"
+          SKIP_RELOAD_CLUSTER: "true"
 
   # NOTE: Abandoned MySQL 9.6 startup fix on 2026-04
   # Issue: Internal MySQL error claiming errmsg.sys is missing in /usr/share/mysql-9.6/, works locally, but fails on GHA.
