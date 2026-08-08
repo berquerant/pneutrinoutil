@@ -36,7 +36,7 @@ Use the `./task` runner for running standardized commands based on the scenario:
 | **Building Individual Binaries** | `./task build:cli`<br>`./task build:server`<br>`./task build:worker` | Builds specific Go binaries to `dist/`. |
 | **Building All Artifacts & Docker Images** | `./task build` | Builds all Go binaries and Docker images via `docker buildx bake`. |
 | **Updating Go Module Dependencies** | `./task tidy` | Runs `go mod tidy` for both root and `tools/` modules. |
-| **Initial Project Setup / Environment Config** | `./task init` | Generates `.envrc.github` and initializes local environment variables. |
+| **Initial Project Setup / Environment Config** | `./task init` | Initializes local environment variables via `mise`. |
 | **Deploying Local Kubernetes (Kind)** | `./task k8s` | Reloads Kind cluster, loads Docker images, and deploys via Helm. |
 | **Stopping Local Kubernetes & Worker** | `./task k8s:stop` | Tears down local Kind cluster and stops background worker processes. |
 | **Reloading K8s Worker Process** | `./task run:reload-k8s-worker` | Rebuilds CLI/Worker and restarts background K8s worker process. |

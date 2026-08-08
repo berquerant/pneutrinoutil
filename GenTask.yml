@@ -16,9 +16,9 @@ tasks:
       - clean-go-generated
       - clean-tools
   envrc:
-    desc: Generate .envrc.github from setup-env
+    desc: Generate .envrc from mise (environment variables are managed in mise.toml)
     cmds:
-      - ./tools/run.sh yq '.runs.steps[].run' ./.github/actions/setup-env/action.yaml | awk -F= '/.+=.*/ {n=$1; v=substr($0, length(n) + 2); print "export "n"=\""v"\""}' > .envrc.github
+      - echo "Environment variables are managed in mise.toml"
   go-generate:
     desc: Go generate
     cmds:
