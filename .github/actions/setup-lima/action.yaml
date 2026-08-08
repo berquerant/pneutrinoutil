@@ -4,7 +4,7 @@ description: Install Lima
 inputs:
   # https://github.com/lima-vm/lima/releases
   version:
-    default: v2.1.0
+    default: v2.2.0
 runs:
   using: "composite"
   steps:
