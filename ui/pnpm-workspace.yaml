@@ -2,3 +2,7 @@ packages:
   - '.'
 # for pnpm deploy
 injectWorkspacePackages: true
+
+onlyBuiltDependencies:
+  - "@openapitools/openapi-generator-cli"
+  - esbuild

@@ -11,8 +11,8 @@ RUN npm i -g pnpm@$PNPM_VERSION
 WORKDIR /app
 
 FROM base AS build
-COPY ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml /app/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+COPY ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml ./.npmrc* /app/
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 COPY . .
 RUN pnpm run build
 RUN pnpm deploy --filter ui --prod deploy/app
