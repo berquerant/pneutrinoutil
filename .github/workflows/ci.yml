@@ -21,8 +21,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Setup Go
-        uses: ./.github/actions/setup-go
+      - name: Setup mise
+        uses: jdx/mise-action@v2
       - name: Build
         run: ./task build:binaries
 
@@ -36,8 +36,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Setup Go
-        uses: ./.github/actions/setup-go
+      - name: Setup mise
+        uses: jdx/mise-action@v2
       - name: Setup Buildx
         run: |
           docker buildx version
@@ -153,14 +153,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Set env vars
-        uses: ./.github/actions/setup-env
-      - name: Setup Go
-        uses: ./.github/actions/setup-go
-      - name: Setup pnpm
-        uses: ./.github/actions/setup-pnpm
-      - name: Setup Python
-        uses: ./.github/actions/setup-python
+      - name: Setup mise
+        uses: jdx/mise-action@v2
       - name: Lint
         run: ./task lint
 
