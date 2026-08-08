@@ -17,6 +17,11 @@ if [[ -z "$name" ]] ; then
     exit 1
 fi
 shift
+
+if command -v mise >/dev/null 2>&1 && mise which "$name" >/dev/null 2>&1 ; then
+    exec mise exec -- "$name" "$@"
+fi
+
 readonly binary="${bind}/${name}"
 
 readonly mod="${d}/go.mod"

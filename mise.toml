@@ -1,0 +1,61 @@
+# mise configuration for pneutrinoutil
+# https://mise.jdx.dev/
+
+[tools]
+go = "1.26"
+node = "24.18.0"
+pnpm = "11.17.0"
+python = "3.14.3"
+uv = "0.11.3"
+
+# CLI Tools
+golangci-lint = "2.10.1"
+"aqua:fe3dback/go-arch-lint" = "1.14.0"
+shellcheck = "0.11.0"
+ls-lint = "2.3.1"
+kind = "0.31.0"
+kubectl = "1.35.0"
+helm = "4.1.3"
+stern = "1.33.1"
+task = "3.52.0"
+yq = "4.52.5"
+
+[env]
+SERVER_HOST = "127.0.0.1"
+SERVER_PORT = "9101"
+UI_HOST = "127.0.0.1"
+UI_PORT = "3000"
+
+MYSQL_HOST = "127.0.0.1"
+MYSQL_PORT = "3306"
+MYSQL_DATABASE = "pneutrinoutil"
+TEST_MYSQL_DATABASE = "test"
+MYSQL_ROOT_PASSWORD = "rootpass"
+MYSQL_USER = "pneutrinoutil"
+TEST_MYSQL_USER = "test"
+MYSQL_PASSWORD = "userpass"
+TEST_MYSQL_PASSWORD = "test"
+
+REDIS_HOST = "127.0.0.1"
+REDIS_PORT = "6379"
+REDIS_DB = "1"
+TEST_REDIS_DB = "10"
+
+AWS_ACCESS_KEY_ID = "admin"
+AWS_SECRET_ACCESS_KEY = "key"
+AWS_DEFAULT_REGION = "us-east-1"
+AWS_USE_PATH_STYLE_ENDPOINT = "true"
+AWS_S3_DISABLE_HTTPS = "true"
+AWS_ENDPOINT_URL = "http://127.0.0.1:9000"
+STORAGE_BUCKET = "pneutrinoutil"
+TEST_STORAGE_BUCKET = "test"
+STORAGES3 = "true"
+
+KIND_NODE_IMAGE = "kindest/node:v1.35.1"
+
+SERVER_URI = "http://{{env.SERVER_HOST}}:{{env.SERVER_PORT}}/v1"
+EXTERNAL_SERVER_URI = "http://{{env.SERVER_HOST}}:{{env.SERVER_PORT}}/v1"
+MYSQL_DSN = "{{env.MYSQL_USER}}:{{env.MYSQL_PASSWORD}}@tcp({{env.MYSQL_HOST}}:{{env.MYSQL_PORT}})/{{env.MYSQL_DATABASE}}?parseTime=true&loc=Asia%2FTokyo"
+TEST_MYSQL_DSN = "{{env.TEST_MYSQL_USER}}:{{env.TEST_MYSQL_PASSWORD}}@tcp({{env.MYSQL_HOST}}:{{env.MYSQL_PORT}})/{{env.TEST_MYSQL_DATABASE}}?parseTime=true&loc=Asia%2FTokyo"
+REDIS_DSN = "redis://{{env.REDIS_HOST}}:{{env.REDIS_PORT}}/{{env.REDIS_DB}}"
+TEST_REDIS_DSN = "redis://{{env.REDIS_HOST}}:{{env.REDIS_PORT}}/{{env.TEST_REDIS_DB}}"
