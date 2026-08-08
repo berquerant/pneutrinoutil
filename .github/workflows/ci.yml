@@ -22,7 +22,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup mise
-        uses: jdx/mise-action@v2
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2.4.4
       - name: Build
         run: ./task build:binaries
 
@@ -37,7 +37,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup mise
-        uses: jdx/mise-action@v2
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2.4.4
       - name: Setup Buildx
         run: |
           docker buildx version
@@ -154,7 +154,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup mise
-        uses: jdx/mise-action@v2
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2.4.4
       - name: Lint
         run: ./task lint
 
@@ -173,14 +173,17 @@ jobs:
     name: Create Git Tag from VERSION
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [build-binaries, test, lint, govulncheck]
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     permissions:
+      # Write contents to create git tags
       contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
       - name: Create and Push Tag
         run: |
           VERSION=$(cat VERSION | tr -d ' \n\r')

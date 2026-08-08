@@ -13,23 +13,21 @@ permissions: {}
 jobs:
   bump-version:
     name: Bump Version & Create PR
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     permissions:
+      # Write contents to update VERSION and generated files
       contents: write
+      # Create pull requests for version bump
       pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-      - name: Set env vars
-        uses: ./.github/actions/setup-env
-      - name: Setup Go environment
-        uses: ./.github/actions/setup-go
-      - name: Setup Python
-        uses: ./.github/actions/setup-python
-      - name: Setup pnpm
-        uses: ./.github/actions/setup-pnpm
+          persist-credentials: false
+      - name: Setup mise
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2.4.4
       - name: Regenerate Swagger & API docs
         run: |
           ./task gen:swag
