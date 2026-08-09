@@ -1,6 +1,8 @@
 version: '3'
 
 includes:
+  gen:
+    taskfile: GenTask.yml
   k8s:
     taskfile: K8sTask.yml
   build:
@@ -18,14 +20,17 @@ tasks:
       - task: e2e
   unit:
     desc: Run unit tests
+    deps:
+      - gen:ignore-tmp
     cmds:
       - task: k8s:test
         if: '[[ "$SKIP_DEPLOY" != "true" ]]'
       # -race requires CGO_ENABLED=1
-      - TEST=true ./bin/env.sh go test -cover $(go list ./... | grep -v tests) ${DEBUG+-v -count=1}
+      - TEST=true ./bin/env.sh go test -cover $(go list ./... | grep -v tmp | grep -v tests) ${DEBUG+-v -count=1}
   e2e:
     desc: Run E2E tests
     deps:
+      - gen:ignore-tmp
       - build:mockcli
       - build:gendata
     cmds:
@@ -37,7 +42,7 @@ tasks:
       - TEST=true ./bin/env.sh ./bin/k8s-worker.sh stop || true
       - TEST=true ./bin/env.sh ./bin/k8s-worker.sh start
       # -race requires CGO_ENABLED=1
-      - ./bin/env.sh go test -cover $(go list ./... | grep tests) -count=1 ${DEBUG+-v}
+      - ./bin/env.sh go test -cover $(go list ./... | grep -v tmp | grep tests) -count=1 ${DEBUG+-v}
   drop-data:
     deps:
       - drop-redis

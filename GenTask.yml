@@ -8,17 +8,18 @@ includes:
 tasks:
   default:
     cmds:
-      - task: envrc
+      - task: ignore-tmp
       - task: go-generate
       - task: swag
+  ignore-tmp:
+    desc: Ensure tmp/go.mod exists with module ignore
+    cmds:
+      - mkdir -p tmp
+      - test -f tmp/go.mod || echo "module ignore" > tmp/go.mod
   clean:
     deps:
       - clean-go-generated
       - clean-tools
-  envrc:
-    desc: Generate .envrc.github from setup-env
-    cmds:
-      - ./tools/run.sh yq '.runs.steps[].run' ./.github/actions/setup-env/action.yaml | awk -F= '/.+=.*/ {n=$1; v=substr($0, length(n) + 2); print "export "n"=\""v"\""}' > .envrc.github
   go-generate:
     desc: Go generate
     cmds:

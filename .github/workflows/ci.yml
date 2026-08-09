@@ -21,8 +21,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Setup Go
-        uses: ./.github/actions/setup-go
+      - name: Setup mise
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2.4.4
       - name: Build
         run: ./task build:binaries
 
@@ -36,8 +36,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Setup Go
-        uses: ./.github/actions/setup-go
+      - name: Setup mise
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2.4.4
       - name: Setup Buildx
         run: |
           docker buildx version
@@ -78,12 +78,11 @@ jobs:
           TARGET_REF: ${{ github.event_name == 'push' && github.ref_name || github.head_ref }}
       - name: Run Unit Test
         run: ./bin/lima.sh run ./task test:unit
-      - name: Set SKIP_BUILD=true
-        run: ./bin/lima.sh run 'echo "export SKIP_BUILD=true" >> .envrc'
-      - name: Set SKIP_RELOAD_CLUSTER=true
-        run: ./bin/lima.sh run 'echo "export SKIP_RELOAD_CLUSTER=true" >> .envrc'
       - name: Run E2E Test
         run: ./bin/lima.sh run ./task test:e2e
+        env:
+          SKIP_BUILD: "true"
+          SKIP_RELOAD_CLUSTER: "true"
 
   # NOTE: Abandoned MySQL 9.6 startup fix on 2026-04
   # Issue: Internal MySQL error claiming errmsg.sys is missing in /usr/share/mysql-9.6/, works locally, but fails on GHA.
@@ -95,53 +94,7 @@ jobs:
   #   - Running as root/privileged
   #   - Copying messages from init container to main container
   # Potential Cause: Incompatibility between Kind (Docker-in-Docker) and GHA storage driver.
-  # test:
-  #   timeout-minutes: 30
-  #   permissions:
-  #     contents: read
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-  #       with:
-  #         persist-credentials: false
-  #     - name: Set env vars
-  #       uses: ./.github/actions/setup-env
-  #     # - name: Set up Docker
-  #     #   uses: ./.github/actions/setup-docker
-  #     - name: Setup Go
-  #       uses: ./.github/actions/setup-go
-  #     # - name: Create kind cluster
-  #     #   uses: ./.github/actions/setup-cluster
-  #     #   with:
-  #     #     node_image: '${{ env.KIND_NODE_IMAGE }}'
-  #     #     version: '${{ env.KIND_VERSION }}'
-  #     - name: Test
-  #       run: ./task test:unit
 
-  # e2e:
-  #   timeout-minutes: 30
-  #   permissions:
-  #     contents: read
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-  #       with:
-  #         persist-credentials: false
-  #     - name: Set env vars
-  #       uses: ./.github/actions/setup-env
-  #     # - name: Set up Docker
-  #     #   uses: ./.github/actions/setup-docker
-  #     - name: Setup Go
-  #       uses: ./.github/actions/setup-go
-  #     # - name: Create kind cluster
-  #     #   uses: ./.github/actions/setup-cluster
-  #     #   with:
-  #     #     node_image: '${{ env.KIND_NODE_IMAGE }}'
-  #     #     version: '${{ env.KIND_VERSION }}'
-  #     - name: E2E
-  #       run: ./task test:e2e
 
   lint:
     timeout-minutes: 5
@@ -153,14 +106,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Set env vars
-        uses: ./.github/actions/setup-env
-      - name: Setup Go
-        uses: ./.github/actions/setup-go
-      - name: Setup pnpm
-        uses: ./.github/actions/setup-pnpm
-      - name: Setup Python
-        uses: ./.github/actions/setup-python
+      - name: Setup mise
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2.4.4
       - name: Lint
         run: ./task lint
 
@@ -179,14 +126,17 @@ jobs:
     name: Create Git Tag from VERSION
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [build-binaries, test, lint, govulncheck]
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     permissions:
+      # Write contents to create git tags
       contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
       - name: Create and Push Tag
         run: |
           VERSION=$(cat VERSION | tr -d ' \n\r')

@@ -3,20 +3,9 @@
 set -eux -o pipefail
 
 readonly vm_repo_dir="$1"
-readonly uv_version="$2"
-readonly pnpm_version="$3"
-readonly target_ref="$4"
 
 if [[ -z "$vm_repo_dir" ]] ; then
     echo >&2 "vm_repo_dir(arg0) is required"
-    exit 1
-fi
-if [[ -z "$uv_version" ]] ; then
-    echo >&2 "uv_version(arg1) is required"
-    exit 1
-fi
-if [[ -z "$pnpm_version" ]] ; then
-    echo >&2 "pnpm_version(arg2) is required"
     exit 1
 fi
 
@@ -30,50 +19,19 @@ with_tmpd() {
     popd > /dev/null
 }
 
-clone() {
-    git clone https://github.com/berquerant/pneutrinoutil "$repo_dir"
-    if [[ -n "$target_ref" ]] ; then
-        pushd "$repo_dir" > /dev/null
-        git checkout "$target_ref"
-        popd > /dev/null
-    fi
-}
-
-go_version() {
-    grep -E "^go [0-9]+\.[0-9]+\.[0-9]+" "${repo_dir}/go.mod" | awk '{print $2}'
-}
-
-install_go() {
-    # https://go.dev/doc/install#install
-    sudo rm -rf /usr/local/go
-    local -r __dest="go$(go_version).linux-$(arch | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/').tar.gz"
-    local -r __url="https://go.dev/dl/${__dest}"
-    curl -L -s -o "$__dest" "$__url"
-    sudo tar -C /usr/local -xzf "$__dest"
-    echo 'export PATH=$PATH:/usr/local/go/bin' >> "${HOME}/.profile"
-}
-
-install_uv() {
-    # https://github.com/astral-sh/uv
-    curl -LsSf "https://astral.sh/uv/${uv_version}/install.sh" | sh
-}
-
-install_pnpm() {
-    # https://pnpm.io/installation
-    curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION="$pnpm_version" sh -
-}
-
-install_direnv() {
-    # https://direnv.net/docs/installation.html
-    sudo apt update
-    sudo apt install -y direnv
-    echo 'eval "$(direnv hook bash)"' >> "${HOME}/.profile"
+install_mise() {
+    curl https://mise.run | sh
+    echo 'export PATH="${HOME}/.local/bin:${PATH}"' >> "${HOME}/.profile"
+    echo 'export PATH="${HOME}/.local/bin:${PATH}"' >> "${HOME}/.bashrc"
+    echo 'eval "$(~/.local/bin/mise activate bash)"' >> "${HOME}/.profile"
+    echo 'eval "$(~/.local/bin/mise activate bash)"' >> "${HOME}/.bashrc"
+    "${HOME}/.local/bin/mise" settings set yes true || true
 }
 
 install_awscli() {
     # https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
     sudo apt update
-    sudo apt install -y unzip
+    sudo apt install -y unzip gpg
     curl "https://awscli.amazonaws.com/awscli-exe-linux-$(arch).zip" -o "awscliv2.zip"
     local -r __public_key="awscli.public-key"
     cat <<EOS > "$__public_key"
@@ -111,12 +69,11 @@ EOS
     curl -o awscliv2.sig "https://awscli.amazonaws.com/awscli-exe-linux-$(arch).zip.sig"
     gpg --verify awscliv2.sig awscliv2.zip
     unzip -q awscliv2.zip
-    sudo ./aws/install
+    sudo ./aws/install --update
 }
 
-clone
-with_tmpd install_go
-with_tmpd install_uv
-with_tmpd install_pnpm
-with_tmpd install_direnv
+# Prepare repo directory
+mkdir -p "$repo_dir"
+
+install_mise
 with_tmpd install_awscli

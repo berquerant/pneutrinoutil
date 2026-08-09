@@ -4,7 +4,6 @@ bin/tools/
 tmp/
 .log/
 .venv/
-.envrc.github
 .pnpm-store/
 .ruff_cache/
 __pycache__/

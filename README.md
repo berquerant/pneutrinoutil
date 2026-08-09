@@ -8,11 +8,8 @@ Provides a Command Line Interface (CLI), REST API server, background job worker,
 
 ## Requirements
 
-- macOS
-- Go
-- [pnpm](https://github.com/pnpm/pnpm)
-- [uv](https://github.com/astral-sh/uv)
-- [direnv](https://github.com/direnv/direnv)
+- macOS (or Linux)
+- [mise](https://github.com/jdx/mise) (polyglot dev tool & environment manager)
 - Docker
 - AWS CLI
 
@@ -22,9 +19,10 @@ Provides a Command Line Interface (CLI), REST API server, background job worker,
 
 ## Setup & Provisioning
 
-### 1. Initial Environment Setup
+### 1. Initial Environment & Tools Setup
+Install all required runtime versions (Go, Node.js, Python, uv, pnpm) and development CLI tools (`golangci-lint`, `kubectl`, `helm`, `kind`, `task`, `yq` etc.) defined in [`mise.toml`](./mise.toml):
 ```shell
-./task init
+mise install
 ```
 
 ### 2. Download NEUTRINO & Singer Voice Models

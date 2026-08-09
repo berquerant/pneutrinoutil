@@ -3,6 +3,16 @@ packages:
 # for pnpm deploy
 injectWorkspacePackages: true
 
-onlyBuiltDependencies:
-  - "@openapitools/openapi-generator-cli"
-  - esbuild
+allowBuilds:
+  '@openapitools/openapi-generator-cli': true
+  esbuild: true
+
+supportedArchitectures:
+  os:
+    - current
+    - darwin
+    - linux
+  cpu:
+    - current
+    - x64
+    - arm64

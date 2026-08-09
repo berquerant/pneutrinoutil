@@ -31,7 +31,7 @@ tasks:
   #     - ./bin/mockdata.sh {{.CLI_ARGS}}
   init:
     deps:
-      - gen:envrc
+      - gen:ignore-tmp
   tidy:
     desc: go mod tidy
     cmds:
