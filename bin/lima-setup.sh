@@ -20,15 +20,6 @@ with_tmpd() {
     popd > /dev/null
 }
 
-clone() {
-    git clone https://github.com/berquerant/pneutrinoutil "$repo_dir"
-    if [[ -n "$target_ref" ]] ; then
-        pushd "$repo_dir" > /dev/null
-        git checkout "$target_ref"
-        popd > /dev/null
-    fi
-}
-
 install_mise() {
     curl https://mise.run | sh
     echo 'export PATH="${HOME}/.local/bin:${PATH}"' >> "${HOME}/.profile"
@@ -36,12 +27,6 @@ install_mise() {
     echo 'eval "$(~/.local/bin/mise activate bash)"' >> "${HOME}/.profile"
     echo 'eval "$(~/.local/bin/mise activate bash)"' >> "${HOME}/.bashrc"
     "${HOME}/.local/bin/mise" settings set yes true || true
-}
-
-setup_repo_tools() {
-    pushd "$repo_dir" > /dev/null
-    ~/.local/bin/mise install
-    popd > /dev/null
 }
 
 install_awscli() {
@@ -88,7 +73,8 @@ EOS
     sudo ./aws/install
 }
 
-clone
+# Prepare repo directory
+mkdir -p "$repo_dir"
+
 install_mise
-setup_repo_tools
 with_tmpd install_awscli
