@@ -9,8 +9,14 @@ tasks:
   default:
     cmds:
       - task: envrc
+      - task: ignore-tmp
       - task: go-generate
       - task: swag
+  ignore-tmp:
+    desc: Ensure tmp/go.mod exists with module ignore
+    cmds:
+      - mkdir -p tmp
+      - test -f tmp/go.mod || echo "module ignore" > tmp/go.mod
   clean:
     deps:
       - clean-go-generated

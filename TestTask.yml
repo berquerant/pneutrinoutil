@@ -1,6 +1,8 @@
 version: '3'
 
 includes:
+  gen:
+    taskfile: GenTask.yml
   k8s:
     taskfile: K8sTask.yml
   build:
@@ -18,6 +20,8 @@ tasks:
       - task: e2e
   unit:
     desc: Run unit tests
+    deps:
+      - gen:ignore-tmp
     cmds:
       - task: k8s:test
         if: '[[ "$SKIP_DEPLOY" != "true" ]]'
@@ -26,6 +30,7 @@ tasks:
   e2e:
     desc: Run E2E tests
     deps:
+      - gen:ignore-tmp
       - build:mockcli
       - build:gendata
     cmds:

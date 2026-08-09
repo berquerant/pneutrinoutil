@@ -32,6 +32,7 @@ tasks:
   init:
     deps:
       - gen:envrc
+      - gen:ignore-tmp
   tidy:
     desc: go mod tidy
     cmds:
