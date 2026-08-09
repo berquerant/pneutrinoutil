@@ -7,6 +7,7 @@ allow:
 excludeFiles:
   - "^.*_test\\.go$"
   - "^.*\/test\/.*$"
+  - ".*tmp.*"
   - "\\.venv/"
   - ".*/ui/node_modules/.*"
   - ".*/\\.pnpm-store/.*"

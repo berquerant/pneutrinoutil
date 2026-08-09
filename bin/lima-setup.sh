@@ -3,7 +3,6 @@
 set -eux -o pipefail
 
 readonly vm_repo_dir="$1"
-readonly target_ref="${2:-}"
 
 if [[ -z "$vm_repo_dir" ]] ; then
     echo >&2 "vm_repo_dir(arg0) is required"
