@@ -76,10 +76,13 @@ ${SKIP_DEPLOY+export SKIP_DEPLOY="${SKIP_DEPLOY}"}
 export PATH="${HOME}/.local/bin:${PATH}"
 if command -v mise >/dev/null 2>&1; then
     eval "\$(mise hook-env)"
+    exec mise exec -- "$@"
 elif [ -x "\${HOME}/.local/bin/mise" ]; then
     eval "\$(\${HOME}/.local/bin/mise hook-env)"
+    exec "\${HOME}/.local/bin/mise" exec -- "$@"
+else
+    exec "$@"
 fi
-$@
 EOS
     chmod +x "$__script"
     limactl copy "$__script" "${name}:/tmp/run.sh"

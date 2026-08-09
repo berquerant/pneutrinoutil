@@ -22,8 +22,20 @@ ldflags() {
     echo "-X ${version_package}.Version=$(current_tag) -X ${version_package}.Revision=$(short_sha) -X ${version_package}.BuildDate=$(build_date)"
 }
 
+go_bin() {
+    if command -v go >/dev/null 2>&1; then
+        echo "go"
+    elif command -v mise >/dev/null 2>&1; then
+        echo "mise exec -- go"
+    elif [ -x "${HOME}/.local/bin/mise" ]; then
+        echo "${HOME}/.local/bin/mise exec -- go"
+    else
+        echo "go"
+    fi
+}
+
 build() {
-    go build -v -trimpath -ldflags "$(ldflags)" "$@"
+    $(go_bin) build -v -trimpath -ldflags "$(ldflags)" "$@"
 }
 
 build "$@"

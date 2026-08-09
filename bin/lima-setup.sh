@@ -31,6 +31,8 @@ clone() {
 
 install_mise() {
     curl https://mise.run | sh
+    echo 'export PATH="${HOME}/.local/bin:${PATH}"' >> "${HOME}/.profile"
+    echo 'export PATH="${HOME}/.local/bin:${PATH}"' >> "${HOME}/.bashrc"
     echo 'eval "$(~/.local/bin/mise activate bash)"' >> "${HOME}/.profile"
     echo 'eval "$(~/.local/bin/mise activate bash)"' >> "${HOME}/.bashrc"
 }
