@@ -16,6 +16,9 @@ readonly vm_cache_dir="${VM_CACHE_DIR:-/tmp/cache}"
 readonly go_cache_dir="${vm_cache_dir}/go/cache"
 readonly gomod_cache_dir="${vm_cache_dir}/go/modcache"
 readonly docker_cache_dir="${vm_cache_dir}/docker"
+readonly pnpm_cache_dir="${vm_cache_dir}/pnpm"
+readonly uv_cache_dir="${vm_cache_dir}/uv"
+readonly mise_cache_dir="${vm_cache_dir}/mise"
 
 start() {
     if limactl list --json 2>/dev/null | grep -q "\"name\":\"${name}\""; then
@@ -64,7 +67,6 @@ run() {
     local __archive="${d}/../tmp/pneutrinoutil-src.tar.gz"
     COPYFILE_DISABLE=1 tar --exclude='.git' --exclude='node_modules' --exclude='.venv' --exclude='dist' --exclude='tmp' --exclude='._*' --exclude='*/._*' -czf "$__archive" -C "$d/.." .
     limactl copy "$__archive" "${name}:/tmp/pneutrinoutil-src.tar.gz"
-    limactl shell "$name" rm -rf "$vm_repo_dir"
     limactl shell "$name" mkdir -p "$vm_repo_dir"
     limactl shell "$name" tar -xzf /tmp/pneutrinoutil-src.tar.gz -C "$vm_repo_dir"
     limactl shell "$name" find "$vm_repo_dir" -name "._*" -delete
@@ -80,6 +82,12 @@ export CACHEDIR="${vm_cache_dir}"
 export GOCACHE="${go_cache_dir}"
 export GOMODCACHE="${gomod_cache_dir}"
 export DOCKERCACHE="${docker_cache_dir}"
+export PNPM_HOME="${pnpm_cache_dir}"
+export PNPM_STORE_PATH="${pnpm_cache_dir}/store"
+export UV_CACHE_DIR="${uv_cache_dir}"
+export PIP_CACHE_DIR="${vm_cache_dir}/pip"
+export MISE_DATA_DIR="${mise_cache_dir}/data"
+export MISE_CACHE_DIR="${mise_cache_dir}/cache"
 \${SKIP_BUILD+export SKIP_BUILD="\${SKIP_BUILD}"}
 \${SKIP_RELOAD_CLUSTER+export SKIP_RELOAD_CLUSTER="\${SKIP_RELOAD_CLUSTER}"}
 \${SKIP_DEPLOY+export SKIP_DEPLOY="\${SKIP_DEPLOY}"}
