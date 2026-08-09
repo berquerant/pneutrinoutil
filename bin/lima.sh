@@ -60,8 +60,18 @@ ssh() {
 }
 
 run() {
+    mkdir -p "${d}/../tmp"
+    local __archive="${d}/../tmp/pneutrinoutil-src.tar.gz"
+    COPYFILE_DISABLE=1 tar --exclude='.git' --exclude='node_modules' --exclude='dist' --exclude='tmp' --exclude='._*' --exclude='*/._*' -czf "$__archive" -C "$d/.." .
+    limactl copy "$__archive" "${name}:/tmp/pneutrinoutil-src.tar.gz"
+    limactl shell "$name" rm -rf "$vm_repo_dir"
+    limactl shell "$name" mkdir -p "$vm_repo_dir"
+    limactl shell "$name" tar -xzf /tmp/pneutrinoutil-src.tar.gz -C "$vm_repo_dir"
+    limactl shell "$name" find "$vm_repo_dir" -name "._*" -delete
+    limactl shell "$name" bash -c "cd $vm_repo_dir && export PATH=\${HOME}/.local/bin:\${PATH} && ~/.local/bin/mise trust --all 2>/dev/null || true && ~/.local/bin/mise install"
+
     local __script
-    __script="$(mktemp)"
+    __script="$(mktemp "${d}/../tmp/run.XXXXXX")"
     cat <<EOS > "$__script"
 #!/bin/bash
 set -ex
@@ -70,22 +80,23 @@ export CACHEDIR="${vm_cache_dir}"
 export GOCACHE="${go_cache_dir}"
 export GOMODCACHE="${gomod_cache_dir}"
 export DOCKERCACHE="${docker_cache_dir}"
-${SKIP_BUILD+export SKIP_BUILD="${SKIP_BUILD}"}
-${SKIP_RELOAD_CLUSTER+export SKIP_RELOAD_CLUSTER="${SKIP_RELOAD_CLUSTER}"}
-${SKIP_DEPLOY+export SKIP_DEPLOY="${SKIP_DEPLOY}"}
-export PATH="${HOME}/.local/bin:${PATH}"
-if command -v mise >/dev/null 2>&1; then
+\${SKIP_BUILD+export SKIP_BUILD="\${SKIP_BUILD}"}
+\${SKIP_RELOAD_CLUSTER+export SKIP_RELOAD_CLUSTER="\${SKIP_RELOAD_CLUSTER}"}
+\${SKIP_DEPLOY+export SKIP_DEPLOY="\${SKIP_DEPLOY}"}
+export PATH="\$HOME/.local/bin:\$PATH"
+if [ -x "\$HOME/.local/bin/mise" ]; then
+    eval "\$(\$HOME/.local/bin/mise hook-env)"
+    exec \$HOME/.local/bin/mise exec -- "\$@"
+elif command -v mise >/dev/null 2>&1; then
     eval "\$(mise hook-env)"
     exec mise exec -- "\$@"
-elif [ -x "\${HOME}/.local/bin/mise" ]; then
-    eval "\$(\${HOME}/.local/bin/mise hook-env)"
-    exec "\${HOME}/.local/bin/mise" exec -- "\$@"
 else
     exec "\$@"
 fi
 EOS
     chmod +x "$__script"
     limactl copy "$__script" "${name}:/tmp/run.sh"
+    rm -f "$__script"
     exec limactl shell "$name" /tmp/run.sh "$@"
 }
 

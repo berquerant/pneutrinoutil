@@ -35,6 +35,7 @@ install_mise() {
     echo 'export PATH="${HOME}/.local/bin:${PATH}"' >> "${HOME}/.bashrc"
     echo 'eval "$(~/.local/bin/mise activate bash)"' >> "${HOME}/.profile"
     echo 'eval "$(~/.local/bin/mise activate bash)"' >> "${HOME}/.bashrc"
+    "${HOME}/.local/bin/mise" settings set yes true || true
 }
 
 setup_repo_tools() {

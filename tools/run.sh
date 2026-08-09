@@ -18,8 +18,10 @@ if [[ -z "$name" ]] ; then
 fi
 shift
 
-if command -v mise >/dev/null 2>&1 && mise which "$name" >/dev/null 2>&1 ; then
+if command -v mise >/dev/null 2>&1 ; then
     exec mise exec -- "$name" "$@"
+elif [ -x "${HOME}/.local/bin/mise" ]; then
+    exec "${HOME}/.local/bin/mise" exec -- "$name" "$@"
 fi
 
 exec "$name" "$@"
