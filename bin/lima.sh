@@ -80,14 +80,11 @@ set -ex
 cd "$vm_repo_dir"
 export CACHEDIR="${vm_cache_dir}"
 export GOCACHE="${go_cache_dir}"
-export GOMODCACHE="${gomod_cache_dir}"
 export DOCKERCACHE="${docker_cache_dir}"
 export PNPM_HOME="${pnpm_cache_dir}"
 export PNPM_STORE_PATH="${pnpm_cache_dir}/store"
 export UV_CACHE_DIR="${uv_cache_dir}"
 export PIP_CACHE_DIR="${vm_cache_dir}/pip"
-export MISE_DATA_DIR="${mise_cache_dir}/data"
-export MISE_CACHE_DIR="${mise_cache_dir}/cache"
 \${SKIP_BUILD+export SKIP_BUILD="\${SKIP_BUILD}"}
 \${SKIP_RELOAD_CLUSTER+export SKIP_RELOAD_CLUSTER="\${SKIP_RELOAD_CLUSTER}"}
 \${SKIP_DEPLOY+export SKIP_DEPLOY="\${SKIP_DEPLOY}"}
