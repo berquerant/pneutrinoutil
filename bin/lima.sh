@@ -71,11 +71,11 @@ export CACHEDIR="${vm_cache_dir}"
 export GOCACHE="${go_cache_dir}"
 export GOMODCACHE="${gomod_cache_dir}"
 export DOCKERCACHE="${docker_cache_dir}"
+${SKIP_BUILD+export SKIP_BUILD="${SKIP_BUILD}"}
+${SKIP_RELOAD_CLUSTER+export SKIP_RELOAD_CLUSTER="${SKIP_RELOAD_CLUSTER}"}
+${SKIP_DEPLOY+export SKIP_DEPLOY="${SKIP_DEPLOY}"}
 if command -v mise >/dev/null 2>&1; then
     eval "\$(mise hook-env)"
-elif command -v direnv >/dev/null 2>&1; then
-    direnv allow
-    direnv exec . $@
 fi
 $@
 EOS
