@@ -8,7 +8,6 @@ includes:
 tasks:
   default:
     cmds:
-      - task: envrc
       - task: ignore-tmp
       - task: go-generate
       - task: swag
@@ -21,10 +20,6 @@ tasks:
     deps:
       - clean-go-generated
       - clean-tools
-  envrc:
-    desc: Generate .envrc from mise (environment variables are managed in mise.toml)
-    cmds:
-      - echo "Environment variables are managed in mise.toml"
   go-generate:
     desc: Go generate
     cmds:
