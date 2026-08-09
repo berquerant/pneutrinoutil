@@ -7,26 +7,12 @@
     {
       "customType": "regex",
       "datasourceTemplate": "github-releases",
-      "depNameTemplate": "astral-sh/uv",
-      "description": "Manage uv version in bin/lima.sh",
-      "fileMatch": [
-        "^bin/lima.sh$"
-      ],
-      "matchStrings": [
-        "uv_version=(?<currentValue>\\d+\\.\\d+\\.\\d+)"
-      ]
-    },
-    {
-      "customType": "regex",
-      "datasourceTemplate": "github-releases",
       "depNameTemplate": "pnpm/pnpm",
-      "description": "Manage pnpm version in bin/lima.sh and ui/Dockerfile",
+      "description": "Manage pnpm version in ui/Dockerfile",
       "fileMatch": [
-        "^bin/lima.sh$",
         "^ui/Dockerfile$"
       ],
       "matchStrings": [
-        "pnpm_version=(?<currentValue>\\d+\\.\\d+\\.\\d+)",
         "PNPM_VERSION=(?<currentValue>\\d+\\.\\d+\\.\\d+)"
       ]
     },

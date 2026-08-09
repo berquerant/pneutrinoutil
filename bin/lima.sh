@@ -3,9 +3,6 @@
 readonly d="$(cd "$(dirname "$0")" || exit 1; pwd)"
 readonly name="pneutrinoutil"
 
-readonly uv_version=0.11.32
-readonly pnpm_version=10.33.0
-
 readonly vm_repo_dir="pneutrinoutil"
 
 readonly target_ref="${TARGET_REF}"
@@ -41,8 +38,6 @@ EOS
     limactl copy "${d}/lima-setup.sh" "${name}:/tmp/"
     limactl shell "$name" /tmp/lima-setup.sh \
             "${vm_repo_dir}" \
-            "${uv_version}" \
-            "${pnpm_version}" \
             "${target_ref}"
 }
 
