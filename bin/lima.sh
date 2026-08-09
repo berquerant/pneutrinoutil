@@ -62,7 +62,7 @@ ssh() {
 run() {
     mkdir -p "${d}/../tmp"
     local __archive="${d}/../tmp/pneutrinoutil-src.tar.gz"
-    COPYFILE_DISABLE=1 tar --exclude='.git' --exclude='node_modules' --exclude='dist' --exclude='tmp' --exclude='._*' --exclude='*/._*' -czf "$__archive" -C "$d/.." .
+    COPYFILE_DISABLE=1 tar --exclude='.git' --exclude='node_modules' --exclude='.venv' --exclude='dist' --exclude='tmp' --exclude='._*' --exclude='*/._*' -czf "$__archive" -C "$d/.." .
     limactl copy "$__archive" "${name}:/tmp/pneutrinoutil-src.tar.gz"
     limactl shell "$name" rm -rf "$vm_repo_dir"
     limactl shell "$name" mkdir -p "$vm_repo_dir"

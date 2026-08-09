@@ -69,7 +69,7 @@ EOS
     curl -o awscliv2.sig "https://awscli.amazonaws.com/awscli-exe-linux-$(arch).zip.sig"
     gpg --verify awscliv2.sig awscliv2.zip
     unzip -q awscliv2.zip
-    sudo ./aws/install
+    sudo ./aws/install --update
 }
 
 # Prepare repo directory

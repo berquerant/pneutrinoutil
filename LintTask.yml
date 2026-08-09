@@ -45,4 +45,4 @@ tasks:
       - ./tools/run.sh ls-lint
   yamllint:
     cmds:
-      - uv run yamllint .
+      - ./tools/run.sh uv run yamllint .
