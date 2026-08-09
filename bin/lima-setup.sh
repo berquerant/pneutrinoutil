@@ -32,6 +32,7 @@ clone() {
 install_mise() {
     curl https://mise.run | sh
     echo 'eval "$(~/.local/bin/mise activate bash)"' >> "${HOME}/.profile"
+    echo 'eval "$(~/.local/bin/mise activate bash)"' >> "${HOME}/.bashrc"
 }
 
 setup_repo_tools() {

@@ -18,21 +18,25 @@ readonly gomod_cache_dir="${vm_cache_dir}/go/modcache"
 readonly docker_cache_dir="${vm_cache_dir}/docker"
 
 start() {
-    local __spec
-    __spec="$(mktemp).yaml"
-    cat <<EOS > "$__spec"
+    if limactl list --json 2>/dev/null | grep -q "\"name\":\"${name}\""; then
+        limactl start "${name}"
+    else
+        local __spec
+        __spec="$(mktemp).yaml"
+        cat <<EOS > "$__spec"
 base:
   - template:docker
 cpus: ${cpus}
 memory: "${memory}GiB"
 disk: "${disk}GiB"
 EOS
-    local __cmd="limactl start --name ${name} --yes ${__spec}"
-    if [[ -n "$host_cache_dir" && -n "$vm_cache_dir" ]] ; then
-        mkdir -p "$host_cache_dir"
-        $__cmd --set=".mounts = [{\"location\": \"${host_cache_dir}\", \"mountPoint\": \"${vm_cache_dir}\", \"writable\": true}]"
-    else
-        $__cmd
+        local __cmd="limactl start --name ${name} --yes ${__spec}"
+        if [[ -n "$host_cache_dir" && -n "$vm_cache_dir" ]] ; then
+            mkdir -p "$host_cache_dir"
+            $__cmd --set=".mounts = [{\"location\": \"${host_cache_dir}\", \"mountPoint\": \"${vm_cache_dir}\", \"writable\": true}]"
+        else
+            $__cmd
+        fi
     fi
 
     limactl copy "${d}/lima-setup.sh" "${name}:/tmp/"
@@ -69,8 +73,11 @@ export DOCKERCACHE="${docker_cache_dir}"
 ${SKIP_BUILD+export SKIP_BUILD="${SKIP_BUILD}"}
 ${SKIP_RELOAD_CLUSTER+export SKIP_RELOAD_CLUSTER="${SKIP_RELOAD_CLUSTER}"}
 ${SKIP_DEPLOY+export SKIP_DEPLOY="${SKIP_DEPLOY}"}
+export PATH="${HOME}/.local/bin:${PATH}"
 if command -v mise >/dev/null 2>&1; then
     eval "\$(mise hook-env)"
+elif [ -x "\${HOME}/.local/bin/mise" ]; then
+    eval "\$(\${HOME}/.local/bin/mise hook-env)"
 fi
 $@
 EOS
