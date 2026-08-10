@@ -213,7 +213,13 @@ def update_version_files(clean_version: str) -> None:
     Path("VERSION").write_text(f"{clean_version}\n", encoding="utf-8")
     logging.info("Updated VERSION")
 
-    logging.info("Version files updated successfully.")
+    # Update uv.lock to sync with updated pyproject.toml version
+    logging.info("Updating uv.lock via uv lock...")
+    uv_res = run_command(["uv", "lock"])
+    if uv_res.returncode != 0:
+        raise BumpVersionError("Failed to update uv.lock using 'uv lock'")
+
+    logging.info("Version files and uv.lock updated successfully.")
 
 
 def create_bump_pr(version_info: VersionInfo, dryrun: bool = False) -> None:
@@ -286,6 +292,7 @@ This PR updates the project version to `{version_info.tag_version}` across all r
 
 - `VERSION`
 - `pyproject.toml`
+- `uv.lock`
 - `charts/pneutrinoutil/Chart.yaml` (`appVersion` & `version`)
 - `server/main.go` (`@version` annotation)
 - Regenerated Swagger API specs (`server/docs/`) and UI client (`ui/app/api/client/`) via `./task gen:swag`
