@@ -36,4 +36,3 @@ tasks:
     desc: go mod tidy
     cmds:
       - go mod tidy
-      - go -C tools mod tidy

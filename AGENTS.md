@@ -35,7 +35,7 @@ Use the `./task` runner for running standardized commands based on the scenario:
 | **End-to-End System Testing** | `./task test:e2e` | Runs E2E tests, verifying integration between Server, Worker, Redis, MySQL, and S3. |
 | **Building Individual Binaries** | `./task build:cli`<br>`./task build:server`<br>`./task build:worker` | Builds specific Go binaries to `dist/`. |
 | **Building All Artifacts & Docker Images** | `./task build` | Builds all Go binaries and Docker images via `docker buildx bake`. |
-| **Updating Go Module Dependencies** | `./task tidy` | Runs `go mod tidy` for both root and `tools/` modules. |
+| **Updating Go Module Dependencies** | `./task tidy` | Runs `go mod tidy` for Go module dependencies. |
 | **Initial Project Setup / Environment Config** | `./task init` | Initializes local environment variables via `mise`. |
 | **Deploying Local Kubernetes (Kind)** | `./task k8s` | Reloads Kind cluster, loads Docker images, and deploys via Helm. |
 | **Stopping Local Kubernetes & Worker** | `./task k8s:stop` | Tears down local Kind cluster and stops background worker processes. |
