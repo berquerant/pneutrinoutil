@@ -28,7 +28,7 @@ The infrastructure is managed using Docker and Docker Compose. It consists of th
 
 ## Building and Running
 
-The project uses a `Taskfile.yml` to define common development tasks. The following are some of the most important commands:
+The project uses `mise` (`mise.toml` tasks section) via `./task` runner to define common development tasks. The following are some of the most important commands:
 
 *   **`./task build`**: Build all the project's binaries.
 *   **`./task k8s`**: Deploy local Kubernetes (Kind) with all services.

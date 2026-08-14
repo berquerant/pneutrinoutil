@@ -22,7 +22,7 @@ This document provides guidelines and best practices for AI assistants (and pair
 
 AI assistants **MUST** follow a strict **"Edit → Verify (Lint/Test/Build)"** loop. Editing files alone is not considered task completion.
 
-Use the `./task` runner for running standardized commands based on the scenario:
+Use the `./task` runner (which executes `mise run` under the hood) for running standardized commands based on the scenario:
 
 ### 📋 Scenario-Based Task Matrix
 
