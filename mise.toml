@@ -369,6 +369,7 @@ run = "pnpm run start"
 
 [tasks."ui:lint"]
 dir = "./ui"
+depends = ["ui:install"]
 run = [
   "pnpm run typecheck",
   "pnpm run eslint"
