@@ -73,13 +73,13 @@ jobs:
       - name: Setup Lima
         uses: ./.github/actions/setup-lima
       - name: Start VM
-        run: ./bin/lima.sh start
+        run: mise run lima:reload
         env:
           TARGET_REF: ${{ github.event_name == 'push' && github.ref_name || github.head_ref }}
       - name: Run Unit Test
-        run: ./bin/lima.sh run ./task test:unit
+        run: mise run lima:unit
       - name: Run E2E Test
-        run: ./bin/lima.sh run ./task test:e2e
+        run: mise run lima:e2e
         env:
           SKIP_BUILD: "true"
           SKIP_RELOAD_CLUSTER: "true"

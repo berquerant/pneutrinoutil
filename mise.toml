@@ -19,6 +19,7 @@ helm = "4.1.3"
 stern = "1.33.1"
 swag = "1.16.6"
 yq = "4.52.5"
+lima = "2.2.0"
 
 [env]
 SERVER_HOST = "127.0.0.1"
@@ -126,8 +127,8 @@ depends = ["build:binaries", "build:images"]
 
 [tasks."build:images"]
 run = """
-if [[ "$SKIP_BUILD_IMAGES" != "true" && "$SKIP_BUILD" != "true" ]]; then
-  if [[ "$DOCKERCACHE" != "" ]]; then
+if [ "$SKIP_BUILD_IMAGES" != "true" ] && [ "$SKIP_BUILD" != "true" ]; then
+  if [ "$DOCKERCACHE" != "" ]; then
     docker buildx bake --set "*.cache-from=type=local,src=$DOCKERCACHE" --set "*.cache-to=type=local,mode=max,dest=$DOCKERCACHE" --allow=fs=$CACHEDIR
   else
     docker buildx bake
@@ -165,7 +166,7 @@ run = [
 description = "Run unit tests"
 depends = ["gen:ignore-tmp"]
 run = """
-if [[ "$SKIP_DEPLOY" != "true" ]]; then
+if [ "$SKIP_DEPLOY" != "true" ]; then
   mise run k8s:test
 fi
 TEST=true ./bin/env.sh go test -cover $(go list ./... | grep -v tmp | grep -v tests) ${DEBUG+-v -count=1}
@@ -176,7 +177,7 @@ description = "Run E2E tests"
 depends = ["gen:ignore-tmp", "build:mockcli", "build:gendata"]
 run = """
 mise run test:drop-data || true
-if [[ "$SKIP_DEPLOY" != "true" ]]; then
+if [ "$SKIP_DEPLOY" != "true" ]; then
   mise run k8s:test
 fi
 TEST=true ./bin/env.sh ./bin/k8s-worker.sh stop || true
@@ -239,7 +240,7 @@ run = [
 
 [tasks."k8s:test"]
 run = """
-if [[ "$SKIP_RELOAD_CLUSTER" != "true" ]]; then
+if [ "$SKIP_RELOAD_CLUSTER" != "true" ]; then
   mise run k8s:reload-cluster
 else
   mise run k8s:uninstall
@@ -270,7 +271,7 @@ run = "./tools/run.sh kind create cluster --config .cluster.yaml --image \"$KIND
 
 [tasks."k8s:reload-cluster"]
 run = """
-if [[ "$SKIP_RELOAD_CLUSTER" != "true" || "$CI" = "true" ]]; then
+if [ "$SKIP_RELOAD_CLUSTER" != "true" ] || [ "$CI" = "true" ]; then
   mise run k8s:delete-cluster
   mise run k8s:create-cluster
 fi
@@ -380,3 +381,25 @@ description = "Generate UI API"
 dir = "./ui"
 depends = ["ui:install"]
 run = "./bin/swag.sh"
+
+# --- Lima Tasks ---
+
+[tasks."lima:start"]
+description = "Start Lima VM"
+run = "./bin/lima.sh start"
+
+[tasks."lima:stop"]
+description = "Stop Lima VM"
+run = "./bin/lima.sh stop"
+
+[tasks."lima:reload"]
+description = "Recreate and start Lima VM"
+run = "./bin/lima.sh reload"
+
+[tasks."lima:unit"]
+description = "Run unit tests inside Lima VM"
+run = "./bin/lima.sh run ./task test:unit"
+
+[tasks."lima:e2e"]
+description = "Run E2E tests inside Lima VM"
+run = "./bin/lima.sh run ./task test:e2e"

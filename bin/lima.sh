@@ -17,6 +17,10 @@ readonly go_cache_dir="${vm_cache_dir}/go/cache"
 readonly gomod_cache_dir="${vm_cache_dir}/go/modcache"
 readonly docker_cache_dir="${vm_cache_dir}/docker"
 
+limactl() {
+    "${d}/../tools/run.sh" limactl "$@"
+}
+
 start() {
     if limactl list --json 2>/dev/null | grep -q "\"name\":\"${name}\""; then
         limactl start "${name}"
@@ -30,7 +34,7 @@ cpus: ${cpus}
 memory: "${memory}GiB"
 disk: "${disk}GiB"
 EOS
-        local __cmd="limactl start --name ${name} --yes ${__spec}"
+        local __cmd="${d}/../tools/run.sh limactl start --name ${name} --yes ${__spec}"
         if [[ -n "$host_cache_dir" && -n "$vm_cache_dir" ]] ; then
             mkdir -p "$host_cache_dir"
             $__cmd --set=".mounts = [{\"location\": \"${host_cache_dir}\", \"mountPoint\": \"${vm_cache_dir}\", \"writable\": true}]"
@@ -56,7 +60,7 @@ reload() {
 }
 
 ssh() {
-    exec limactl shell "$name" "$@"
+    exec "${d}/../tools/run.sh" limactl shell "$name" "$@"
 }
 
 run() {
@@ -97,7 +101,7 @@ EOS
     chmod +x "$__script"
     limactl copy "$__script" "${name}:/tmp/run.sh"
     rm -f "$__script"
-    exec limactl shell "$name" /tmp/run.sh "$@"
+    exec "${d}/../tools/run.sh" limactl shell "$name" /tmp/run.sh "$@"
 }
 
 set -ex
