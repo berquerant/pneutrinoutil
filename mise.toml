@@ -169,7 +169,7 @@ run = """
 if [ "$SKIP_DEPLOY" != "true" ]; then
   mise run k8s:test
 fi
-TEST=true ./bin/env.sh go test -cover $(go list ./... | grep -v tmp | grep -v tests) ${DEBUG+-v -count=1}
+TEST=true ./bin/env.sh go test ${TEST_PARALLEL+-p $TEST_PARALLEL} -cover $(go list ./... | grep -v tmp | grep -v tests) ${DEBUG+-v -count=1}
 """
 
 [tasks."test:e2e"]
@@ -182,7 +182,7 @@ if [ "$SKIP_DEPLOY" != "true" ]; then
 fi
 TEST=true ./bin/env.sh ./bin/k8s-worker.sh stop || true
 TEST=true ./bin/env.sh ./bin/k8s-worker.sh start
-./bin/env.sh go test -cover $(go list ./... | grep -v tmp | grep tests) -count=1 ${DEBUG+-v}
+./bin/env.sh go test ${TEST_PARALLEL+-p $TEST_PARALLEL} -cover $(go list ./... | grep -v tmp | grep tests) -count=1 ${DEBUG+-v}
 """
 
 [tasks."test:drop-data"]

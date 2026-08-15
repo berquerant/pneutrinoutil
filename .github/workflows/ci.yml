@@ -78,13 +78,17 @@ jobs:
         run: mise run lima:reload
         env:
           TARGET_REF: ${{ github.event_name == 'push' && github.ref_name || github.head_ref }}
+          VM_MEMORY_GB: "8"
       - name: Run Unit Test
         run: mise run lima:unit
+        env:
+          TEST_PARALLEL: "2"
       - name: Run E2E Test
         run: mise run lima:e2e
         env:
           SKIP_BUILD: "true"
           SKIP_RELOAD_CLUSTER: "true"
+          TEST_PARALLEL: "2"
 
   # NOTE: Abandoned MySQL 9.6 startup fix on 2026-04
   # Issue: Internal MySQL error claiming errmsg.sys is missing in /usr/share/mysql-9.6/, works locally, but fails on GHA.

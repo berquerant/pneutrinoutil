@@ -87,6 +87,7 @@ export DOCKERCACHE="${docker_cache_dir}"
 \${SKIP_BUILD+export SKIP_BUILD="\${SKIP_BUILD}"}
 \${SKIP_RELOAD_CLUSTER+export SKIP_RELOAD_CLUSTER="\${SKIP_RELOAD_CLUSTER}"}
 \${SKIP_DEPLOY+export SKIP_DEPLOY="\${SKIP_DEPLOY}"}
+\${TEST_PARALLEL+export TEST_PARALLEL="\${TEST_PARALLEL}"}
 export PATH="\$HOME/.local/bin:\$PATH"
 if [ -x "\$HOME/.local/bin/mise" ]; then
     eval "\$(\$HOME/.local/bin/mise hook-env)"
