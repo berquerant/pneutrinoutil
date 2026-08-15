@@ -83,6 +83,7 @@ cd "$vm_repo_dir"
 export CACHEDIR="${vm_cache_dir}"
 export GOCACHE="${go_cache_dir}"
 export GOMODCACHE="${gomod_cache_dir}"
+chmod -R +w "${gomod_cache_dir}" 2>/dev/null || true
 export DOCKERCACHE="${docker_cache_dir}"
 \${SKIP_BUILD+export SKIP_BUILD="\${SKIP_BUILD}"}
 \${SKIP_RELOAD_CLUSTER+export SKIP_RELOAD_CLUSTER="\${SKIP_RELOAD_CLUSTER}"}
