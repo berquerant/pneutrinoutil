@@ -18,8 +18,8 @@ kubectl = "1.35.0"
 helm = "4.1.3"
 stern = "1.33.1"
 swag = "1.16.6"
-task = "3.52.0"
 yq = "4.52.5"
+lima = "2.2.0"
 
 [env]
 SERVER_HOST = "127.0.0.1"
@@ -60,3 +60,346 @@ MYSQL_DSN = "{{env.MYSQL_USER}}:{{env.MYSQL_PASSWORD}}@tcp({{env.MYSQL_HOST}}:{{
 TEST_MYSQL_DSN = "{{env.TEST_MYSQL_USER}}:{{env.TEST_MYSQL_PASSWORD}}@tcp({{env.MYSQL_HOST}}:{{env.MYSQL_PORT}})/{{env.TEST_MYSQL_DATABASE}}?parseTime=true&loc=Asia%2FTokyo"
 REDIS_DSN = "redis://{{env.REDIS_HOST}}:{{env.REDIS_PORT}}/{{env.REDIS_DB}}"
 TEST_REDIS_DSN = "redis://{{env.REDIS_HOST}}:{{env.REDIS_PORT}}/{{env.TEST_REDIS_DB}}"
+
+# --- Tasks Configuration ---
+
+[tasks.default]
+description = "Run linters, tests, and build all binaries"
+depends = ["lint", "test", "build"]
+
+[tasks.init]
+description = "Initialize development environment"
+depends = ["gen:ignore-tmp"]
+
+[tasks.tidy]
+description = "go mod tidy"
+run = "go mod tidy"
+
+# --- Lint Tasks ---
+
+[tasks.lint]
+description = "Run all linters"
+depends = [
+  "lint:yamllint",
+  "lint:ls-lint",
+  "lint:shellcheck",
+  "lint:vet",
+  "lint:fix",
+  "lint:golangci-lint",
+  "lint:go-arch-lint",
+  "ui:build",
+  "ui:lint"
+]
+
+[tasks."lint:vet"]
+run = "go vet ./..."
+
+[tasks."lint:fix"]
+run = "go fix -diff ./..."
+
+[tasks."lint:golangci-lint"]
+run = [
+  "./tools/run.sh golangci-lint config verify -v",
+  "./tools/run.sh golangci-lint run"
+]
+
+[tasks."lint:go-arch-lint"]
+run = [
+  "./tools/run.sh go-arch-lint check",
+  "mkdir -p tmp",
+  "./tools/run.sh go-arch-lint graph -t di --out tmp/go-arch-lint.svg"
+]
+
+[tasks."lint:shellcheck"]
+run = "./bin/shellcheck.sh"
+
+[tasks."lint:ls-lint"]
+run = "./tools/run.sh ls-lint"
+
+[tasks."lint:yamllint"]
+run = "./tools/run.sh uv run yamllint ."
+
+# --- Build Tasks ---
+
+[tasks.build]
+description = "Build binaries and images"
+depends = ["build:binaries", "build:images"]
+
+[tasks."build:images"]
+run = """
+if [ "$SKIP_BUILD_IMAGES" != "true" ] && [ "$SKIP_BUILD" != "true" ]; then
+  if [ "$DOCKERCACHE" != "" ]; then
+    docker buildx bake --set "*.cache-from=type=local,src=$DOCKERCACHE" --set "*.cache-to=type=local,mode=max,dest=$DOCKERCACHE" --allow=fs=$CACHEDIR
+  else
+    docker buildx bake
+  fi
+fi
+"""
+
+[tasks."build:binaries"]
+depends = ["build:cli", "build:server", "build:worker", "build:mockcli", "build:gendata"]
+
+[tasks."build:cli"]
+run = "./bin/build.sh -o dist/pneutrinoutil cli/main.go"
+
+[tasks."build:server"]
+run = "./bin/build.sh -o dist/pneutrinoutil-server server/main.go"
+
+[tasks."build:worker"]
+run = "./bin/build.sh -o dist/pneutrinoutil-worker worker/main.go"
+
+[tasks."build:mockcli"]
+run = "./bin/build.sh -o dist/pneutrinoutil-mockcli mockcli/main.go"
+
+[tasks."build:gendata"]
+run = "./bin/build.sh -o dist/pneutrinoutil-gendata gendata/main.go"
+
+# --- Test Tasks ---
+
+[tasks.test]
+run = [
+  "mise run test:unit",
+  "mise run test:e2e",
+]
+
+[tasks."test:unit"]
+description = "Run unit tests"
+depends = ["gen:ignore-tmp"]
+run = """
+if [ "$SKIP_DEPLOY" != "true" ]; then
+  mise run k8s:test
+fi
+TEST=true ./bin/env.sh go test ${TEST_PARALLEL+-p $TEST_PARALLEL} -cover $(go list ./... | grep -v tmp | grep -v tests) ${DEBUG+-v -count=1}
+"""
+
+[tasks."test:e2e"]
+description = "Run E2E tests"
+depends = ["gen:ignore-tmp", "build:mockcli", "build:gendata"]
+run = """
+mise run test:drop-data || true
+if [ "$SKIP_DEPLOY" != "true" ]; then
+  mise run k8s:test
+fi
+TEST=true ./bin/env.sh ./bin/k8s-worker.sh stop || true
+TEST=true ./bin/env.sh ./bin/k8s-worker.sh start
+./bin/env.sh go test ${TEST_PARALLEL+-p $TEST_PARALLEL} -cover $(go list ./... | grep -v tmp | grep tests) -count=1 ${DEBUG+-v}
+"""
+
+[tasks."test:drop-data"]
+depends = ["test:drop-redis", "test:drop-mysql", "test:drop-s3"]
+
+[tasks."test:drop-redis"]
+run = "./bin/env.sh ./bin/ddl.sh drop redis ${TEST_REDIS_DB}"
+
+[tasks."test:drop-s3"]
+run = "./bin/env.sh ./bin/ddl.sh drop s3 ${TEST_STORAGE_BUCKET}"
+
+[tasks."test:drop-mysql"]
+run = "./bin/env.sh ./bin/ddl.sh drop mysql ${TEST_MYSQL_DATABASE}"
+
+# --- Gen Tasks ---
+
+[tasks.gen]
+depends = ["gen:ignore-tmp", "gen:go-generate", "gen:swag"]
+
+[tasks."gen:ignore-tmp"]
+description = "Ensure tmp/go.mod exists with module ignore"
+run = [
+  "mkdir -p tmp",
+  "test -f tmp/go.mod || echo \"module ignore\" > tmp/go.mod"
+]
+
+[tasks."gen:clean"]
+depends = ["gen:clean-go-generated", "gen:clean-tools"]
+
+[tasks."gen:go-generate"]
+description = "Go generate"
+run = "go generate ./..."
+
+[tasks."gen:clean-go-generated"]
+run = "find . -name \"*_generated.go\" -type f -delete"
+
+[tasks."gen:clean-tools"]
+run = "rm -rf ./bin/tools"
+
+[tasks."gen:swag"]
+description = "Generate API"
+run = [
+  "./tools/run.sh swag init -g ./server/main.go -o ./server/docs --exclude tmp",
+  "mise run ui:gen-swag"
+]
+
+# --- K8s Tasks ---
+
+[tasks.k8s]
+run = [
+  "mise run k8s:reload-cluster",
+  "mise run k8s:reload-images",
+  "mise run k8s:deploy"
+]
+
+[tasks."k8s:test"]
+run = """
+if [ "$SKIP_RELOAD_CLUSTER" != "true" ]; then
+  mise run k8s:reload-cluster
+else
+  mise run k8s:uninstall
+fi
+mise run k8s:reload-images
+mise run k8s:test-deploy
+"""
+
+[tasks."k8s:purge"]
+run = "rm -rf tmp/data/mysql tmp/data/s3"
+
+[tasks."k8s:reload"]
+depends = ["k8s:stop"]
+run = "mise run k8s"
+
+[tasks."k8s:redeploy"]
+depends = ["k8s:uninstall"]
+run = "mise run k8s:deploy"
+
+[tasks."k8s:stop"]
+depends = ["run:stop-k8s-worker", "k8s:delete-cluster"]
+
+[tasks."k8s:delete-cluster"]
+run = "./tools/run.sh kind delete cluster || true"
+
+[tasks."k8s:create-cluster"]
+run = "./tools/run.sh kind create cluster --config .cluster.yaml --image \"$KIND_NODE_IMAGE\""
+
+[tasks."k8s:reload-cluster"]
+run = """
+if [ "$SKIP_RELOAD_CLUSTER" != "true" ] || [ "$CI" = "true" ]; then
+  mise run k8s:delete-cluster
+  mise run k8s:create-cluster
+fi
+"""
+
+[tasks."k8s:deploy"]
+run = [
+  "./bin/deploy.sh",
+  "mise run run:reload-k8s-worker"
+]
+
+[tasks."k8s:test-deploy"]
+run = [
+  "./bin/deploy.sh -f test-values.yaml",
+  "mise run run:reload-k8s-worker"
+]
+
+[tasks."k8s:uninstall"]
+run = "./tools/run.sh helm uninstall pneutrinoutil"
+
+[tasks."k8s:reload-images"]
+run = [
+  "mise run build:images",
+  "mise run k8s:load-images",
+  "mise run k8s:restart-deploys"
+]
+
+[tasks."k8s:load-images"]
+depends = ["k8s:load-server-image", "k8s:load-ui-image", "k8s:load-curl-image"]
+
+[tasks."k8s:restart-deploys"]
+depends = ["k8s:restart-server", "k8s:restart-ui"]
+
+[tasks."k8s:restart-server"]
+run = "./tools/run.sh kubectl rollout restart deploy pneutrinoutil-server || true"
+
+[tasks."k8s:load-server-image"]
+run = "./tools/run.sh kind load docker-image pneutrinoutil/server:local"
+
+[tasks."k8s:restart-ui"]
+run = "./tools/run.sh kubectl rollout restart deploy pneutrinoutil-ui || true"
+
+[tasks."k8s:load-ui-image"]
+run = "./tools/run.sh kind load docker-image pneutrinoutil/ui:local"
+
+[tasks."k8s:load-curl-image"]
+run = "./tools/run.sh kind load docker-image pneutrinoutil/curl:local"
+
+# --- Run Tasks ---
+
+[tasks."run:restart-k8s-worker"]
+depends = ["run:stop-k8s-worker"]
+run = "mise run run:start-k8s-worker"
+
+[tasks."run:reload-k8s-worker"]
+depends = ["build:cli", "build:worker"]
+run = "mise run run:restart-k8s-worker"
+
+[tasks."run:start-k8s-worker"]
+run = "./bin/env.sh ./bin/k8s-worker.sh start"
+
+[tasks."run:stop-k8s-worker"]
+run = "./bin/env.sh ./bin/k8s-worker.sh stop || true"
+
+# --- Ansible Tasks ---
+
+[tasks.ansible]
+depends = ["ansible:run"]
+
+[tasks."ansible:run"]
+run = "./ansible-playbook playbook/main.yml --diff -v"
+
+[tasks."ansible:dry"]
+run = "./ansible-playbook playbook/main.yml --diff --check -v"
+
+# --- UI Tasks ---
+
+[tasks.ui]
+description = "Start UI dev server"
+dir = "./ui"
+depends = ["ui:install"]
+run = "pnpm run dev"
+
+[tasks."ui:install"]
+dir = "./ui"
+run = "CI=true pnpm i --ignore-scripts"
+
+[tasks."ui:build"]
+dir = "./ui"
+depends = ["ui:install"]
+run = "pnpm run build"
+
+[tasks."ui:start"]
+dir = "./ui"
+run = "pnpm run start"
+
+[tasks."ui:lint"]
+dir = "./ui"
+depends = ["ui:install"]
+run = [
+  "pnpm run typecheck",
+  "pnpm run eslint"
+]
+
+[tasks."ui:gen-swag"]
+description = "Generate UI API"
+dir = "./ui"
+depends = ["ui:install"]
+run = "./bin/swag.sh"
+
+# --- Lima Tasks ---
+
+[tasks."lima:start"]
+description = "Start Lima VM"
+run = "./bin/lima.sh start"
+
+[tasks."lima:stop"]
+description = "Stop Lima VM"
+run = "./bin/lima.sh stop"
+
+[tasks."lima:reload"]
+description = "Recreate and start Lima VM"
+run = "./bin/lima.sh reload"
+
+[tasks."lima:unit"]
+description = "Run unit tests inside Lima VM"
+run = "./bin/lima.sh run ./task test:unit"
+
+[tasks."lima:e2e"]
+description = "Run E2E tests inside Lima VM"
+run = "./bin/lima.sh run ./task test:e2e"

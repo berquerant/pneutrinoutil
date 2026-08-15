@@ -22,7 +22,7 @@ This document provides guidelines and best practices for AI assistants (and pair
 
 AI assistants **MUST** follow a strict **"Edit → Verify (Lint/Test/Build)"** loop. Editing files alone is not considered task completion.
 
-Use the `./task` runner for running standardized commands based on the scenario:
+Use the `./task` runner (which executes `mise run` under the hood) for running standardized commands based on the scenario:
 
 ### 📋 Scenario-Based Task Matrix
 
@@ -41,6 +41,9 @@ Use the `./task` runner for running standardized commands based on the scenario:
 | **Stopping Local Kubernetes & Worker** | `./task k8s:stop` | Tears down local Kind cluster and stops background worker processes. |
 | **Reloading K8s Worker Process** | `./task run:reload-k8s-worker` | Rebuilds CLI/Worker and restarts background K8s worker process. |
 | **Provisioning NEUTRINO Engine & Singers** | `./task ansible` | Downloads and installs NEUTRINO binaries and singer voice models via Ansible. |
+| **Running Unit Tests inside Lima VM** | `./task lima:unit` | Executes unit tests inside isolated Lima VM environment (`./bin/lima.sh run ./task test:unit`). |
+| **Running E2E Tests inside Lima VM** | `./task lima:e2e` | Executes E2E tests inside isolated Lima VM environment (`./bin/lima.sh run ./task test:e2e`). |
+| **Managing Lima VM Lifecycle** | `./task lima:start`<br>`./task lima:stop`<br>`./task lima:reload` | Starts, stops, or recreates Lima VM environment. |
 | **Cleaning Generated Files / Tools** | `./task gen:clean` | Removes generated Go files (`*_generated.go`) and binary tool caches. |
 
 ---

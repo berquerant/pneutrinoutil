@@ -70,19 +70,25 @@ jobs:
           path: |
             ./tmp/lima/docker
           key: ${{ runner.os }}-lima-docker
+      - name: Setup mise
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2.4.4
       - name: Setup Lima
         uses: ./.github/actions/setup-lima
       - name: Start VM
-        run: ./bin/lima.sh start
+        run: mise run lima:reload
         env:
           TARGET_REF: ${{ github.event_name == 'push' && github.ref_name || github.head_ref }}
+          VM_MEMORY_GB: "12"
       - name: Run Unit Test
-        run: ./bin/lima.sh run ./task test:unit
+        run: mise run lima:unit
+        env:
+          TEST_PARALLEL: "4"
       - name: Run E2E Test
-        run: ./bin/lima.sh run ./task test:e2e
+        run: mise run lima:e2e
         env:
           SKIP_BUILD: "true"
           SKIP_RELOAD_CLUSTER: "true"
+          TEST_PARALLEL: "4"
 
   # NOTE: Abandoned MySQL 9.6 startup fix on 2026-04
   # Issue: Internal MySQL error claiming errmsg.sys is missing in /usr/share/mysql-9.6/, works locally, but fails on GHA.
