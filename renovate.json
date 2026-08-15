@@ -30,18 +30,6 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "fe3dback/go-arch-lint",
-      "description": "Manage go-arch-lint version in mise.toml",
-      "fileMatch": [
-        "^mise.toml$"
-      ],
-      "matchStrings": [
-        "\"aqua:fe3dback/go-arch-lint\" = \"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
-      ]
-    },
-    {
-      "customType": "regex",
       "datasourceTemplate": "docker",
       "depNameTemplate": "kindest/node",
       "description": "Manage KIND_NODE_IMAGE version in mise.toml",
