@@ -19,7 +19,6 @@ import (
 	"github.com/berquerant/pneutrinoutil/pkg/infra"
 	"github.com/berquerant/pneutrinoutil/pkg/logx"
 	"github.com/berquerant/pneutrinoutil/pkg/pathx"
-	"github.com/berquerant/pneutrinoutil/pkg/ptr"
 	"github.com/berquerant/pneutrinoutil/pkg/repo"
 	"github.com/hibiken/asynq"
 )
@@ -118,7 +117,7 @@ func (p *PneutrinoutilProcessor) ProcessStart(ctx context.Context, t *asynq.Task
 	}
 	if _, err := p.ProcessUpdater.UpdateProcess(ctx, &repo.UpdateProcessRequest{
 		ID:        proc.ID,
-		Status:    ptr.To(domain.ProcessStatusRunning),
+		Status:    new(domain.ProcessStatusRunning),
 		StartedAt: new(time.Now()),
 	}); err != nil {
 		return withBaseErr(err, "failed to update process(%d)", proc.ID)
@@ -351,9 +350,9 @@ func (p *PneutrinoutilProcessor) findResultDir(workDir string) (string, error) {
 }
 
 func (p *PneutrinoutilProcessor) updateProcessStatus(ctx context.Context, processID int, now time.Time, processSucceed bool) error {
-	status := ptr.To(domain.ProcessStatusFailed)
+	status := new(domain.ProcessStatusFailed)
 	if processSucceed {
-		status = ptr.To(domain.ProcessStatusSucceed)
+		status = new(domain.ProcessStatusSucceed)
 	}
 	_, err := p.ProcessUpdater.UpdateProcess(ctx, &repo.UpdateProcessRequest{
 		ID:          processID,
