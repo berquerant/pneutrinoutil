@@ -52,7 +52,7 @@ STORAGE_BUCKET = "pneutrinoutil"
 TEST_STORAGE_BUCKET = "test"
 STORAGES3 = "true"
 
-KIND_NODE_IMAGE = "kindest/node:v1.35.1"
+KIND_NODE_IMAGE = "kindest/node:v1.36.1"
 
 SERVER_URI = "http://{{env.SERVER_HOST}}:{{env.SERVER_PORT}}/v1"
 EXTERNAL_SERVER_URI = "http://{{env.SERVER_HOST}}:{{env.SERVER_PORT}}/v1"
