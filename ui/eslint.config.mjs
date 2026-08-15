@@ -11,6 +11,7 @@ export default defineConfig(
     ".react-router",
     "node_modules",
     "app/api/client",
+    "eslint-ts6.cjs",
   ]),
   eslint.configs.recommended,
   tseslint.configs.recommended,
