@@ -7,17 +7,6 @@ allowBuilds:
   '@openapitools/openapi-generator-cli': true
   esbuild: true
 
-packageExtensions:
-  typescript-eslint:
-    peerDependencies:
-      typescript: "*"
-  "@typescript-eslint/parser":
-    peerDependencies:
-      typescript: "*"
-  "@typescript-eslint/eslint-plugin":
-    peerDependencies:
-      typescript: "*"
-
 supportedArchitectures:
   os:
     - current

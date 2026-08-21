@@ -42,5 +42,5 @@ The web UI is available at `http://localhost:3000/` (or `http://localhost:9201/`
 
 *   **Go**: The Go code follows standard Go conventions.
 *   **React**: The React code is written in TypeScript and uses `pnpm` for package management.
-*   **Linting**: The project uses `golangci-lint` for Go and `eslint` for TypeScript to enforce code style and catch potential errors.
+*   **Linting**: The project uses `golangci-lint` for Go to enforce code style and catch potential errors, and `tsc` for TypeScript type checking.
 *   **Testing**: The project has a suite of unit tests and end-to-end tests. New code should be accompanied by tests.
