@@ -8,7 +8,6 @@
     "dev": "react-router dev --port 9201",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
-    "eslint": "NODE_OPTIONS='-r ./eslint-ts6.cjs' eslint .",
     "swag": "openapi-generator-cli generate -i ./swagger.yaml -g typescript-axios -o app/api/client"
   },
   "dependencies": {
@@ -24,21 +23,14 @@
     "react-router": "^8.3.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.5",
     "@openapitools/openapi-generator-cli": "^2.40.1",
     "@pnpm/exe": "11.19.0",
     "@react-router/dev": "^8.3.0",
     "@types/node": "^26.1.2",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
-    "@typescript-eslint/eslint-plugin": "^8.67.0",
-    "@typescript-eslint/parser": "^8.67.0",
     "env-cmd": "^11.0.0",
-    "eslint": "^9.39.5",
-    "eslint-plugin-react": "^7.37.5",
     "typescript": "^7.0.2",
-    "typescript-eslint": "^8.67.0",
-    "typescript6": "npm:typescript@~6.0.3",
     "vite": "^8.2.0"
   }
 }

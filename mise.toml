@@ -371,10 +371,7 @@ run = "pnpm run start"
 [tasks."ui:lint"]
 dir = "./ui"
 depends = ["ui:install"]
-run = [
-  "pnpm run typecheck",
-  "pnpm run eslint"
-]
+run = "pnpm run typecheck"
 
 [tasks."ui:gen-swag"]
 description = "Generate UI API"
