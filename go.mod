@@ -12,7 +12,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.106.3
 	github.com/aws/smithy-go v1.27.7
 	github.com/berquerant/execx v0.13.0
-	github.com/berquerant/structconfig v0.9.0
+	github.com/berquerant/structconfig v0.9.1
 	github.com/go-sql-driver/mysql v1.10.0
 	github.com/goccy/go-yaml v1.19.2
 	github.com/google/uuid v1.6.0

@@ -46,8 +46,8 @@ github.com/berquerant/execx v0.13.0 h1:+cA6zD+RHVL6rxOEoZHGRDxeDzXvFyeMH6aYNzm9J
 github.com/berquerant/execx v0.13.0/go.mod h1:ZkfL9XgEV4x4hDz5yJTJOYevJySkPg76K3AggqiHJkg=
 github.com/berquerant/goconfig v0.5.0 h1:YBRf2hlhs8BCEZIgeRqrUCI7K/VQCSsdgZQ2FvJLrJ4=
 github.com/berquerant/goconfig v0.5.0/go.mod h1:Cjd3SRCYP2UlnTjOpA2r+V6HaD8emXkO52TVB2B5zgU=
-github.com/berquerant/structconfig v0.9.0 h1:4hCdQ5wq76gWsz4NQZBgNYtGSB2OtZJ743QAVMryPjs=
-github.com/berquerant/structconfig v0.9.0/go.mod h1:VsmrTnMK3AeAOkUCcI/lDu7694iXmTqw1TJuuy3yIlg=
+github.com/berquerant/structconfig v0.9.1 h1:XTqO2zrvmS/GnqR9hFNCVNF0xJRFHWtPAf/vM4XzW5c=
+github.com/berquerant/structconfig v0.9.1/go.mod h1:UGn28q9iEhonxhbU2b7hQpKzXUOGbMw1gVDAi0xU3UQ=
 github.com/bsm/ginkgo/v2 v2.12.0 h1:Ny8MWAHyOepLGlLKYmXG4IEkioBysk6GpaRTLC8zwWs=
 github.com/bsm/ginkgo/v2 v2.12.0/go.mod h1:SwYbGRRDovPVboqFv0tPTcG1sN61LM1Z4ARdbAV9g4c=
 github.com/bsm/gomega v1.27.10 h1:yeMWxP2pV2fG3FgAODIY8EiRE3dy0aeFYt4l7wh6yKA=
