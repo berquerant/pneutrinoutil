@@ -76,6 +76,64 @@
       "matchManagers": [
         "mise"
       ]
+    },
+    {
+      "addLabels": [
+        "node"
+      ],
+      "description": "Group node updates across mise and Dockerfile",
+      "groupName": "node",
+      "matchPackageNames": [
+        "node",
+        "docker.io/library/node"
+      ]
+    },
+    {
+      "addLabels": [
+        "pnpm"
+      ],
+      "description": "Group pnpm updates across mise, Dockerfile, and package.json",
+      "groupName": "pnpm",
+      "matchPackageNames": [
+        "pnpm",
+        "pnpm/pnpm",
+        "@pnpm/exe"
+      ]
+    },
+    {
+      "addLabels": [
+        "go"
+      ],
+      "description": "Group Go language updates across mise, go.mod, and Dockerfile",
+      "groupName": "go",
+      "matchPackageNames": [
+        "go",
+        "golang",
+        "docker.io/library/golang"
+      ]
+    },
+    {
+      "addLabels": [
+        "lima"
+      ],
+      "description": "Group Lima updates across mise and setup-lima action",
+      "groupName": "lima",
+      "matchPackageNames": [
+        "lima",
+        "lima-vm/lima"
+      ]
+    },
+    {
+      "addLabels": [
+        "swag"
+      ],
+      "description": "Group Swag CLI and Go module updates",
+      "groupName": "swag",
+      "matchPackageNames": [
+        "swag",
+        "github.com/swaggo/swag",
+        "github.com/swaggo/swag/v2"
+      ]
     }
   ],
   "postUpdateOptions": [
