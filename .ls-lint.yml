@@ -21,6 +21,7 @@ ls:
     .dir: kebab-case
 
 ignore:
+  - .agent
   - .git
   - ui/node_modules
   - "**/.react-router"
