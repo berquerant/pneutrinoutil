@@ -69,69 +69,9 @@ func (r *APIRunner) Synthesize(ctx context.Context, params *SynthesizeParams) (*
 	startTime := time.Now()
 	_, _, _, serverURI := r.cfg.ResolveEffectiveConfig(params.Options)
 
-	var body bytes.Buffer
-	writer := multipart.NewWriter(&body)
-
-	part, err := writer.CreateFormFile("score", "score.musicxml")
+	requestID, err := r.submitScoreJob(ctx, serverURI, params)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create multipart form: %w", err)
-	}
-
-	if params.ScorePath != "" {
-		f, err := os.Open(params.ScorePath)
-		if err != nil {
-			return nil, fmt.Errorf("failed to open score file %s: %w", params.ScorePath, err)
-		}
-		defer func() { _ = f.Close() }()
-		if _, err := io.Copy(part, f); err != nil {
-			return nil, fmt.Errorf("failed to copy score data: %w", err)
-		}
-	} else if params.ScoreContent != "" {
-		if _, err := io.WriteString(part, params.ScoreContent); err != nil {
-			return nil, fmt.Errorf("failed to write score content: %w", err)
-		}
-	} else {
-		return nil, fmt.Errorf("either scorePath or scoreContent must be provided")
-	}
-
-	if params.Model != "" {
-		_ = writer.WriteField("model", params.Model)
-	}
-	if params.SupportModel != "" {
-		_ = writer.WriteField("supportModel", params.SupportModel)
-	}
-	if params.Transpose != 0 {
-		_ = writer.WriteField("transpose", strconv.Itoa(params.Transpose))
-	}
-	if err := writer.Close(); err != nil {
-		return nil, fmt.Errorf("failed to close multipart writer: %w", err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf("%s/proc", serverURI), &body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
-	}
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-
-	resp, err := r.cfg.HTTPClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to send request to %s: %w", serverURI, err)
-	}
-	defer func() { _ = resp.Body.Close() }()
-
-	if resp.StatusCode != http.StatusAccepted {
-		respBody, _ := io.ReadAll(resp.Body)
-		return &SynthesizeResult{
-			Mode:        string(ModeAPI),
-			Status:      "failed",
-			ErrorDetail: fmt.Sprintf("server returned status %d: %s", resp.StatusCode, string(respBody)),
-			ElapsedSec:  time.Since(startTime).Seconds(),
-		}, nil
-	}
-
-	requestID := resp.Header.Get("X-Request-Id")
-	if requestID == "" {
-		return nil, fmt.Errorf("server did not return X-Request-Id header")
+		return nil, err
 	}
 
 	if !params.Wait {
@@ -144,6 +84,89 @@ func (r *APIRunner) Synthesize(ctx context.Context, params *SynthesizeParams) (*
 		}, nil
 	}
 
+	return r.pollJobCompletion(ctx, params, requestID, startTime)
+}
+
+func (r *APIRunner) submitScoreJob(ctx context.Context, serverURI string, params *SynthesizeParams) (string, error) {
+	body, contentType, err := buildScoreMultipartForm(params)
+	if err != nil {
+		return "", err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf("%s/proc", serverURI), body)
+	if err != nil {
+		return "", fmt.Errorf("failed to create request: %w", err)
+	}
+	req.Header.Set("Content-Type", contentType)
+
+	resp, err := r.cfg.HTTPClient.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("failed to send request to %s: %w", serverURI, err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusAccepted {
+		respBody, _ := io.ReadAll(resp.Body)
+		return "", fmt.Errorf("server returned status %d: %s", resp.StatusCode, string(respBody))
+	}
+
+	requestID := resp.Header.Get("X-Request-Id")
+	if requestID == "" {
+		return "", fmt.Errorf("server did not return X-Request-Id header")
+	}
+	return requestID, nil
+}
+
+func buildScoreMultipartForm(params *SynthesizeParams) (*bytes.Buffer, string, error) {
+	var body bytes.Buffer
+	writer := multipart.NewWriter(&body)
+
+	part, err := writer.CreateFormFile("score", "score.musicxml")
+	if err != nil {
+		return nil, "", fmt.Errorf("failed to create multipart form: %w", err)
+	}
+
+	if err := writeScorePayload(part, params); err != nil {
+		return nil, "", err
+	}
+
+	if params.Model != "" {
+		_ = writer.WriteField("model", params.Model)
+	}
+	if params.SupportModel != "" {
+		_ = writer.WriteField("supportModel", params.SupportModel)
+	}
+	if params.Transpose != 0 {
+		_ = writer.WriteField("transpose", strconv.Itoa(params.Transpose))
+	}
+	if err := writer.Close(); err != nil {
+		return nil, "", fmt.Errorf("failed to close multipart writer: %w", err)
+	}
+	return &body, writer.FormDataContentType(), nil
+}
+
+func writeScorePayload(w io.Writer, params *SynthesizeParams) error {
+	if params.ScorePath != "" {
+		f, err := os.Open(params.ScorePath)
+		if err != nil {
+			return fmt.Errorf("failed to open score file %s: %w", params.ScorePath, err)
+		}
+		defer func() { _ = f.Close() }()
+		if _, err := io.Copy(w, f); err != nil {
+			return fmt.Errorf("failed to copy score data: %w", err)
+		}
+		return nil
+	}
+	if params.ScoreContent != "" {
+		if _, err := io.WriteString(w, params.ScoreContent); err != nil {
+			return fmt.Errorf("failed to write score content: %w", err)
+		}
+		return nil
+	}
+	return fmt.Errorf("either scorePath or scoreContent must be provided")
+}
+
+func (r *APIRunner) pollJobCompletion(ctx context.Context, params *SynthesizeParams, requestID string, startTime time.Time) (*SynthesizeResult, error) {
 	timeoutSec := 30
 	if params.TimeoutSeconds > 0 {
 		timeoutSec = params.TimeoutSeconds
