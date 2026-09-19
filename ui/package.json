@@ -23,7 +23,7 @@
     "react-router": "^8.3.1"
   },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^2.40.1",
+    "@openapitools/openapi-generator-cli": "^2.41.0",
     "@pnpm/exe": "12.3.4",
     "@react-router/dev": "^8.3.1",
     "@types/node": "^26.4.1",
