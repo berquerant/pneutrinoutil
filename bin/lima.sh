@@ -24,7 +24,7 @@ get_github_token() {
         echo "$GITHUB_TOKEN"
     elif [[ -n "${GH_TOKEN:-}" ]]; then
         echo "$GH_TOKEN"
-    elif command -v gh >/dev/null 2>&1; then
+    elif [[ "${GITHUB_ACTIONS:-}" != "true" ]] && command -v gh >/dev/null 2>&1; then
         if gh auth status >/dev/null 2>&1; then
             gh auth token 2>/dev/null || true
         fi

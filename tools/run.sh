@@ -18,7 +18,7 @@ if [[ -z "$name" ]] ; then
 fi
 shift
 
-if [[ -z "${GITHUB_TOKEN:-}" && -z "${GH_TOKEN:-}" ]] && command -v gh >/dev/null 2>&1; then
+if [[ -z "${GITHUB_TOKEN:-}" && -z "${GH_TOKEN:-}" && "${GITHUB_ACTIONS:-}" != "true" ]] && command -v gh >/dev/null 2>&1; then
     if gh auth status >/dev/null 2>&1; then
         _gh_token="$(gh auth token 2>/dev/null || true)"
         if [[ -n "$_gh_token" ]]; then
