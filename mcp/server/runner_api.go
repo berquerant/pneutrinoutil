@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/berquerant/pneutrinoutil/cli/info"
@@ -27,7 +28,7 @@ func NewAPIRunner(cfg *Config) *APIRunner {
 
 func (r *APIRunner) GetInfo(ctx context.Context, opt *ExecutionOptions) (*info.Info, error) {
 	_, _, _, serverURI := r.cfg.ResolveEffectiveConfig(opt)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/version", serverURI), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, apiURL(serverURI, "/version"), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +94,7 @@ func (r *APIRunner) submitScoreJob(ctx context.Context, serverURI string, params
 		return "", err
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf("%s/proc", serverURI), body)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, apiURL(serverURI, "/proc"), body)
 	if err != nil {
 		return "", fmt.Errorf("failed to create request: %w", err)
 	}
@@ -225,7 +226,7 @@ func (r *APIRunner) pollJobCompletion(ctx context.Context, params *SynthesizePar
 func (r *APIRunner) CheckProcess(ctx context.Context, params *CheckProcessParams) (*CheckProcessResult, error) {
 	_, _, workDir, serverURI := r.cfg.ResolveEffectiveConfig(params.Options)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/proc/%s/detail", serverURI, params.RequestID), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, apiURL(serverURI, fmt.Sprintf("/proc/%s/detail", params.RequestID)), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -270,7 +271,7 @@ func (r *APIRunner) CheckProcess(ctx context.Context, params *CheckProcessParams
 	}
 
 	if status == "succeed" || status == "failed" {
-		logReq, _ := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/proc/%s/log", serverURI, params.RequestID), nil)
+		logReq, _ := http.NewRequestWithContext(ctx, http.MethodGet, apiURL(serverURI, fmt.Sprintf("/proc/%s/log", params.RequestID)), nil)
 		if logResp, err := r.cfg.HTTPClient.Do(logReq); err == nil {
 			if logResp.StatusCode == http.StatusOK {
 				logBytes, _ := io.ReadAll(logResp.Body)
@@ -281,7 +282,7 @@ func (r *APIRunner) CheckProcess(ctx context.Context, params *CheckProcessParams
 	}
 
 	if params.DownloadWav && status == "succeed" {
-		wavReq, _ := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/proc/%s/wav", serverURI, params.RequestID), nil)
+		wavReq, _ := http.NewRequestWithContext(ctx, http.MethodGet, apiURL(serverURI, fmt.Sprintf("/proc/%s/wav", params.RequestID)), nil)
 		if wavResp, err := r.cfg.HTTPClient.Do(wavReq); err == nil {
 			if wavResp.StatusCode == http.StatusOK {
 				destDir := filepath.Join(workDir, "downloads", params.RequestID)
@@ -298,4 +299,10 @@ func (r *APIRunner) CheckProcess(ctx context.Context, params *CheckProcessParams
 	}
 
 	return result, nil
+}
+
+func apiURL(baseURI, endpoint string) string {
+	cleanBase := strings.TrimRight(baseURI, "/")
+	cleanEndpoint := "/" + strings.TrimLeft(endpoint, "/")
+	return cleanBase + cleanEndpoint
 }
