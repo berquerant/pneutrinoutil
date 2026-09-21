@@ -37,12 +37,13 @@ limactl() {
 
 shell_in_vm() {
     local __token
+    { set +x; } 2>/dev/null
     __token="$(get_github_token)"
     if [[ -n "$__token" ]]; then
-        { set +x; } 2>/dev/null
         limactl shell "$name" env "GITHUB_TOKEN=${__token}" "$@"
         set -x
     else
+        set -x
         limactl shell "$name" "$@"
     fi
 }
