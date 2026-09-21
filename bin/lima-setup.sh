@@ -26,11 +26,6 @@ install_mise() {
     echo 'eval "$(~/.local/bin/mise activate bash)"' >> "${HOME}/.profile"
     echo 'eval "$(~/.local/bin/mise activate bash)"' >> "${HOME}/.bashrc"
     "${HOME}/.local/bin/mise" settings set yes true || true
-    if [[ -n "${GITHUB_TOKEN:-}" ]]; then
-        { set +x; } 2>/dev/null
-        "${HOME}/.local/bin/mise" settings set github_token "${GITHUB_TOKEN}" || true
-        set -x
-    fi
 }
 
 install_awscli() {
