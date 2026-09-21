@@ -17,6 +17,16 @@ readonly go_cache_dir="${vm_cache_dir}/go/cache"
 readonly gomod_cache_dir="${vm_cache_dir}/go/modcache"
 readonly docker_cache_dir="${vm_cache_dir}/docker"
 
+get_github_token() {
+    if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+        echo "$GITHUB_TOKEN"
+    elif [[ -n "${GH_TOKEN:-}" ]]; then
+        echo "$GH_TOKEN"
+    elif command -v gh >/dev/null 2>&1; then
+        gh auth token 2>/dev/null || true
+    fi
+}
+
 limactl() {
     "${d}/../tools/run.sh" limactl "$@"
 }
@@ -44,9 +54,19 @@ EOS
     fi
 
     limactl copy "${d}/lima-setup.sh" "${name}:/tmp/"
-    limactl shell "$name" /tmp/lima-setup.sh \
-            "${vm_repo_dir}" \
-            "${target_ref}"
+    local __gh_token
+    __gh_token="$(get_github_token)"
+    if [[ -n "$__gh_token" ]]; then
+        { set +x; } 2>/dev/null
+        limactl shell "$name" env "GITHUB_TOKEN=${__gh_token}" /tmp/lima-setup.sh \
+                "${vm_repo_dir}" \
+                "${target_ref}"
+        set -x
+    else
+        limactl shell "$name" /tmp/lima-setup.sh \
+                "${vm_repo_dir}" \
+                "${target_ref}"
+    fi
 }
 
 stop() {
@@ -72,12 +92,29 @@ run() {
     limactl shell "$name" mkdir -p "$vm_repo_dir"
     limactl shell "$name" tar -xzf /tmp/pneutrinoutil-src.tar.gz -C "$vm_repo_dir"
     limactl shell "$name" find "$vm_repo_dir" -name "._*" -delete
-    limactl shell "$name" bash -c "cd $vm_repo_dir && export PATH=\${HOME}/.local/bin:\${PATH} && ~/.local/bin/mise trust --all 2>/dev/null || true && ~/.local/bin/mise install"
+    local __gh_token
+    __gh_token="$(get_github_token)"
+    if [[ -n "$__gh_token" ]]; then
+        { set +x; } 2>/dev/null
+        limactl shell "$name" bash -c "cd $vm_repo_dir && export PATH=\${HOME}/.local/bin:\${PATH} && export GITHUB_TOKEN=\"$__gh_token\" && ~/.local/bin/mise trust --all 2>/dev/null || true && ~/.local/bin/mise install"
+        set -x
+    else
+        limactl shell "$name" bash -c "cd $vm_repo_dir && export PATH=\${HOME}/.local/bin:\${PATH} && ~/.local/bin/mise trust --all 2>/dev/null || true && ~/.local/bin/mise install"
+    fi
 
     local __script
     __script="$(mktemp "${d}/../tmp/run.XXXXXX")"
     cat <<EOS > "$__script"
 #!/bin/bash
+EOS
+    if [[ -n "$__gh_token" ]]; then
+        cat <<EOS >> "$__script"
+{ set +x; } 2>/dev/null
+export GITHUB_TOKEN="${__gh_token}"
+set -x
+EOS
+    fi
+    cat <<EOS >> "$__script"
 set -ex
 cd "$vm_repo_dir"
 export CACHEDIR="${vm_cache_dir}"
@@ -85,6 +122,8 @@ export GOCACHE="${go_cache_dir}"
 export GOMODCACHE="${gomod_cache_dir}"
 export GOFLAGS="-modcacherw"
 export DOCKERCACHE="${docker_cache_dir}"
+\${GITHUB_TOKEN+export GITHUB_TOKEN="\${GITHUB_TOKEN}"}
+\${GH_TOKEN+export GH_TOKEN="\${GH_TOKEN}"}
 \${SKIP_BUILD+export SKIP_BUILD="\${SKIP_BUILD}"}
 \${SKIP_RELOAD_CLUSTER+export SKIP_RELOAD_CLUSTER="\${SKIP_RELOAD_CLUSTER}"}
 \${SKIP_DEPLOY+export SKIP_DEPLOY="\${SKIP_DEPLOY}"}
