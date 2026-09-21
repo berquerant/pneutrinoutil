@@ -35,6 +35,18 @@ limactl() {
     "${d}/../tools/run.sh" limactl "$@"
 }
 
+shell_in_vm() {
+    local __token
+    __token="$(get_github_token)"
+    if [[ -n "$__token" ]]; then
+        { set +x; } 2>/dev/null
+        limactl shell "$name" env "GITHUB_TOKEN=${__token}" "$@"
+        set -x
+    else
+        limactl shell "$name" "$@"
+    fi
+}
+
 start() {
     if limactl list --json 2>/dev/null | grep -q "\"name\":\"${name}\""; then
         limactl start "${name}"
@@ -58,19 +70,7 @@ EOS
     fi
 
     limactl copy "${d}/lima-setup.sh" "${name}:/tmp/"
-    local __gh_token
-    __gh_token="$(get_github_token)"
-    if [[ -n "$__gh_token" ]]; then
-        { set +x; } 2>/dev/null
-        limactl shell "$name" env "GITHUB_TOKEN=${__gh_token}" /tmp/lima-setup.sh \
-                "${vm_repo_dir}" \
-                "${target_ref}"
-        set -x
-    else
-        limactl shell "$name" /tmp/lima-setup.sh \
-                "${vm_repo_dir}" \
-                "${target_ref}"
-    fi
+    shell_in_vm /tmp/lima-setup.sh "${vm_repo_dir}" "${target_ref}"
 }
 
 stop() {
@@ -96,16 +96,9 @@ run() {
     limactl shell "$name" mkdir -p "$vm_repo_dir"
     limactl shell "$name" tar -xzf /tmp/pneutrinoutil-src.tar.gz -C "$vm_repo_dir"
     limactl shell "$name" find "$vm_repo_dir" -name "._*" -delete
-    local __gh_token
-    __gh_token="$(get_github_token)"
+
     local __mise_env="export MISE_DATA_DIR=\"$mise_data_dir\" && export MISE_CACHE_DIR=\"$mise_cache_dir\""
-    if [[ -n "$__gh_token" ]]; then
-        { set +x; } 2>/dev/null
-        limactl shell "$name" bash -c "cd $vm_repo_dir && export PATH=\${HOME}/.local/bin:\${PATH} && $__mise_env && export GITHUB_TOKEN=\"$__gh_token\" && ~/.local/bin/mise trust --all 2>/dev/null || true && ~/.local/bin/mise install"
-        set -x
-    else
-        limactl shell "$name" bash -c "cd $vm_repo_dir && export PATH=\${HOME}/.local/bin:\${PATH} && $__mise_env && ~/.local/bin/mise trust --all 2>/dev/null || true && ~/.local/bin/mise install"
-    fi
+    shell_in_vm bash -c "cd $vm_repo_dir && export PATH=\${HOME}/.local/bin:\${PATH} && $__mise_env && \${GITHUB_TOKEN+export GITHUB_TOKEN=\"\${GITHUB_TOKEN}\"} && ~/.local/bin/mise trust --all 2>/dev/null || true && ~/.local/bin/mise install"
 
     local __script
     __script="$(mktemp "${d}/../tmp/run.XXXXXX")"
