@@ -98,21 +98,12 @@ run() {
     limactl shell "$name" find "$vm_repo_dir" -name "._*" -delete
 
     local __mise_env="export MISE_DATA_DIR=\"$mise_data_dir\" && export MISE_CACHE_DIR=\"$mise_cache_dir\""
-    shell_in_vm bash -c "cd $vm_repo_dir && export PATH=\${HOME}/.local/bin:\${PATH} && $__mise_env && \${GITHUB_TOKEN+export GITHUB_TOKEN=\"\${GITHUB_TOKEN}\"} && ~/.local/bin/mise trust --all 2>/dev/null || true && ~/.local/bin/mise install"
+    shell_in_vm bash -c "cd $vm_repo_dir && export PATH=\${HOME}/.local/bin:\${PATH} && $__mise_env && ~/.local/bin/mise trust --all 2>/dev/null || true && ~/.local/bin/mise install"
 
     local __script
     __script="$(mktemp "${d}/../tmp/run.XXXXXX")"
     cat <<EOS > "$__script"
 #!/bin/bash
-EOS
-    if [[ -n "$__gh_token" ]]; then
-        cat <<EOS >> "$__script"
-{ set +x; } 2>/dev/null
-export GITHUB_TOKEN="${__gh_token}"
-set -x
-EOS
-    fi
-    cat <<EOS >> "$__script"
 set -ex
 cd "$vm_repo_dir"
 export CACHEDIR="${vm_cache_dir}"
@@ -122,8 +113,6 @@ export GOFLAGS="-modcacherw"
 export DOCKERCACHE="${docker_cache_dir}"
 export MISE_DATA_DIR="${mise_data_dir}"
 export MISE_CACHE_DIR="${mise_cache_dir}"
-\${GITHUB_TOKEN+export GITHUB_TOKEN="\${GITHUB_TOKEN}"}
-\${GH_TOKEN+export GH_TOKEN="\${GH_TOKEN}"}
 \${SKIP_BUILD+export SKIP_BUILD="\${SKIP_BUILD}"}
 \${SKIP_RELOAD_CLUSTER+export SKIP_RELOAD_CLUSTER="\${SKIP_RELOAD_CLUSTER}"}
 \${SKIP_DEPLOY+export SKIP_DEPLOY="\${SKIP_DEPLOY}"}
@@ -142,7 +131,7 @@ EOS
     chmod +x "$__script"
     limactl copy "$__script" "${name}:/tmp/run.sh"
     rm -f "$__script"
-    exec "${d}/../tools/run.sh" limactl shell "$name" /tmp/run.sh "$@"
+    shell_in_vm /tmp/run.sh "$@"
 }
 
 set -ex
