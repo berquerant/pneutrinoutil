@@ -19,6 +19,9 @@ readonly docker_cache_dir="${vm_cache_dir}/docker"
 readonly mise_data_dir="${vm_cache_dir}/mise/data"
 readonly mise_cache_dir="${vm_cache_dir}/mise/cache"
 
+# Resolves a GitHub token to pass to the Lima VM for mise tool installations.
+# Prioritizes explicit environment variables, and falls back to 'gh auth token'
+# only outside GitHub Actions to prevent accidental invalid token usage.
 get_github_token() {
     if [[ -n "${GITHUB_TOKEN:-}" ]]; then
         echo "$GITHUB_TOKEN"
@@ -35,6 +38,9 @@ limactl() {
     "${d}/../tools/run.sh" limactl "$@"
 }
 
+# Executes a command in the Lima VM. When a GitHub token is available, passes it
+# via the environment to the VM while temporarily disabling trace output (+x)
+# so the secret is never echoed to stdout/stderr in debug logs.
 shell_in_vm() {
     local __token
     { set +x; } 2>/dev/null

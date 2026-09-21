@@ -301,6 +301,8 @@ func (r *APIRunner) CheckProcess(ctx context.Context, params *CheckProcessParams
 	return result, nil
 }
 
+// apiURL joins baseURI and endpoint safely, ensuring no double or missing slashes
+// regardless of whether baseURI includes trailing slashes (e.g., http://host/v1 vs http://host/v1/).
 func apiURL(baseURI, endpoint string) string {
 	cleanBase := strings.TrimRight(baseURI, "/")
 	cleanEndpoint := "/" + strings.TrimLeft(endpoint, "/")
