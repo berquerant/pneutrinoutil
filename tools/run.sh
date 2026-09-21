@@ -19,9 +19,11 @@ fi
 shift
 
 if [[ -z "${GITHUB_TOKEN:-}" && -z "${GH_TOKEN:-}" ]] && command -v gh >/dev/null 2>&1; then
-    _gh_token="$(gh auth token 2>/dev/null || true)"
-    if [[ -n "$_gh_token" ]]; then
-        export GITHUB_TOKEN="$_gh_token"
+    if gh auth status >/dev/null 2>&1; then
+        _gh_token="$(gh auth token 2>/dev/null || true)"
+        if [[ -n "$_gh_token" ]]; then
+            export GITHUB_TOKEN="$_gh_token"
+        fi
     fi
 fi
 

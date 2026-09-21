@@ -16,6 +16,8 @@ readonly vm_cache_dir="${VM_CACHE_DIR:-/tmp/cache}"
 readonly go_cache_dir="${vm_cache_dir}/go/cache"
 readonly gomod_cache_dir="${vm_cache_dir}/go/modcache"
 readonly docker_cache_dir="${vm_cache_dir}/docker"
+readonly mise_data_dir="${vm_cache_dir}/mise/data"
+readonly mise_cache_dir="${vm_cache_dir}/mise/cache"
 
 get_github_token() {
     if [[ -n "${GITHUB_TOKEN:-}" ]]; then
@@ -23,7 +25,9 @@ get_github_token() {
     elif [[ -n "${GH_TOKEN:-}" ]]; then
         echo "$GH_TOKEN"
     elif command -v gh >/dev/null 2>&1; then
-        gh auth token 2>/dev/null || true
+        if gh auth status >/dev/null 2>&1; then
+            gh auth token 2>/dev/null || true
+        fi
     fi
 }
 
@@ -94,12 +98,13 @@ run() {
     limactl shell "$name" find "$vm_repo_dir" -name "._*" -delete
     local __gh_token
     __gh_token="$(get_github_token)"
+    local __mise_env="export MISE_DATA_DIR=\"$mise_data_dir\" && export MISE_CACHE_DIR=\"$mise_cache_dir\""
     if [[ -n "$__gh_token" ]]; then
         { set +x; } 2>/dev/null
-        limactl shell "$name" bash -c "cd $vm_repo_dir && export PATH=\${HOME}/.local/bin:\${PATH} && export GITHUB_TOKEN=\"$__gh_token\" && ~/.local/bin/mise trust --all 2>/dev/null || true && ~/.local/bin/mise install"
+        limactl shell "$name" bash -c "cd $vm_repo_dir && export PATH=\${HOME}/.local/bin:\${PATH} && $__mise_env && export GITHUB_TOKEN=\"$__gh_token\" && ~/.local/bin/mise trust --all 2>/dev/null || true && ~/.local/bin/mise install"
         set -x
     else
-        limactl shell "$name" bash -c "cd $vm_repo_dir && export PATH=\${HOME}/.local/bin:\${PATH} && ~/.local/bin/mise trust --all 2>/dev/null || true && ~/.local/bin/mise install"
+        limactl shell "$name" bash -c "cd $vm_repo_dir && export PATH=\${HOME}/.local/bin:\${PATH} && $__mise_env && ~/.local/bin/mise trust --all 2>/dev/null || true && ~/.local/bin/mise install"
     fi
 
     local __script
@@ -122,6 +127,8 @@ export GOCACHE="${go_cache_dir}"
 export GOMODCACHE="${gomod_cache_dir}"
 export GOFLAGS="-modcacherw"
 export DOCKERCACHE="${docker_cache_dir}"
+export MISE_DATA_DIR="${mise_data_dir}"
+export MISE_CACHE_DIR="${mise_cache_dir}"
 \${GITHUB_TOKEN+export GITHUB_TOKEN="\${GITHUB_TOKEN}"}
 \${GH_TOKEN+export GH_TOKEN="\${GH_TOKEN}"}
 \${SKIP_BUILD+export SKIP_BUILD="\${SKIP_BUILD}"}

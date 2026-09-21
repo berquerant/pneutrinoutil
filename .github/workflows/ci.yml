@@ -78,6 +78,16 @@ jobs:
             ${{ runner.os }}-lima-docker-${{ github.ref_name }}-
             ${{ runner.os }}-lima-docker-main-
             ${{ runner.os }}-lima-docker-
+      - name: Cache mise tools
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ./tmp/lima/mise
+          key: ${{ runner.os }}-lima-mise-${{ github.ref_name }}-${{ hashFiles('mise.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-lima-mise-${{ github.ref_name }}-
+            ${{ runner.os }}-lima-mise-main-
+            ${{ runner.os }}-lima-mise-
       - name: Setup mise
         uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
       - name: Setup Lima
