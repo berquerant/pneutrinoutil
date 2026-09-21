@@ -15,6 +15,7 @@ This document provides guidelines and best practices for AI assistants developin
 | Directory | Technology | Purpose |
 | :--- | :--- | :--- |
 | `cli/` | Go (Cobra) | Command-line interface for batch rendering `.musicxml` → `.wav` |
+| `mcp/` | Go (mcp-sdk, Cobra) | Model Context Protocol (MCP) server for AI assistants (stdio) |
 | `server/` | Go (Echo v5) | HTTP REST API server with Swagger/OpenAPI documentation |
 | `worker/` | Go (Asynq) | Background task worker processing asynchronous synthesis jobs via Redis |
 | `ui/` | React 19, React Router v7, TypeScript, Vite | Web frontend for job submission, monitoring, and audio playback |
@@ -225,7 +226,7 @@ Use the `./task` runner (which executes `mise run` under the hood) for running s
 | **API Handler / Swagger Annotation Changes** | `./task gen:swag` | Generates Swagger docs in `server/docs` and updates TypeScript API client for UI. |
 | **Frontend UI (TypeScript/React) Editing** | `./task ui-lint` | Runs TypeScript type checking (`typecheck`). |
 | **End-to-End System Testing** | `./task test:e2e` | Runs E2E tests, verifying integration between Server, Worker, Redis, MySQL, and S3. |
-| **Building Individual Binaries** | `./task build:cli`<br>`./task build:server`<br>`./task build:worker` | Builds specific Go binaries to `dist/`. |
+| **Building Individual Binaries** | `./task build:cli`<br>`./task build:server`<br>`./task build:worker`<br>`./task build:mcp` | Builds specific Go binaries to `dist/`. |
 | **Building All Artifacts & Docker Images** | `./task build` | Builds all Go binaries and Docker images via `docker buildx bake`. |
 | **Updating Go Module Dependencies** | `./task tidy` | Runs `go mod tidy` for Go module dependencies. |
 | **Initial Project Setup / Environment Config** | `./task init` | Initializes local environment variables via `mise`. |
@@ -262,6 +263,11 @@ Use the `./task` runner (which executes `mise run` under the hood) for running s
 1. **Package Management:** Always use `pnpm`.
 2. **Type Safety:** Ensure strong TypeScript typing for API request/response structures. Avoid using `any`. Run `./task ui-lint` after modifying UI code.
 3. **UI/UX Excellence:** Maintain a modern, responsive interface using rich aesthetics (clean color palettes, micro-animations, clear status indicators for job processing and audio playback).
+
+### D. MCP Server (`mcp/`)
+1. **Transport:** Operates over `stdio` using official `mcp-sdk`. All application logs MUST be directed to `os.Stderr` to avoid corrupting the JSON-RPC stream on `os.Stdout`.
+2. **Dual-Mode Execution:** Supports `standalone` (local NEUTRINO invocation) and `api` (`pneutrinoutil-server` REST API).
+3. **Asynchronous Handshake for API Mode:** In `api` mode, the `synthesize` tool returns immediately (`wait: false` by default) with `requestId` to avoid timing out AI agent clients. The client monitors completion via `check_process`.
 
 ---
 

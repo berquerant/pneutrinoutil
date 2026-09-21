@@ -137,7 +137,7 @@ fi
 """
 
 [tasks."build:binaries"]
-depends = ["build:cli", "build:server", "build:worker", "build:mockcli", "build:gendata"]
+depends = ["build:cli", "build:server", "build:worker", "build:mcp", "build:mockcli", "build:gendata"]
 
 [tasks."build:cli"]
 run = "./bin/build.sh -o dist/pneutrinoutil cli/main.go"
@@ -147,6 +147,9 @@ run = "./bin/build.sh -o dist/pneutrinoutil-server server/main.go"
 
 [tasks."build:worker"]
 run = "./bin/build.sh -o dist/pneutrinoutil-worker worker/main.go"
+
+[tasks."build:mcp"]
+run = "./bin/build.sh -o dist/pneutrinoutil-mcp mcp/main.go"
 
 [tasks."build:mockcli"]
 run = "./bin/build.sh -o dist/pneutrinoutil-mockcli mockcli/main.go"

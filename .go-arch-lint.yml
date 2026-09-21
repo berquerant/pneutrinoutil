@@ -25,8 +25,6 @@ vendors:
     in: github.com/go-sql-driver/mysql
   yaml:
     in: github.com/goccy/go-yaml
-  google-uuid:
-    in: github.com/google/uuid
   asynq:
     in: github.com/hibiken/asynq
   echo:
@@ -43,6 +41,8 @@ vendors:
     in: github.com/BurntSushi/toml
   golangx:
     in: golang.org/x/**
+  mcp-sdk:
+    in: github.com/modelcontextprotocol/go-sdk/**
 
 components:
   #
@@ -112,6 +112,13 @@ components:
     in: worker/worker
   worker:
     in: worker
+  #
+  # mcp
+  #
+  mcp-server:
+    in: mcp/server
+  mcp:
+    in: mcp
 
 commonVendors:
   - yaml
@@ -122,6 +129,7 @@ commonComponents:
   - logx
   - pathx
   - set
+  - uuid
   - version
 
 deps:
@@ -180,9 +188,6 @@ deps:
       - repo
     canUse:
       - asynq
-  uuid:
-    canUse:
-      - google-uuid
   server-config:
     mayDependOn:
       - infra
@@ -243,5 +248,19 @@ deps:
     mayDependOn:
       - worker-config
       - worker-worker
+    canUse:
+      - cobra
+  mcp-server:
+    mayDependOn:
+      - cli-cmd
+      - cli-ctl
+      - cli-task
+      - cli-info
+    canUse:
+      - execx
+      - mcp-sdk
+  mcp:
+    mayDependOn:
+      - mcp-server
     canUse:
       - cobra

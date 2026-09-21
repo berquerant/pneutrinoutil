@@ -66,13 +66,21 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 		searcher     = repo.NewSearcher(searcherConn)
 	)
 
-	//
-	// middlewares
-	//
+	registerMiddlewares(e, cfg)
+	registerRoutes(e, cfg, client, objectAdmin, objects, details, processes, searcher)
+
+	return &Server{
+		e:      e,
+		c:      cfg,
+		db:     db,
+		client: client,
+	}, nil
+}
+
+func registerMiddlewares(e *echo.Echo, cfg *config.Config) {
 	const healthPath = "/health"
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		Skipper: func(c *echo.Context) bool {
-			// skip /health access log
 			return strings.Contains(c.Request().RequestURI, healthPath)
 		},
 		LogValuesFunc: func(c *echo.Context, v middleware.RequestLoggerValues) error {
@@ -117,11 +125,20 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 	}))
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
-	//
-	// handlers
-	//
+}
+
+func registerRoutes(
+	e *echo.Echo,
+	cfg *config.Config,
+	client *asynq.Client,
+	objectAdmin *repo.ObjectAdmin,
+	objects *repo.Object,
+	details *repo.ProcessDetails,
+	processes *repo.Process,
+	searcher *repo.Searcher,
+) {
 	v1 := e.Group("/v1")
-	r1 := v1.GET(healthPath, handler.Health)
+	r1 := v1.GET("/health", handler.Health)
 	r1.Name = "health"
 	r2 := v1.GET("/version", handler.Version)
 	r2.Name = "version"
@@ -144,13 +161,6 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 	r9.Name = "getWav"
 	r10 := getGroup.GET("/log", getHandler.Log)
 	r10.Name = "getLog"
-
-	return &Server{
-		e:      e,
-		c:      cfg,
-		db:     db,
-		client: client,
-	}, nil
 }
 
 func (s *Server) Start(ctx context.Context) {

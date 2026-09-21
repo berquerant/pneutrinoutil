@@ -16,9 +16,42 @@ readonly vm_cache_dir="${VM_CACHE_DIR:-/tmp/cache}"
 readonly go_cache_dir="${vm_cache_dir}/go/cache"
 readonly gomod_cache_dir="${vm_cache_dir}/go/modcache"
 readonly docker_cache_dir="${vm_cache_dir}/docker"
+readonly mise_data_dir="${vm_cache_dir}/mise/data"
+readonly mise_cache_dir="${vm_cache_dir}/mise/cache"
+
+# Resolves a GitHub token to pass to the Lima VM for mise tool installations.
+# Prioritizes explicit environment variables, and falls back to 'gh auth token'
+# only outside GitHub Actions to prevent accidental invalid token usage.
+get_github_token() {
+    if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+        echo "$GITHUB_TOKEN"
+    elif [[ -n "${GH_TOKEN:-}" ]]; then
+        echo "$GH_TOKEN"
+    elif [[ "${GITHUB_ACTIONS:-}" != "true" ]] && command -v gh >/dev/null 2>&1; then
+        if gh auth status >/dev/null 2>&1; then
+            gh auth token 2>/dev/null || true
+        fi
+    fi
+}
 
 limactl() {
     "${d}/../tools/run.sh" limactl "$@"
+}
+
+# Executes a command in the Lima VM. When a GitHub token is available, passes it
+# via the environment to the VM while temporarily disabling trace output (+x)
+# so the secret is never echoed to stdout/stderr in debug logs.
+shell_in_vm() {
+    local __token
+    { set +x; } 2>/dev/null
+    __token="$(get_github_token)"
+    if [[ -n "$__token" ]]; then
+        limactl shell "$name" env "GITHUB_TOKEN=${__token}" "$@"
+        set -x
+    else
+        set -x
+        limactl shell "$name" "$@"
+    fi
 }
 
 start() {
@@ -44,9 +77,7 @@ EOS
     fi
 
     limactl copy "${d}/lima-setup.sh" "${name}:/tmp/"
-    limactl shell "$name" /tmp/lima-setup.sh \
-            "${vm_repo_dir}" \
-            "${target_ref}"
+    shell_in_vm /tmp/lima-setup.sh "${vm_repo_dir}" "${target_ref}"
 }
 
 stop() {
@@ -72,7 +103,9 @@ run() {
     limactl shell "$name" mkdir -p "$vm_repo_dir"
     limactl shell "$name" tar -xzf /tmp/pneutrinoutil-src.tar.gz -C "$vm_repo_dir"
     limactl shell "$name" find "$vm_repo_dir" -name "._*" -delete
-    limactl shell "$name" bash -c "cd $vm_repo_dir && export PATH=\${HOME}/.local/bin:\${PATH} && ~/.local/bin/mise trust --all 2>/dev/null || true && ~/.local/bin/mise install"
+
+    local __mise_env="export MISE_DATA_DIR=\"$mise_data_dir\" && export MISE_CACHE_DIR=\"$mise_cache_dir\""
+    shell_in_vm bash -c "cd $vm_repo_dir && export PATH=\${HOME}/.local/bin:\${PATH} && $__mise_env && ~/.local/bin/mise trust --all 2>/dev/null || true && ~/.local/bin/mise install"
 
     local __script
     __script="$(mktemp "${d}/../tmp/run.XXXXXX")"
@@ -85,6 +118,8 @@ export GOCACHE="${go_cache_dir}"
 export GOMODCACHE="${gomod_cache_dir}"
 export GOFLAGS="-modcacherw"
 export DOCKERCACHE="${docker_cache_dir}"
+export MISE_DATA_DIR="${mise_data_dir}"
+export MISE_CACHE_DIR="${mise_cache_dir}"
 \${SKIP_BUILD+export SKIP_BUILD="\${SKIP_BUILD}"}
 \${SKIP_RELOAD_CLUSTER+export SKIP_RELOAD_CLUSTER="\${SKIP_RELOAD_CLUSTER}"}
 \${SKIP_DEPLOY+export SKIP_DEPLOY="\${SKIP_DEPLOY}"}
@@ -103,7 +138,7 @@ EOS
     chmod +x "$__script"
     limactl copy "$__script" "${name}:/tmp/run.sh"
     rm -f "$__script"
-    exec "${d}/../tools/run.sh" limactl shell "$name" /tmp/run.sh "$@"
+    shell_in_vm /tmp/run.sh "$@"
 }
 
 set -ex
