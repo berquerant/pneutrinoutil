@@ -19,7 +19,6 @@ helm = "4.2.4"
 stern = "1.34.0"
 swag = "1.16.6"
 yq = "4.53.6"
-lima = "2.2.0"
 
 [env]
 SERVER_HOST = "127.0.0.1"
@@ -52,6 +51,7 @@ STORAGE_BUCKET = "pneutrinoutil"
 TEST_STORAGE_BUCKET = "test"
 STORAGES3 = "true"
 
+KIND_CLUSTER_NAME = "pneutrinoutil"
 KIND_NODE_IMAGE = "kindest/node:v1.37.0"
 
 SERVER_URI = "http://{{env.SERVER_HOST}}:{{env.SERVER_PORT}}/v1"
@@ -137,7 +137,7 @@ fi
 """
 
 [tasks."build:binaries"]
-depends = ["build:cli", "build:server", "build:worker", "build:mockcli", "build:gendata"]
+depends = ["build:cli", "build:server", "build:worker", "build:mcp", "build:mockcli", "build:gendata"]
 
 [tasks."build:cli"]
 run = "./bin/build.sh -o dist/pneutrinoutil cli/main.go"
@@ -147,6 +147,9 @@ run = "./bin/build.sh -o dist/pneutrinoutil-server server/main.go"
 
 [tasks."build:worker"]
 run = "./bin/build.sh -o dist/pneutrinoutil-worker worker/main.go"
+
+[tasks."build:mcp"]
+run = "./bin/build.sh -o dist/pneutrinoutil-mcp mcp/main.go"
 
 [tasks."build:mockcli"]
 run = "./bin/build.sh -o dist/pneutrinoutil-mockcli mockcli/main.go"
@@ -159,17 +162,23 @@ run = "./bin/build.sh -o dist/pneutrinoutil-gendata gendata/main.go"
 [tasks.test]
 run = [
   "mise run test:unit",
+  "mise run test:integration",
   "mise run test:e2e",
 ]
 
 [tasks."test:unit"]
-description = "Run unit tests"
+description = "Run pure unit tests (no external dependencies)"
+depends = ["gen:ignore-tmp"]
+run = "go test ${TEST_PARALLEL+-p $TEST_PARALLEL} -cover $(go list ./... | grep -v tmp | grep -v tests) ${DEBUG+-v -count=1}"
+
+[tasks."test:integration"]
+description = "Run integration tests"
 depends = ["gen:ignore-tmp"]
 run = """
 if [ "$SKIP_DEPLOY" != "true" ]; then
   mise run k8s:test
 fi
-TEST=true ./bin/env.sh go test ${TEST_PARALLEL+-p $TEST_PARALLEL} -cover $(go list ./... | grep -v tmp | grep -v tests) ${DEBUG+-v -count=1}
+TEST=true ./bin/env.sh go test -tags=integration ${TEST_PARALLEL+-p $TEST_PARALLEL} -cover ./pkg/infra ${DEBUG+-v -count=1}
 """
 
 [tasks."test:e2e"]
@@ -264,10 +273,10 @@ run = "mise run k8s:deploy"
 depends = ["run:stop-k8s-worker", "k8s:delete-cluster"]
 
 [tasks."k8s:delete-cluster"]
-run = "./tools/run.sh kind delete cluster || true"
+run = "./tools/run.sh kind delete cluster --name \"$KIND_CLUSTER_NAME\" || true"
 
 [tasks."k8s:create-cluster"]
-run = "./tools/run.sh kind create cluster --config .cluster.yaml --image \"$KIND_NODE_IMAGE\""
+run = "./tools/run.sh kind create cluster --name \"$KIND_CLUSTER_NAME\" --config .cluster.yaml --image \"$KIND_NODE_IMAGE\""
 
 [tasks."k8s:reload-cluster"]
 run = """
@@ -309,16 +318,16 @@ depends = ["k8s:restart-server", "k8s:restart-ui"]
 run = "./tools/run.sh kubectl rollout restart deploy pneutrinoutil-server || true"
 
 [tasks."k8s:load-server-image"]
-run = "./tools/run.sh kind load docker-image pneutrinoutil/server:local"
+run = "./tools/run.sh kind load docker-image --name \"$KIND_CLUSTER_NAME\" pneutrinoutil/server:local"
 
 [tasks."k8s:restart-ui"]
 run = "./tools/run.sh kubectl rollout restart deploy pneutrinoutil-ui || true"
 
 [tasks."k8s:load-ui-image"]
-run = "./tools/run.sh kind load docker-image pneutrinoutil/ui:local"
+run = "./tools/run.sh kind load docker-image --name \"$KIND_CLUSTER_NAME\" pneutrinoutil/ui:local"
 
 [tasks."k8s:load-curl-image"]
-run = "./tools/run.sh kind load docker-image pneutrinoutil/curl:local"
+run = "./tools/run.sh kind load docker-image --name \"$KIND_CLUSTER_NAME\" pneutrinoutil/curl:local"
 
 # --- Run Tasks ---
 
@@ -378,25 +387,3 @@ description = "Generate UI API"
 dir = "./ui"
 depends = ["ui:install"]
 run = "./bin/swag.sh"
-
-# --- Lima Tasks ---
-
-[tasks."lima:start"]
-description = "Start Lima VM"
-run = "./bin/lima.sh start"
-
-[tasks."lima:stop"]
-description = "Stop Lima VM"
-run = "./bin/lima.sh stop"
-
-[tasks."lima:reload"]
-description = "Recreate and start Lima VM"
-run = "./bin/lima.sh reload"
-
-[tasks."lima:unit"]
-description = "Run unit tests inside Lima VM"
-run = "./bin/lima.sh run ./task test:unit"
-
-[tasks."lima:e2e"]
-description = "Run E2E tests inside Lima VM"
-run = "./bin/lima.sh run ./task test:e2e"

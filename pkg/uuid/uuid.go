@@ -1,7 +1,9 @@
 package uuid
 
-import uid "github.com/google/uuid"
+import (
+	std_uuid "uuid"
+)
 
 func New() string {
-	return uid.NewString()
+	return std_uuid.New().String()
 }

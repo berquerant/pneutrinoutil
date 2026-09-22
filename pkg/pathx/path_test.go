@@ -1,7 +1,6 @@
 package pathx_test
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -11,53 +10,105 @@ import (
 )
 
 func TestEnsure(t *testing.T) {
-	root := t.TempDir()
+	t.Run("EnsureDir", func(t *testing.T) {
+		root := t.TempDir()
+		dir := filepath.Join(root, "dir")
 
-	dir := filepath.Join(root, "dir")
-	assert.Equal(t, pathx.EnotExist, pathx.Exist(dir))
+		for _, tc := range []struct {
+			title    string
+			action   func() error
+			wantType pathx.ExistType
+		}{
+			{
+				title:    "initial state is not exist",
+				action:   func() error { return nil },
+				wantType: pathx.EnotExist,
+			},
+			{
+				title:    "create dir",
+				action:   func() error { return pathx.EnsureDir(dir) },
+				wantType: pathx.Edir,
+			},
+			{
+				title:    "create existing dir is idempotent",
+				action:   func() error { return pathx.EnsureDir(dir) },
+				wantType: pathx.Edir,
+			},
+		} {
+			t.Run(tc.title, func(t *testing.T) {
+				assert.Nil(t, tc.action())
+				assert.Equal(t, tc.wantType, pathx.Exist(dir))
+			})
+		}
+	})
 
-	assert.Nil(t, pathx.EnsureDir(dir))
-	assert.Equal(t, pathx.Edir, pathx.Exist(dir))
+	t.Run("EnsureFile", func(t *testing.T) {
+		root := t.TempDir()
+		file := filepath.Join(root, "file")
 
-	assert.Nil(t, pathx.EnsureDir(dir))
-	assert.Equal(t, pathx.Edir, pathx.Exist(dir))
+		const initialMode = 0644
+		const updatedMode = 0666
 
-	file := filepath.Join(root, "file")
-	const fileMode = 0644
-	assert.Equal(t, pathx.EnotExist, pathx.Exist(file))
+		for _, tc := range []struct {
+			title        string
+			opt          []pathx.ConfigOption
+			writeContent string
+			wantType     pathx.ExistType
+			wantMode     os.FileMode
+			wantSize     int64
+		}{
+			{
+				title:    "create new file",
+				opt:      []pathx.ConfigOption{pathx.WithMode(initialMode)},
+				wantType: pathx.Efile,
+				wantMode: initialMode,
+				wantSize: 0,
+			},
+			{
+				title:    "ensure existing file without changes",
+				opt:      []pathx.ConfigOption{pathx.WithMode(initialMode)},
+				wantType: pathx.Efile,
+				wantMode: initialMode,
+				wantSize: 0,
+			},
+			{
+				title:        "update mode and write content",
+				opt:          []pathx.ConfigOption{pathx.WithMode(updatedMode)},
+				writeContent: "test\n",
+				wantType:     pathx.Efile,
+				wantMode:     updatedMode,
+				wantSize:     5,
+			},
+			{
+				title:    "ensure file preserves content when truncate is false",
+				opt:      []pathx.ConfigOption{pathx.WithMode(updatedMode)},
+				wantType: pathx.Efile,
+				wantMode: updatedMode,
+				wantSize: 5,
+			},
+			{
+				title:    "ensure file truncates when truncate is true",
+				opt:      []pathx.ConfigOption{pathx.WithMode(updatedMode), pathx.WithTruncate(true)},
+				wantType: pathx.Efile,
+				wantMode: updatedMode,
+				wantSize: 0,
+			},
+		} {
+			t.Run(tc.title, func(t *testing.T) {
+				assert.Nil(t, pathx.EnsureFile(file, tc.opt...))
+				assert.Equal(t, tc.wantType, pathx.Exist(file))
+				assertFileMode(t, file, tc.wantMode)
 
-	assert.Nil(t, pathx.EnsureFile(file, pathx.WithMode(fileMode)))
-	assert.Equal(t, pathx.Efile, pathx.Exist(file))
-	assertFileMode(t, file, fileMode)
+				if tc.writeContent != "" {
+					assert.Nil(t, os.WriteFile(file, []byte(tc.writeContent), tc.wantMode))
+				}
 
-	assert.Nil(t, pathx.EnsureFile(file, pathx.WithMode(fileMode)))
-	assert.Equal(t, pathx.Efile, pathx.Exist(file))
-	assertFileMode(t, file, fileMode)
-
-	const newFileMode = 0666
-	assert.Nil(t, pathx.EnsureFile(file, pathx.WithMode(newFileMode)))
-	assert.Equal(t, pathx.Efile, pathx.Exist(file))
-	assertFileMode(t, file, newFileMode)
-
-	{
-		f, err := os.OpenFile(file, os.O_WRONLY, newFileMode)
-		assert.Nil(t, err)
-		defer f.Close()
-		_, err = fmt.Fprintln(f, "test")
-		assert.Nil(t, err)
-	}
-	assertFileSize := func(t *testing.T, size int64) {
-		info, err := os.Stat(file)
-		assert.Nil(t, err)
-		assert.Equal(t, size, info.Size())
-	}
-	assertFileSize(t, 5)
-
-	assert.Nil(t, pathx.EnsureFile(file, pathx.WithMode(newFileMode)))
-	assertFileSize(t, 5)
-
-	assert.Nil(t, pathx.EnsureFile(file, pathx.WithMode(newFileMode), pathx.WithTruncate(true)))
-	assertFileSize(t, 0)
+				info, err := os.Stat(file)
+				assert.Nil(t, err)
+				assert.Equal(t, tc.wantSize, info.Size())
+			})
+		}
+	})
 }
 
 func assertFileMode(t *testing.T, path string, want os.FileMode) {

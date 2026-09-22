@@ -114,23 +114,22 @@ func TestE2E(t *testing.T) {
 		assert.Equal(t, http.StatusOK, r.StatusCode)
 	}, "healthcheck")
 
-	t.Run("version", func(t *testing.T) {
-		r, err := http.Get(newUrl("/version"))
-		if !assertNil(t, err) {
-			return
-		}
-		defer r.Body.Close()
-		assert.Equal(t, http.StatusOK, r.StatusCode)
-	})
-
-	t.Run("debug", func(t *testing.T) {
-		r, err := http.Get(newUrl("/debug"))
-		if !assertNil(t, err) {
-			return
-		}
-		defer r.Body.Close()
-		assert.Equal(t, http.StatusOK, r.StatusCode)
-	})
+	for _, tc := range []struct {
+		name string
+		path string
+	}{
+		{name: "version", path: "/version"},
+		{name: "debug", path: "/debug"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			r, err := http.Get(newUrl(tc.path))
+			if !assertNil(t, err) {
+				return
+			}
+			defer r.Body.Close()
+			assert.Equal(t, http.StatusOK, r.StatusCode)
+		})
+	}
 
 	const (
 		scoreFileName = "score_sample.musicxml"
@@ -168,15 +167,6 @@ func TestE2E(t *testing.T) {
 		assert.Equal(t, basename, got.Basename())
 	})
 
-	t.Run("download log", func(t *testing.T) {
-		r, err := http.Get(newUrl("/proc/" + newRid + "/log"))
-		if !assertNil(t, err) {
-			return
-		}
-		r.Body.Close()
-		assert.Equal(t, http.StatusOK, r.StatusCode)
-	})
-
 	t.Run("download musicxml", func(t *testing.T) {
 		r, err := http.Get(newUrl("/proc/" + newRid + "/musicxml"))
 		if !assertNil(t, err) {
@@ -191,14 +181,22 @@ func TestE2E(t *testing.T) {
 		assert.Equal(t, scoreContent, string(body))
 	})
 
-	t.Run("download wav", func(t *testing.T) {
-		r, err := http.Get(newUrl("/proc/" + newRid + "/wav"))
-		if !assertNil(t, err) {
-			return
-		}
-		r.Body.Close()
-		assert.Equal(t, http.StatusOK, r.StatusCode)
-	})
+	for _, tc := range []struct {
+		name string
+		path string
+	}{
+		{name: "download log", path: "/log"},
+		{name: "download wav", path: "/wav"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			r, err := http.Get(newUrl("/proc/" + newRid + tc.path))
+			if !assertNil(t, err) {
+				return
+			}
+			r.Body.Close()
+			assert.Equal(t, http.StatusOK, r.StatusCode)
+		})
+	}
 
 	t.Run("search", func(t *testing.T) {
 		r, ok := assertAndGet[handler.SearchProcessResponseData](t, newUrl("/proc/search"))

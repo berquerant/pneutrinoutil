@@ -1,0 +1,71 @@
+name: Test
+
+permissions: {}
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_call:
+
+jobs:
+  unit-test:
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup mise
+        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+      - name: Run Unit Test
+        run: ./task test:unit
+
+  # NOTE: Abandoned running e2e-test (and integration test with kind) on GitHub Actions runners (2026-04 & 2026-09)
+  # Issue: MySQL server container fails to start inside Kind cluster on GitHub Actions ubuntu-latest:
+  #   [ERROR] [MY-010338] [Server] Can't find error-message file '/usr/share/mysql-<version>/english/errmsg.sys'. Check error-message file location and 'lc-messages-dir' configuration directive.
+  # Observed across MySQL versions: 9.6.0, 8.4.11, 5.7.44 (amd64-only), and 9.7.2.
+  # Verification:
+  #   - Works reliably in local development environment (macOS with Kind/Docker Desktop/Lima ext4).
+  #   - Files (/usr/share/mysql-*/english/errmsg.sys) exist in the container image.
+  # Attempted fixes (all failed on GHA):
+  #   - Setting lc-messages-dir and basedir explicitly in my.cnf
+  #   - Removing/configuring securityContext (runAsUser: 999, runAsNonRoot, fsGroup)
+  #   - Isolating ConfigMap volume mounts (mounting only my.cnf)
+  #   - Copying share directory to an emptyDir volume via initContainer
+  #   - Running container as root / privileged / imagePullPolicy: Always
+  # Root Cause:
+  #   Incompatibility between Kind (Docker-in-Docker) and GitHub Actions runner storage driver (multi-layered OverlayFS).
+  #   The nested OverlayFS causes file open / stat system calls in lowerdir to fail with EACCES/EPERM/ENOENT for mysqld.
+  # e2e-test:
+  #   timeout-minutes: 30
+  #   permissions:
+  #     contents: read
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+  #       with:
+  #         persist-credentials: false
+  #     - name: Setup mise
+  #       uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+  #     - name: Run Integration Test
+  #       run: ./task test:integration
+  #       env:
+  #         TEST_PARALLEL: "4"
+  #     - name: Run E2E Test
+  #       run: ./task test:e2e
+  #       env:
+  #         SKIP_BUILD: "true"
+  #         SKIP_RELOAD_CLUSTER: "true"
+  #         TEST_PARALLEL: "4"
