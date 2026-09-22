@@ -162,17 +162,23 @@ run = "./bin/build.sh -o dist/pneutrinoutil-gendata gendata/main.go"
 [tasks.test]
 run = [
   "mise run test:unit",
+  "mise run test:integration",
   "mise run test:e2e",
 ]
 
 [tasks."test:unit"]
-description = "Run unit tests"
+description = "Run pure unit tests (no external dependencies)"
+depends = ["gen:ignore-tmp"]
+run = "go test ${TEST_PARALLEL+-p $TEST_PARALLEL} -cover $(go list ./... | grep -v tmp | grep -v tests) ${DEBUG+-v -count=1}"
+
+[tasks."test:integration"]
+description = "Run integration tests"
 depends = ["gen:ignore-tmp"]
 run = """
 if [ "$SKIP_DEPLOY" != "true" ]; then
   mise run k8s:test
 fi
-TEST=true ./bin/env.sh go test ${TEST_PARALLEL+-p $TEST_PARALLEL} -cover $(go list ./... | grep -v tmp | grep -v tests) ${DEBUG+-v -count=1}
+TEST=true ./bin/env.sh go test -tags=integration ${TEST_PARALLEL+-p $TEST_PARALLEL} -cover ./pkg/infra ${DEBUG+-v -count=1}
 """
 
 [tasks."test:e2e"]
@@ -396,9 +402,9 @@ run = "./bin/lima.sh stop"
 description = "Recreate and start Lima VM"
 run = "./bin/lima.sh reload"
 
-[tasks."lima:unit"]
-description = "Run unit tests inside Lima VM"
-run = "./bin/lima.sh run ./task test:unit"
+[tasks."lima:integration"]
+description = "Run integration tests inside Lima VM"
+run = "./bin/lima.sh run ./task test:integration"
 
 [tasks."lima:e2e"]
 description = "Run E2E tests inside Lima VM"

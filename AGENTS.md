@@ -222,7 +222,8 @@ Use the `./task` runner (which executes `mise run` under the hood) for running s
 | Situation / Development Trigger | Command | Description |
 | :--- | :--- | :--- |
 | **Routine Full Verification** | `./task` | Runs linters, unit/integration tests, and builds all binaries in sequence. |
-| **Go Code Modifications** | `./task test:unit` | Runs all Go unit tests with coverage (`go test -cover`). |
+| **Go Code Modifications** | `./task test:unit` | Runs pure Go unit tests with coverage (`go test -cover`, no external dependencies). |
+| **Infrastructure Integration Testing** | `./task test:integration` | Runs integration tests for DB and S3 infra against local Kubernetes (Kind). |
 | **API Handler / Swagger Annotation Changes** | `./task gen:swag` | Generates Swagger docs in `server/docs` and updates TypeScript API client for UI. |
 | **Frontend UI (TypeScript/React) Editing** | `./task ui-lint` | Runs TypeScript type checking (`typecheck`). |
 | **End-to-End System Testing** | `./task test:e2e` | Runs E2E tests, verifying integration between Server, Worker, Redis, MySQL, and S3. |
@@ -234,7 +235,7 @@ Use the `./task` runner (which executes `mise run` under the hood) for running s
 | **Stopping Local Kubernetes & Worker** | `./task k8s:stop` | Tears down local Kind cluster and stops background worker processes. |
 | **Reloading K8s Worker Process** | `./task run:reload-k8s-worker` | Rebuilds CLI/Worker and restarts background K8s worker process. |
 | **Provisioning NEUTRINO Engine & Singers** | `./task ansible` | Downloads and installs NEUTRINO binaries and singer voice models via Ansible. |
-| **Running Unit Tests inside Lima VM** | `./task lima:unit` | Executes unit tests inside isolated Lima VM environment. |
+| **Running Integration Tests inside Lima VM** | `./task lima:integration` | Executes integration tests inside isolated Lima VM environment. |
 | **Running E2E Tests inside Lima VM** | `./task lima:e2e` | Executes E2E tests inside isolated Lima VM environment. |
 | **Managing Lima VM Lifecycle** | `./task lima:start`<br>`./task lima:stop`<br>`./task lima:reload` | Starts, stops, or recreates Lima VM environment. |
 | **Cleaning Generated Files / Tools** | `./task gen:clean` | Removes generated Go files (`*_generated.go`) and binary tool caches. |
