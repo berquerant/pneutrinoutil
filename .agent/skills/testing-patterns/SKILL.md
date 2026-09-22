@@ -308,24 +308,31 @@ mysql:
 
 ## 6. CI Pipeline
 
-Continuous integration runs on GitHub Actions in [`.github/workflows/ci.yml`](.github/workflows/ci.yml):
+Continuous integration runs on GitHub Actions divided into specialized workflow files under [`.github/workflows/`](.github/workflows/):
+
+- [`build.yml`](.github/workflows/build.yml): `build-binaries` and `build-images`
+- [`test.yml`](.github/workflows/test.yml): `unit-test` and `e2e-test`
+- [`lint.yml`](.github/workflows/lint.yml): `lint` and `govulncheck`
+- [`tag.yml`](.github/workflows/tag.yml): `create-tag` (publishes matching git release tag on push to `main`)
 
 ```mermaid
 flowchart TD
-    subgraph CI["GitHub Actions CI Pipeline"]
-        B1["build-binaries<br/>(./task build:binaries)"]
-        B2["build-images<br/>(./task build:images)"]
-        TU["unit-test<br/>(./task test:unit)"]
-        TE["e2e-test<br/>(./task test:integration & ./task test:e2e)"]
-        L["lint<br/>(./task lint)"]
-        V["govulncheck<br/>(vulnerability scanning)"]
-        TAG["create-tag<br/>(Push to main -> Git Tag v{VERSION})"]
-
-        B1 --> TAG
-        TU --> TAG
-        TE --> TAG
-        L --> TAG
-        V --> TAG
+    subgraph CI["GitHub Actions Workflows"]
+        subgraph BuildWF["build.yml"]
+            B1["build-binaries<br/>(./task build:binaries)"]
+            B2["build-images<br/>(./task build:images)"]
+        end
+        subgraph TestWF["test.yml"]
+            TU["unit-test<br/>(./task test:unit)"]
+            TE["e2e-test<br/>(./task test:integration & ./task test:e2e)"]
+        end
+        subgraph LintWF["lint.yml"]
+            L["lint<br/>(./task lint)"]
+            V["govulncheck<br/>(vulnerability scanning)"]
+        end
+        subgraph TagWF["tag.yml"]
+            TAG["create-tag<br/>(Push to main -> Git Tag v{VERSION})"]
+        end
     end
 ```
 
