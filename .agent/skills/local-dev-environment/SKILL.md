@@ -1,6 +1,6 @@
 ---
 name: local-dev-environment
-description: Local development environment setup with Kind, Helm, worker management, Lima VM, and debugging utilities
+description: Local development environment setup with Kind, Helm, worker management, and debugging utilities
 ---
 
 # Local Development Environment Guide
@@ -26,7 +26,6 @@ The following core tools are specified in [`mise.toml`](mise.toml):
 | **kubectl** | `1.37.0` | Kubernetes CLI |
 | **Helm** | `4.2.4` | Kubernetes package manager / deployment |
 | **stern** | `1.34.0` | Multi-pod log tailing tool |
-| **Lima** | `2.2.0` | Linux virtual machine manager (CI parity) |
 | **golangci-lint** | `2.13.2` | Go linting suite |
 | **swag** | `1.16.6` | Swagger OpenAPI doc generator |
 | **yq** | `4.53.6` | Command-line YAML processor |
@@ -71,7 +70,7 @@ flowchart TD
         subgraph Pods["Deployed Pods"]
             Server["Server Pod<br/>NodePort: 31002 → Host: 9101"]
             UI["UI Pod<br/>NodePort: 31001 → Host: 3000"]
-            MySQL["MySQL 9.6 Pod<br/>NodePort: 31011 → Host: 3306"]
+            MySQL["MySQL 9.7 Pod<br/>NodePort: 31011 → Host: 3306"]
             Redis["Redis 8.6 Pod<br/>NodePort: 31012 → Host: 6379"]
             S3["SeaweedFS Pod<br/>NodePort: 31013 → Host: 9000"]
         end
@@ -108,6 +107,7 @@ This task automatically executes four stages:
 ### Cluster Configuration (`.cluster.yaml`)
 
 Configuration is declared in [`.cluster.yaml`](.cluster.yaml):
+- **Cluster Name**: `pneutrinoutil` (configurable via `KIND_CLUSTER_NAME`)
 - **Node Image**: `kindest/node:v1.37.0` (configurable via `KIND_NODE_IMAGE`)
 - **Port Mappings (NodePort → Host)**:
   | Service | Container Port | Host Port | Protocol / Purpose |
@@ -148,7 +148,7 @@ Application manifests are packaged in the Helm chart located at [`charts/pneutri
 
 | Component | Workload Type | Image | Storage / Initialization |
 | :--- | :--- | :--- | :--- |
-| **MySQL** | `StatefulSet` | `mysql:9.6.0` | PV/PVC hostPath at `/mnt/local-data/mysql`. A post-install Kubernetes Job runs DDL migrations defined in `templates/mysql/job.yaml`. |
+| **MySQL** | `StatefulSet` | `mysql:9.7.2` | PV/PVC hostPath at `/mnt/local-data/mysql`. A post-install Kubernetes Job runs DDL migrations defined in `templates/mysql/job.yaml`. |
 | **Redis** | `Deployment` | `redis:8.6.1` | In-memory key-value store and Asynq broker. |
 | **SeaweedFS** | `StatefulSet` | `chrislusf/seaweedfs:4.17` | S3-compatible object store. PV/PVC hostPath at `/mnt/local-data/s3`. A post-install Job (`amazon/aws-cli:2.34.13`) provisions the initial bucket. |
 | **Server** | `Deployment` | `pneutrinoutil/server:local` | Echo REST API serving requests on port 9101. |
@@ -305,6 +305,7 @@ All environment variables are declared in [`mise.toml`](mise.toml) under the `[e
 | `STORAGES3` | `true` | Enable S3 storage driver |
 | `NEUTRINO_DIR` | `./dist/NEUTRINO` | Path to NEUTRINO engine install |
 | `PNEUTRINOUTIL` | `pneutrinoutil` | CLI binary name / path |
+| `KIND_CLUSTER_NAME` | `pneutrinoutil` | Kind cluster name |
 | `KIND_NODE_IMAGE` | `kindest/node:v1.37.0` | Node image for Kind |
 
 ### Test Environment (`bin/env.sh`)
@@ -323,30 +324,7 @@ When running automated tests or setting `TEST=true`, [`bin/env.sh`](bin/env.sh) 
 
 ---
 
-## 7. Lima VM (CI-Equivalent Testing)
-
-[Lima](https://lima-vm.io/) provides a native Linux virtual machine on macOS to mirror CI test execution.
-
-### Why Lima?
-MySQL 9.6 fails when executed in nested Kind-in-Docker containers on standard GitHub Actions runners due to storage driver incompatibilities (overlayfs vs vfs/ext4 mount issues). Running Kind inside a Lima VM replicates the exact Linux VM environment used in CI, eliminating host OS discrepancies.
-
-### Lifecycle & Commands
-
-| Task | Command | Description |
-| :--- | :--- | :--- |
-| **Start VM** | `./task lima:start` | Launches VM and runs setup scripts |
-| **Stop VM** | `./task lima:stop` | Suspends VM |
-| **Reload VM** | `./task lima:reload` | Deletes existing VM and re-provisions from scratch |
-| **Run Unit Tests** | `./task lima:unit` | Syncs workspace to VM and executes `./task test:unit` inside VM |
-| **Run E2E Tests** | `./task lima:e2e` | Syncs workspace to VM and executes `./task test:e2e` inside VM |
-
-### Provisioning Scripts
-- [`bin/lima.sh`](bin/lima.sh): Configures VM CPU, memory, and persistent disk limits, mounts host caches (`tmp/lima` → `/tmp/cache` for Go cache, modcache, and Docker layers), packages the repository tarball, and runs commands inside the VM.
-- [`bin/lima-setup.sh`](bin/lima-setup.sh): Provisions guest VM dependencies (installs `mise` and installs the official AWS CLI with PGP verification).
-
----
-
-## 8. Debugging Tips & Troubleshooting
+## 7. Debugging Tips & Troubleshooting
 
 ### Pod & Cluster Inspection
 ```bash

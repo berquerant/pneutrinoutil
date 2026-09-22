@@ -18,8 +18,6 @@ All testing and verification workflows are standardized using the `./task` runne
 | `./task test:unit` | Run pure Go unit tests with coverage (`go test -cover ./...`, excluding `tests/`, `tmp/`, and integration tests; no external resources required) |
 | `./task test:integration` | Run integration tests requiring DB/S3 (`go test -tags=integration ./pkg/infra`) |
 | `./task test:e2e` | Run E2E integration tests (requires running Kind cluster + worker) |
-| `./task lima:integration` | Run integration tests inside Lima VM (CI-equivalent environment) |
-| `./task lima:e2e` | Run E2E tests inside Lima VM |
 | `./task ui-lint` | TypeScript type checking for UI code (`pnpm run typecheck` in `ui/`) |
 
 ### Additional Test Utilities and Flags
@@ -310,41 +308,42 @@ mysql:
 
 ## 6. CI Pipeline
 
-Continuous integration runs on GitHub Actions in [`.github/workflows/ci.yml`](.github/workflows/ci.yml):
+Continuous integration runs on GitHub Actions divided into specialized workflow files under [`.github/workflows/`](.github/workflows/):
+
+- [`build.yml`](.github/workflows/build.yml): `build-binaries` and `build-images`
+- [`test.yml`](.github/workflows/test.yml): `unit-test` and `e2e-test`
+- [`lint.yml`](.github/workflows/lint.yml): `lint` and `govulncheck`
+- [`tag.yml`](.github/workflows/tag.yml): `create-tag` (publishes matching git release tag on push to `main`)
 
 ```mermaid
 flowchart TD
-    subgraph CI["GitHub Actions CI Pipeline"]
-        B1["build-binaries<br/>(./task build:binaries)"]
-        B2["build-images<br/>(./task build:images)"]
-        T["test<br/>(Lima VM: lima:unit & lima:e2e)"]
-        L["lint<br/>(./task lint)"]
-        V["govulncheck<br/>(vulnerability scanning)"]
-        TAG["create-tag<br/>(Push to main -> Git Tag v{VERSION})"]
-
-        B1 --> TAG
-        T --> TAG
-        L --> TAG
-        V --> TAG
+    subgraph CI["GitHub Actions Workflows"]
+        subgraph BuildWF["build.yml"]
+            B1["build-binaries<br/>(./task build:binaries)"]
+            B2["build-images<br/>(./task build:images)"]
+        end
+        subgraph TestWF["test.yml"]
+            TU["unit-test<br/>(./task test:unit)"]
+            TE["e2e-test<br/>(./task test:integration & ./task test:e2e)"]
+        end
+        subgraph LintWF["lint.yml"]
+            L["lint<br/>(./task lint)"]
+            V["govulncheck<br/>(vulnerability scanning)"]
+        end
+        subgraph TagWF["tag.yml"]
+            TAG["create-tag<br/>(Push to main -> Git Tag v{VERSION})"]
+        end
     end
 ```
 
 ### Pipeline Jobs
 1. **`build-binaries`**: Builds all Go binaries (`cli`, `server`, `worker`, `mockcli`, `gendata`).
 2. **`build-images`**: Builds container images with `docker buildx bake`.
-3. **`test`**: Provisions a **Lima VM** to run unit and E2E tests in a native Linux VM:
-   - `mise run lima:unit` (runs unit tests with `TEST_PARALLEL=4`)
-   - `mise run lima:e2e` (runs E2E tests against Kind cluster)
-4. **`lint`**: Runs the complete linting suite (`./task lint`: `yamllint`, `ls-lint`, `shellcheck`, `vet`, `golangci-lint`, `go-arch-lint`, `ui:build`, `ui:lint`).
-5. **`govulncheck`**: Runs dependency vulnerability scanning against `go.mod`.
-6. **`create-tag`**: On pushes to `main`, reads `VERSION` and publishes a matching git release tag (e.g. `v0.1.0`).
-
-### Why Lima VM is Used in CI
-In GitHub Actions runners, running MySQL 9.6 inside a Kind cluster (Docker-in-Docker) fails due to storage driver file-descriptor incompatibilities:
-```
-[ERROR] [MY-010338] [Server] Can't find error-message file '/usr/share/mysql-9.6/english/errmsg.sys'.
-```
-Even though the error-message file exists, the storage driver in nested container environments prevents the MySQL server binary from opening it. Running inside a Lima VM on the runner provides a clean, native virtualization layer with standard filesystem semantics, allowing Kind and MySQL 9.6 to run reliably.
+3. **`unit-test`**: Runs pure Go unit tests without external resource dependencies.
+4. **`e2e-test`**: Runs integration and E2E tests against a local Kind cluster on the host runner.
+5. **`lint`**: Runs the complete linting suite (`./task lint`: `yamllint`, `ls-lint`, `shellcheck`, `vet`, `golangci-lint`, `go-arch-lint`, `ui:build`, `ui:lint`).
+6. **`govulncheck`**: Runs dependency vulnerability scanning against `go.mod`.
+7. **`create-tag`**: On pushes to `main`, reads `VERSION` and publishes a matching git release tag (e.g. `v0.1.0`).
 
 ---
 
