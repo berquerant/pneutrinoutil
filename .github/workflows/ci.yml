@@ -73,66 +73,18 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Cache Go modules and build folders
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: |
-            ./tmp/lima/go
-          key: ${{ runner.os }}-lima-go-${{ github.ref_name }}-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-lima-go-${{ github.ref_name }}-
-            ${{ runner.os }}-lima-go-main-
-            ${{ runner.os }}-lima-go-
-      - name: Cache Images
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: |
-            ./tmp/lima/docker
-          key: ${{ runner.os }}-lima-docker-${{ github.ref_name }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-lima-docker-${{ github.ref_name }}-
-            ${{ runner.os }}-lima-docker-main-
-            ${{ runner.os }}-lima-docker-
-      - name: Cache mise tools
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: |
-            ./tmp/lima/mise
-          key: ${{ runner.os }}-lima-mise-${{ github.ref_name }}-${{ hashFiles('mise.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-lima-mise-${{ github.ref_name }}-
-            ${{ runner.os }}-lima-mise-main-
-            ${{ runner.os }}-lima-mise-
       - name: Setup mise
         uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
-      - name: Setup Lima
-        uses: ./.github/actions/setup-lima
-      - name: Start VM
-        run: mise run lima:reload
-        env:
-          TARGET_REF: ${{ github.event_name == 'push' && github.ref_name || github.head_ref }}
-          VM_MEMORY_GB: "12"
       - name: Run Integration Test
-        run: mise run lima:integration
+        run: ./task test:integration
         env:
           TEST_PARALLEL: "4"
       - name: Run E2E Test
-        run: mise run lima:e2e
+        run: ./task test:e2e
         env:
           SKIP_BUILD: "true"
           SKIP_RELOAD_CLUSTER: "true"
           TEST_PARALLEL: "4"
-
-  # NOTE: Abandoned MySQL 9.6 startup fix on 2026-04
-  # Issue: Internal MySQL error claiming errmsg.sys is missing in /usr/share/mysql-9.6/, works locally, but fails on GHA.
-  #   [ERROR] [MY-010338] [Server] Can't find error-message file '/usr/share/mysql-9.6/english/errmsg.sys'. Check error-message file location and 'lc-messages-dir' configuration directive.
-  # Verification: Confirmed file existence via 'ls', but MySQL binary fails to read it.
-  # Attempted fixes (all failed):
-  #   - Setting lc-messages-dir in my.cnf
-  #   - imagePullPolicy: Always
-  #   - Running as root/privileged
-  #   - Copying messages from init container to main container
-  # Potential Cause: Incompatibility between Kind (Docker-in-Docker) and GHA storage driver.
 
 
   lint:

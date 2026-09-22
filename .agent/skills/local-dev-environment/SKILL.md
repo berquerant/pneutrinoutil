@@ -1,6 +1,6 @@
 ---
 name: local-dev-environment
-description: Local development environment setup with Kind, Helm, worker management, Lima VM, and debugging utilities
+description: Local development environment setup with Kind, Helm, worker management, and debugging utilities
 ---
 
 # Local Development Environment Guide
@@ -26,7 +26,6 @@ The following core tools are specified in [`mise.toml`](mise.toml):
 | **kubectl** | `1.37.0` | Kubernetes CLI |
 | **Helm** | `4.2.4` | Kubernetes package manager / deployment |
 | **stern** | `1.34.0` | Multi-pod log tailing tool |
-| **Lima** | `2.2.0` | Linux virtual machine manager (CI parity) |
 | **golangci-lint** | `2.13.2` | Go linting suite |
 | **swag** | `1.16.6` | Swagger OpenAPI doc generator |
 | **yq** | `4.53.6` | Command-line YAML processor |
@@ -323,30 +322,7 @@ When running automated tests or setting `TEST=true`, [`bin/env.sh`](bin/env.sh) 
 
 ---
 
-## 7. Lima VM (CI-Equivalent Testing)
-
-[Lima](https://lima-vm.io/) provides a native Linux virtual machine on macOS to mirror CI test execution.
-
-### Why Lima?
-MySQL 9.6 fails when executed in nested Kind-in-Docker containers on standard GitHub Actions runners due to storage driver incompatibilities (overlayfs vs vfs/ext4 mount issues). Running Kind inside a Lima VM replicates the exact Linux VM environment used in CI, eliminating host OS discrepancies.
-
-### Lifecycle & Commands
-
-| Task | Command | Description |
-| :--- | :--- | :--- |
-| **Start VM** | `./task lima:start` | Launches VM and runs setup scripts |
-| **Stop VM** | `./task lima:stop` | Suspends VM |
-| **Reload VM** | `./task lima:reload` | Deletes existing VM and re-provisions from scratch |
-| **Run Unit Tests** | `./task lima:unit` | Syncs workspace to VM and executes `./task test:unit` inside VM |
-| **Run E2E Tests** | `./task lima:e2e` | Syncs workspace to VM and executes `./task test:e2e` inside VM |
-
-### Provisioning Scripts
-- [`bin/lima.sh`](bin/lima.sh): Configures VM CPU, memory, and persistent disk limits, mounts host caches (`tmp/lima` → `/tmp/cache` for Go cache, modcache, and Docker layers), packages the repository tarball, and runs commands inside the VM.
-- [`bin/lima-setup.sh`](bin/lima-setup.sh): Provisions guest VM dependencies (installs `mise` and installs the official AWS CLI with PGP verification).
-
----
-
-## 8. Debugging Tips & Troubleshooting
+## 7. Debugging Tips & Troubleshooting
 
 ### Pod & Cluster Inspection
 ```bash

@@ -19,7 +19,6 @@ helm = "4.2.4"
 stern = "1.34.0"
 swag = "1.16.6"
 yq = "4.53.6"
-lima = "2.2.0"
 
 [env]
 SERVER_HOST = "127.0.0.1"
@@ -387,25 +386,3 @@ description = "Generate UI API"
 dir = "./ui"
 depends = ["ui:install"]
 run = "./bin/swag.sh"
-
-# --- Lima Tasks ---
-
-[tasks."lima:start"]
-description = "Start Lima VM"
-run = "./bin/lima.sh start"
-
-[tasks."lima:stop"]
-description = "Stop Lima VM"
-run = "./bin/lima.sh stop"
-
-[tasks."lima:reload"]
-description = "Recreate and start Lima VM"
-run = "./bin/lima.sh reload"
-
-[tasks."lima:integration"]
-description = "Run integration tests inside Lima VM"
-run = "./bin/lima.sh run ./task test:integration"
-
-[tasks."lima:e2e"]
-description = "Run E2E tests inside Lima VM"
-run = "./bin/lima.sh run ./task test:e2e"

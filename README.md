@@ -13,8 +13,6 @@ Provides a Command Line Interface (CLI), REST API server, background job worker,
 - Docker
 - AWS CLI
 
-*(Or use [lima](https://github.com/lima-vm/lima) environment)*
-
 ---
 
 ## Setup & Provisioning
@@ -79,10 +77,4 @@ Stop and tear down local Kind cluster and background worker:
 ### Reload K8s Worker Process
 ```shell
 ./task run:reload-k8s-worker
-```
-
-### Development with Lima
-```shell
-./bin/lima.sh start
-./bin/lima.sh run ./task test:unit
 ```

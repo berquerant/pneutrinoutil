@@ -235,9 +235,6 @@ Use the `./task` runner (which executes `mise run` under the hood) for running s
 | **Stopping Local Kubernetes & Worker** | `./task k8s:stop` | Tears down local Kind cluster and stops background worker processes. |
 | **Reloading K8s Worker Process** | `./task run:reload-k8s-worker` | Rebuilds CLI/Worker and restarts background K8s worker process. |
 | **Provisioning NEUTRINO Engine & Singers** | `./task ansible` | Downloads and installs NEUTRINO binaries and singer voice models via Ansible. |
-| **Running Integration Tests inside Lima VM** | `./task lima:integration` | Executes integration tests inside isolated Lima VM environment. |
-| **Running E2E Tests inside Lima VM** | `./task lima:e2e` | Executes E2E tests inside isolated Lima VM environment. |
-| **Managing Lima VM Lifecycle** | `./task lima:start`<br>`./task lima:stop`<br>`./task lima:reload` | Starts, stops, or recreates Lima VM environment. |
 | **Cleaning Generated Files / Tools** | `./task gen:clean` | Removes generated Go files (`*_generated.go`) and binary tool caches. |
 
 ---
@@ -304,5 +301,5 @@ Specialized skills are available in `.agent/skills/` for deep dives into specifi
 | [`neutrino-pipeline`](.agent/skills/neutrino-pipeline/SKILL.md) | Understanding NEUTRINO synthesis, CLI config, worker task pipeline, mock CLI testing |
 | [`api-swagger-workflow`](.agent/skills/api-swagger-workflow/SKILL.md) | Adding/modifying REST API endpoints, Swagger annotations, TypeScript client generation |
 | [`go-architecture`](.agent/skills/go-architecture/SKILL.md) | Package layering rules, adding new domain entities, code generation patterns |
-| [`local-dev-environment`](.agent/skills/local-dev-environment/SKILL.md) | Kind cluster, Helm deployment, worker management, Lima VM, environment variables |
+| [`local-dev-environment`](.agent/skills/local-dev-environment/SKILL.md) | Kind cluster, Helm deployment, worker management, environment variables |
 | [`testing-patterns`](.agent/skills/testing-patterns/SKILL.md) | Writing tests, E2E patterns, mock CLI strategy, test isolation |

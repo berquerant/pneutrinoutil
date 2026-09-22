@@ -18,18 +18,6 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "lima-vm/lima",
-      "description": "Manage lima version",
-      "fileMatch": [
-        "^.github/actions/setup-lima/action.yaml$"
-      ],
-      "matchStrings": [
-        "default: (?<currentValue>v\\d+\\.\\d+\\.\\d+)"
-      ]
-    },
-    {
-      "customType": "regex",
       "datasourceTemplate": "docker",
       "depNameTemplate": "kindest/node",
       "description": "Manage KIND_NODE_IMAGE version in mise.toml",
@@ -110,17 +98,6 @@
         "go",
         "golang",
         "docker.io/library/golang"
-      ]
-    },
-    {
-      "addLabels": [
-        "lima"
-      ],
-      "description": "Group Lima updates across mise and setup-lima action",
-      "groupName": "lima",
-      "matchPackageNames": [
-        "lima",
-        "lima-vm/lima"
       ]
     },
     {
