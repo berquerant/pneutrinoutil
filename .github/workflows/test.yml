@@ -29,6 +29,22 @@ jobs:
       - name: Run Unit Test
         run: ./task test:unit
 
+  # NOTE: Abandoned running e2e-test (and integration test with kind) on GitHub Actions runners (2026-04 & 2026-09)
+  # Issue: MySQL server container fails to start inside Kind cluster on GitHub Actions ubuntu-latest:
+  #   [ERROR] [MY-010338] [Server] Can't find error-message file '/usr/share/mysql-<version>/english/errmsg.sys'. Check error-message file location and 'lc-messages-dir' configuration directive.
+  # Observed across MySQL versions: 9.6.0, 8.4.11, 5.7.44 (amd64-only), and 9.7.2.
+  # Verification:
+  #   - Works reliably in local development environment (macOS with Kind/Docker Desktop/Lima ext4).
+  #   - Files (/usr/share/mysql-*/english/errmsg.sys) exist in the container image.
+  # Attempted fixes (all failed on GHA):
+  #   - Setting lc-messages-dir and basedir explicitly in my.cnf
+  #   - Removing/configuring securityContext (runAsUser: 999, runAsNonRoot, fsGroup)
+  #   - Isolating ConfigMap volume mounts (mounting only my.cnf)
+  #   - Copying share directory to an emptyDir volume via initContainer
+  #   - Running container as root / privileged / imagePullPolicy: Always
+  # Root Cause:
+  #   Incompatibility between Kind (Docker-in-Docker) and GitHub Actions runner storage driver (multi-layered OverlayFS).
+  #   The nested OverlayFS causes file open / stat system calls in lowerdir to fail with EACCES/EPERM/ENOENT for mysqld.
   # e2e-test:
   #   timeout-minutes: 30
   #   permissions:
