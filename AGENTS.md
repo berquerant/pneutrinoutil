@@ -34,7 +34,7 @@ flowchart TD
     Browser["Browser"]
     UI["UI<br/>(React + React Router v7)<br/>Port 3000"]
     Server["Server<br/>(Echo v5 REST API)<br/>Port 9101"]
-    MySQL["MySQL 8.4<br/>Port 3306"]
+    MySQL["MySQL 9.7<br/>Port 3306"]
     S3["SeaweedFS (S3)<br/>Port 9000"]
     Redis["Redis 8.6<br/>Port 6379"]
     Worker["Worker<br/>(Asynq)"]

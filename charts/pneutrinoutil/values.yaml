@@ -13,7 +13,7 @@ images:
     tag: 2.34.13
   mysql:
     repository: mysql
-    tag: 8.4.11
+    tag: 9.7.2
   server:
     repository: pneutrinoutil/server
     tag: local

@@ -70,7 +70,7 @@ flowchart TD
         subgraph Pods["Deployed Pods"]
             Server["Server Pod<br/>NodePort: 31002 → Host: 9101"]
             UI["UI Pod<br/>NodePort: 31001 → Host: 3000"]
-            MySQL["MySQL 8.4 Pod<br/>NodePort: 31011 → Host: 3306"]
+            MySQL["MySQL 9.7 Pod<br/>NodePort: 31011 → Host: 3306"]
             Redis["Redis 8.6 Pod<br/>NodePort: 31012 → Host: 6379"]
             S3["SeaweedFS Pod<br/>NodePort: 31013 → Host: 9000"]
         end
@@ -148,7 +148,7 @@ Application manifests are packaged in the Helm chart located at [`charts/pneutri
 
 | Component | Workload Type | Image | Storage / Initialization |
 | :--- | :--- | :--- | :--- |
-| **MySQL** | `StatefulSet` | `mysql:8.4.11` | PV/PVC hostPath at `/mnt/local-data/mysql`. A post-install Kubernetes Job runs DDL migrations defined in `templates/mysql/job.yaml`. |
+| **MySQL** | `StatefulSet` | `mysql:9.7.2` | PV/PVC hostPath at `/mnt/local-data/mysql`. A post-install Kubernetes Job runs DDL migrations defined in `templates/mysql/job.yaml`. |
 | **Redis** | `Deployment` | `redis:8.6.1` | In-memory key-value store and Asynq broker. |
 | **SeaweedFS** | `StatefulSet` | `chrislusf/seaweedfs:4.17` | S3-compatible object store. PV/PVC hostPath at `/mnt/local-data/s3`. A post-install Job (`amazon/aws-cli:2.34.13`) provisions the initial bucket. |
 | **Server** | `Deployment` | `pneutrinoutil/server:local` | Echo REST API serving requests on port 9101. |
