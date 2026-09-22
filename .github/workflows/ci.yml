@@ -46,7 +46,22 @@ jobs:
       - name: Build
         run: ./task build:images
 
-  test:
+  unit-test:
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup mise
+        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+      - name: Run Unit Test
+        run: ./task test:unit
+
+  e2e-test:
     timeout-minutes: 30
     permissions:
       contents: read
@@ -97,8 +112,8 @@ jobs:
         env:
           TARGET_REF: ${{ github.event_name == 'push' && github.ref_name || github.head_ref }}
           VM_MEMORY_GB: "12"
-      - name: Run Unit Test
-        run: mise run lima:unit
+      - name: Run Integration Test
+        run: mise run lima:integration
         env:
           TEST_PARALLEL: "4"
       - name: Run E2E Test
@@ -149,7 +164,7 @@ jobs:
   create-tag:
     name: Create Git Tag from VERSION
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [build-binaries, test, lint, govulncheck]
+    needs: [build-binaries, unit-test, e2e-test, lint, govulncheck]
     timeout-minutes: 5
     runs-on: ubuntu-latest
     permissions:

@@ -15,9 +15,10 @@ All testing and verification workflows are standardized using the `./task` runne
 
 | Command | What it does |
 | :--- | :--- |
-| `./task test:unit` | Run all Go unit tests with coverage (`go test -cover ./...`, excluding `tests/` and `tmp/`) |
+| `./task test:unit` | Run pure Go unit tests with coverage (`go test -cover ./...`, excluding `tests/`, `tmp/`, and integration tests; no external resources required) |
+| `./task test:integration` | Run integration tests requiring DB/S3 (`go test -tags=integration ./pkg/infra`) |
 | `./task test:e2e` | Run E2E integration tests (requires running Kind cluster + worker) |
-| `./task lima:unit` | Run unit tests inside Lima VM (CI-equivalent environment) |
+| `./task lima:integration` | Run integration tests inside Lima VM (CI-equivalent environment) |
 | `./task lima:e2e` | Run E2E tests inside Lima VM |
 | `./task ui-lint` | TypeScript type checking for UI code (`pnpm run typecheck` in `ui/`) |
 

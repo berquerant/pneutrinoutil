@@ -1,3 +1,5 @@
+//go:build integration
+
 package infra_test
 
 import (
