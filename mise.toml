@@ -51,6 +51,7 @@ STORAGE_BUCKET = "pneutrinoutil"
 TEST_STORAGE_BUCKET = "test"
 STORAGES3 = "true"
 
+KIND_CLUSTER_NAME = "pneutrinoutil"
 KIND_NODE_IMAGE = "kindest/node:v1.37.0"
 
 SERVER_URI = "http://{{env.SERVER_HOST}}:{{env.SERVER_PORT}}/v1"
@@ -272,10 +273,10 @@ run = "mise run k8s:deploy"
 depends = ["run:stop-k8s-worker", "k8s:delete-cluster"]
 
 [tasks."k8s:delete-cluster"]
-run = "./tools/run.sh kind delete cluster || true"
+run = "./tools/run.sh kind delete cluster --name \"$KIND_CLUSTER_NAME\" || true"
 
 [tasks."k8s:create-cluster"]
-run = "./tools/run.sh kind create cluster --config .cluster.yaml --image \"$KIND_NODE_IMAGE\""
+run = "./tools/run.sh kind create cluster --name \"$KIND_CLUSTER_NAME\" --config .cluster.yaml --image \"$KIND_NODE_IMAGE\""
 
 [tasks."k8s:reload-cluster"]
 run = """
@@ -317,16 +318,16 @@ depends = ["k8s:restart-server", "k8s:restart-ui"]
 run = "./tools/run.sh kubectl rollout restart deploy pneutrinoutil-server || true"
 
 [tasks."k8s:load-server-image"]
-run = "./tools/run.sh kind load docker-image pneutrinoutil/server:local"
+run = "./tools/run.sh kind load docker-image --name \"$KIND_CLUSTER_NAME\" pneutrinoutil/server:local"
 
 [tasks."k8s:restart-ui"]
 run = "./tools/run.sh kubectl rollout restart deploy pneutrinoutil-ui || true"
 
 [tasks."k8s:load-ui-image"]
-run = "./tools/run.sh kind load docker-image pneutrinoutil/ui:local"
+run = "./tools/run.sh kind load docker-image --name \"$KIND_CLUSTER_NAME\" pneutrinoutil/ui:local"
 
 [tasks."k8s:load-curl-image"]
-run = "./tools/run.sh kind load docker-image pneutrinoutil/curl:local"
+run = "./tools/run.sh kind load docker-image --name \"$KIND_CLUSTER_NAME\" pneutrinoutil/curl:local"
 
 # --- Run Tasks ---
 

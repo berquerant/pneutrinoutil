@@ -107,6 +107,7 @@ This task automatically executes four stages:
 ### Cluster Configuration (`.cluster.yaml`)
 
 Configuration is declared in [`.cluster.yaml`](.cluster.yaml):
+- **Cluster Name**: `pneutrinoutil` (configurable via `KIND_CLUSTER_NAME`)
 - **Node Image**: `kindest/node:v1.37.0` (configurable via `KIND_NODE_IMAGE`)
 - **Port Mappings (NodePort → Host)**:
   | Service | Container Port | Host Port | Protocol / Purpose |
@@ -304,6 +305,7 @@ All environment variables are declared in [`mise.toml`](mise.toml) under the `[e
 | `STORAGES3` | `true` | Enable S3 storage driver |
 | `NEUTRINO_DIR` | `./dist/NEUTRINO` | Path to NEUTRINO engine install |
 | `PNEUTRINOUTIL` | `pneutrinoutil` | CLI binary name / path |
+| `KIND_CLUSTER_NAME` | `pneutrinoutil` | Kind cluster name |
 | `KIND_NODE_IMAGE` | `kindest/node:v1.37.0` | Node image for Kind |
 
 ### Test Environment (`bin/env.sh`)
