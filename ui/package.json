@@ -1,7 +1,7 @@
 {
   "name": "ui",
   "private": true,
-  "packageManager": "pnpm@12.3.4",
+  "packageManager": "pnpm@12.4.1",
   "type": "module",
   "scripts": {
     "build": "react-router build",
@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.41.0",
-    "@pnpm/exe": "12.3.4",
+    "@pnpm/exe": "12.4.1",
     "@react-router/dev": "^8.3.1",
     "@types/node": "^26.4.1",
     "@types/react": "^19.2.18",
