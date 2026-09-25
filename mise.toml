@@ -6,7 +6,7 @@ go = "1.27.1"
 node = "24.20.0"
 pnpm = "12.3.4"
 python = "3.14.7"
-uv = "0.12.10"
+uv = "0.12.13"
 
 # CLI Tools
 golangci-lint = "2.13.2"
