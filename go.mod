@@ -1,6 +1,6 @@
 module github.com/berquerant/pneutrinoutil
 
-go 1.27.1
+go 1.27.2
 
 tool github.com/berquerant/goconfig
 
