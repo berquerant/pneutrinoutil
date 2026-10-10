@@ -19,7 +19,7 @@ The following core tools are specified in [`mise.toml`](mise.toml):
 
 | Tool | Version | Purpose |
 | :--- | :--- | :--- |
-| **Go** | `1.27.1` | Backend REST API server, CLI, and task worker |
+| **Go** | `1.27.2` | Backend REST API server, CLI, and task worker |
 | **Node.js** | `24.20.0` | Frontend JavaScript runtime |
 | **pnpm** | `12.3.4` | Fast frontend package manager |
 | **Kind** | `0.33.0` | Local Kubernetes in Docker cluster |
