@@ -10,7 +10,7 @@ uv = "0.13.6"
 
 # CLI Tools
 golangci-lint = "2.14.0"
-"aqua:fe3dback/go-arch-lint" = "1.19.0"
+"aqua:fe3dback/go-arch-lint" = "1.19.1"
 shellcheck = "0.11.0"
 ls-lint = "2.3.2"
 kind = "0.33.0"
