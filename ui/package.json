@@ -16,7 +16,7 @@
     "@types/react-modal": "^3.16.3",
     "axios": "^1.20.0",
     "bootstrap": "^5.3.8",
-    "isbot": "^5.2.2",
+    "isbot": "^5.2.3",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-modal": "^3.16.3",
