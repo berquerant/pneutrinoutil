@@ -228,6 +228,8 @@ Use the `./task` runner (which executes `mise run` under the hood) for running s
 | **Frontend UI (TypeScript/React) Editing** | `./task ui-lint` | Runs TypeScript type checking (`typecheck`). |
 | **End-to-End System Testing** | `./task test:e2e` | Runs E2E tests, verifying integration between Server, Worker, Redis, MySQL, and S3. |
 | **Building Individual Binaries** | `./task build:cli`<br>`./task build:server`<br>`./task build:worker`<br>`./task build:mcp` | Builds specific Go binaries to `dist/`. |
+| **Code Complexity Check** | `./task lizard` | Runs lizard cyclomatic complexity check. |
+| **Code & Complexity Report** | `./task scc` | Runs scc code and complexity report by file. |
 | **Building All Artifacts & Docker Images** | `./task build` | Builds all Go binaries and Docker images via `docker buildx bake`. |
 | **Updating Go Module Dependencies** | `./task tidy` | Runs `go mod tidy` for Go module dependencies. |
 | **Initial Project Setup / Environment Config** | `./task init` | Initializes local environment variables via `mise`. |

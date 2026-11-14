@@ -19,6 +19,8 @@ helm = "4.3.1"
 stern = "1.35.0"
 swag = "1.16.6"
 yq = "4.54.3"
+"aqua:boyter/scc" = "4.1.0"
+"pipx:lizard" = "1.24.1"
 
 [env]
 SERVER_HOST = "127.0.0.1"
@@ -87,6 +89,8 @@ depends = [
   "lint:fix",
   "lint:golangci-lint",
   "lint:go-arch-lint",
+  "lint:lizard",
+  "lint:scc",
   "ui:build",
   "ui:lint"
 ]
@@ -118,6 +122,33 @@ run = "./tools/run.sh ls-lint"
 
 [tasks."lint:yamllint"]
 run = "./tools/run.sh uv run yamllint ."
+
+[tasks."lint:lizard"]
+description = "Run lizard complexity check"
+run = """
+./tools/run.sh lizard -w -C 15 -L 200 -s cyclomatic_complexity \
+  -x "*/node_modules/*" \
+  -x "*/build/*" \
+  -x "*/dist/*" \
+  -x "*/tmp/*" \
+  -x "*/.venv/*" \
+  -x "*generated*" \
+  -x "*/ui/app/api/client/*" \
+  -x "*_test.go" \
+  -x "*/tests/*"
+"""
+
+[tasks.lizard]
+description = "Run lizard complexity check"
+depends = ["lint:lizard"]
+
+[tasks."lint:scc"]
+description = "Run scc code and complexity report"
+run = "./tools/run.sh scc --by-file -s complexity"
+
+[tasks.scc]
+description = "Run scc code and complexity report"
+depends = ["lint:scc"]
 
 # --- Build Tasks ---
 

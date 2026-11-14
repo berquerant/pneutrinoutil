@@ -23,6 +23,7 @@ ls:
 ignore:
   - .agent
   - .git
+  - .git-worktree
   - ui/node_modules
   - "**/.react-router"
   - dist
