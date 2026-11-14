@@ -199,7 +199,7 @@ importers:
         version: 8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
     devDependencies:
       '@openapitools/openapi-generator-cli':
-        specifier: ^2.42.1
+        specifier: ^2.42.2
         version: 2.42.2(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
       '@pnpm/exe':
         specifier: 12.18.0
