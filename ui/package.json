@@ -26,7 +26,7 @@
     "@openapitools/openapi-generator-cli": "^2.42.2",
     "@pnpm/exe": "12.18.0",
     "@react-router/dev": "^8.5.2",
-    "@types/node": "^26.6.7",
+    "@types/node": "^26.6.10",
     "@types/react": "^19.3.1",
     "@types/react-dom": "^19.3.0",
     "env-cmd": "^11.0.0",
